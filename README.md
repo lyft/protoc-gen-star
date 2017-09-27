@@ -1,4 +1,4 @@
-# protoc-gen-star (PGS) [![Build Status](https://travis-ci.com/lyft/protoc-gen-star.svg?token=XXXXXX&branch=master)][travis]
+# protoc-gen-star (PGS) [![Build Status](https://travis-ci.org/lyft/protoc-gen-star.svg?branch=master)](https://travis-ci.org/lyft/protoc-gen-star)
 
 **!!! THIS PROJECT IS A WORK-IN-PROGRESS | THE API SHOULD BE CONSIDERED UNSTABLE !!!**
 
