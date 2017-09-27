@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"text/template"
 
 	"github.com/golang/protobuf/protoc-gen-go/generator"
 )
@@ -75,6 +76,11 @@ func (p *PluginBase) Generate(file *generator.FileDescriptor) {
 	p.Fail("Generate method is not implemented for this plugin")
 }
 
+var importsTmpl = template.Must(template.New("imports").Parse(`import({{ range $path, $pkg := . }}
+	{{ $pkg }} "{{ $path }}"
+{{- end }}
+)`))
+
 // GenerateImports adds the imported packages to the top of the file to be
 // generated, using the packages included in b.Imports. This method satisfies
 // the GenerateImports method for the protoc-gen-go plugin, and is called after
@@ -84,13 +90,7 @@ func (p *PluginBase) GenerateImports(file *generator.FileDescriptor) {
 	if p == nil || len(p.Imports) == 0 {
 		return
 	}
-
-	p.P("import(")
-	for path, pkg := range p.Imports {
-		p.P(pkg, " ", strconv.Quote(path))
-	}
-	p.P(")")
-
+	p.T(importsTmpl, p.Imports)
 	p.Imports = nil
 }
 
