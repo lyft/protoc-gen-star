@@ -55,8 +55,8 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 
 	// have we already hydrated this package
 	pcomments := comments[fmt.Sprintf(".%s", name)]
-	if p, ok := g.pkgs[name]; ok {
-		if tp, ok := p.(*pkg); ok && tp.comments == "" {
+	if p, pok := g.pkgs[name]; pok {
+		if tp, tok := p.(*pkg); tok && tp.comments == "" {
 			tp.comments = pcomments
 		}
 		return p

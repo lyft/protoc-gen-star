@@ -737,52 +737,78 @@ func TestGatherer_NameByPath(t *testing.T) {
 
 	g := initTestGatherer(t)
 
+	cases := []struct {
+		name string
+		path []int32
+		want string
+	}{
+		{
+			name: "Package",
+			path: []int32{2},
+			want: ".my.package",
+		},
+		{
+			name: "Message",
+			path: []int32{4, 0},
+			want: ".my.package.MyMessage",
+		},
+		{
+			name: "FieldInMessage",
+			path: []int32{4, 0, 2, 0},
+			want: ".my.package.MyMessage.my_field",
+		},
+		{
+			name: "OneOfFieldInMessage",
+			path: []int32{4, 0, 2, 1},
+			want: ".my.package.MyMessage.my_oneof_field",
+		},
+		{
+			name: "NestedMessageInMessage",
+			path: []int32{4, 0, 3, 0},
+			want: ".my.package.MyMessage.MyNestedMessage",
+		},
+		{
+			name: "OneOfInMessage",
+			path: []int32{4, 0, 8, 0},
+			want: ".my.package.MyMessage.my_oneof",
+		},
+		{
+			name: "Enum",
+			path: []int32{5, 0},
+			want: ".my.package.MyEnum",
+		},
+		{
+			name: "EnumValue1InEnum",
+			path: []int32{5, 0, 2, 0},
+			want: ".my.package.MyEnum.FIRST",
+		},
+		{
+			name: "EnumValue1InEnum",
+			path: []int32{5, 0, 2, 1},
+			want: ".my.package.MyEnum.SECOND",
+		},
+		{
+			name: "Service",
+			path: []int32{6, 0},
+			want: ".my.package.MyService",
+		},
+		{
+			name: "MethodInService",
+			path: []int32{6, 0, 2, 0},
+			want: ".my.package.MyService.MyMethod",
+		},
+	}
+
 	var v string
 	var err error
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			v, err = g.nameByPath(file, tt.path)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, v)
+		})
+	}
 
-	v, err = g.nameByPath(file, []int32{2})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package", v)
-
-	v, err = g.nameByPath(file, []int32{4, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyMessage", v)
-
-	v, err = g.nameByPath(file, []int32{4, 0, 2, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyMessage.my_field", v)
-
-	v, err = g.nameByPath(file, []int32{4, 0, 2, 1})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyMessage.my_oneof_field", v)
-
-	v, err = g.nameByPath(file, []int32{4, 0, 3, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyMessage.MyNestedMessage", v)
-
-	v, err = g.nameByPath(file, []int32{4, 0, 8, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyMessage.my_oneof", v)
-
-	v, err = g.nameByPath(file, []int32{5, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyEnum", v)
-
-	v, err = g.nameByPath(file, []int32{5, 0, 2, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyEnum.FIRST", v)
-
-	v, err = g.nameByPath(file, []int32{5, 0, 2, 1})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyEnum.SECOND", v)
-
-	v, err = g.nameByPath(file, []int32{6, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyService", v)
-
-	v, err = g.nameByPath(file, []int32{6, 0, 2, 0})
-	assert.NoError(t, err)
-	assert.Equal(t, ".my.package.MyService.MyMethod", v)
 }
 
 type mockObject struct {
