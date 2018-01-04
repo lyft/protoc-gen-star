@@ -697,6 +697,94 @@ func TestGatherer_SeenObj(t *testing.T) {
 	assert.Equal(t, m, e)
 }
 
+func TestGatherer_NameByPath(t *testing.T) {
+	file := &descriptor.FileDescriptorProto{
+		Package: proto.String("my.package"),
+		Name:    proto.String("file.proto"),
+		MessageType: []*descriptor.DescriptorProto{
+			&descriptor.DescriptorProto{
+				Name: proto.String("MyMessage"),
+				Field: []*descriptor.FieldDescriptorProto{
+					&descriptor.FieldDescriptorProto{Name: proto.String("my_field")},
+					&descriptor.FieldDescriptorProto{Name: proto.String("my_oneof_field")},
+				},
+				NestedType: []*descriptor.DescriptorProto{
+					&descriptor.DescriptorProto{Name: proto.String("MyNestedMessage")},
+				},
+				OneofDecl: []*descriptor.OneofDescriptorProto{
+					&descriptor.OneofDescriptorProto{Name: proto.String("my_oneof")},
+				},
+			},
+		},
+		EnumType: []*descriptor.EnumDescriptorProto{
+			&descriptor.EnumDescriptorProto{
+				Name: proto.String("MyEnum"),
+				Value: []*descriptor.EnumValueDescriptorProto{
+					&descriptor.EnumValueDescriptorProto{Name: proto.String("FIRST")},
+					&descriptor.EnumValueDescriptorProto{Name: proto.String("SECOND")},
+				},
+			},
+		},
+		Service: []*descriptor.ServiceDescriptorProto{
+			&descriptor.ServiceDescriptorProto{
+				Name: proto.String("MyService"),
+				Method: []*descriptor.MethodDescriptorProto{
+					&descriptor.MethodDescriptorProto{Name: proto.String("MyMethod")},
+				},
+			},
+		},
+	}
+
+	g := initTestGatherer(t)
+
+	var v string
+	var err error
+
+	v, err = g.nameByPath(file, []int32{2})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package", v)
+
+	v, err = g.nameByPath(file, []int32{4, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyMessage", v)
+
+	v, err = g.nameByPath(file, []int32{4, 0, 2, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyMessage.my_field", v)
+
+	v, err = g.nameByPath(file, []int32{4, 0, 2, 1})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyMessage.my_oneof_field", v)
+
+	v, err = g.nameByPath(file, []int32{4, 0, 3, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyMessage.MyNestedMessage", v)
+
+	v, err = g.nameByPath(file, []int32{4, 0, 8, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyMessage.my_oneof", v)
+
+	v, err = g.nameByPath(file, []int32{5, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyEnum", v)
+
+	v, err = g.nameByPath(file, []int32{5, 0, 2, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyEnum.FIRST", v)
+
+	v, err = g.nameByPath(file, []int32{5, 0, 2, 1})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyEnum.SECOND", v)
+
+	v, err = g.nameByPath(file, []int32{6, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyService", v)
+
+	v, err = g.nameByPath(file, []int32{6, 0, 2, 0})
+	assert.NoError(t, err)
+	assert.Equal(t, ".my.package.MyService.MyMethod", v)
+}
+
 type mockObject struct {
 	generator.Object
 	file *descriptor.FileDescriptorProto

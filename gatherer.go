@@ -54,7 +54,11 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 	defer g.pop()
 
 	// have we already hydrated this package
+	pcomments := comments[fmt.Sprintf(".%s", name)]
 	if p, ok := g.pkgs[name]; ok {
+		if tp, ok := p.(*pkg); ok && tp.comments == "" {
+			tp.comments = pcomments
+		}
 		return p
 	}
 
@@ -62,7 +66,7 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 		fd:         f,
 		name:       name,
 		importPath: goImportPath(g.Generator.Unwrap(), f),
-		comments:   comments[fmt.Sprintf(".%s", name)],
+		comments:   pcomments,
 	}
 
 	g.pkgs[name] = p
@@ -468,7 +472,7 @@ func (g *gatherer) nameByPath(f *descriptor.FileDescriptorProto, path []int32) (
 	// return fast in case it's the package leading comment
 	packageName := f.GetPackage()
 	if path[0] == packagePath {
-		return packageName, nil
+		return fmt.Sprintf(".%s", packageName), nil
 	}
 
 	// as we're refering to concrete entities, entity type should be followed by
@@ -477,7 +481,7 @@ func (g *gatherer) nameByPath(f *descriptor.FileDescriptorProto, path []int32) (
 		return "", errors.New("path must have even elements")
 	}
 
-	// tail call
+	// tail-call recursive path to name conversion functor
 	var fn func(interface {
 		GetName() string
 	}, []int32, *[]string) error
@@ -521,6 +525,7 @@ func (g *gatherer) nameByPath(f *descriptor.FileDescriptorProto, path []int32) (
 		return fn(parent, path[2:], names)
 	}
 
+	// reserve exactly the required capacity
 	var names []string
 	namesLen := uint(len(path) / 2)
 	if packageName != "" {
@@ -530,6 +535,7 @@ func (g *gatherer) nameByPath(f *descriptor.FileDescriptorProto, path []int32) (
 		names = make([]string, 0, namesLen)
 	}
 
+	// start the conversion
 	err := fn(f, path, &names)
 	if err != nil {
 		return "", err

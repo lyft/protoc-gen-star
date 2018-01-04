@@ -150,9 +150,4 @@ func (f *file) addService(s Service) {
 
 func (f *file) addMapEntry(m Message) { panic("cannot add map entry directly to file") }
 
-func (f *file) lookupComments(name string) string {
-	if c, ok := f.comments[name]; ok {
-		return c
-	}
-	return ""
-}
+func (f *file) lookupComments(name string) string { return f.comments[name] }
