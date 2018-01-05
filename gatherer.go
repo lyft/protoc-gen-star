@@ -53,11 +53,13 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 	g.push("package:" + name)
 	defer g.pop()
 
-	// have we already hydrated this package
+	// have we already hydrated this package. In case we already did, and if
+	// current file contains comments in the package statement, concatenate it
+	// so that we don't give any precedence to whatsever file.
 	pcomments := comments[fmt.Sprintf(".%s", name)]
-	if p, pok := g.pkgs[name]; pok {
-		if tp, tok := p.(*pkg); tok && tp.comments == "" {
-			tp.comments = pcomments
+	if p, ok := g.pkgs[name]; ok {
+		if pcomments != "" {
+			p.setComments(strings.Join([]string{p.Comments(), pcomments}, "\n"))
 		}
 		return p
 	}
