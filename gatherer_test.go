@@ -698,6 +698,8 @@ func TestGatherer_SeenObj(t *testing.T) {
 }
 
 func TestGatherer_NameByPath(t *testing.T) {
+	t.Parallel()
+
 	file := &descriptor.FileDescriptorProto{
 		Package: proto.String("my.package"),
 		Name:    proto.String("file.proto"),
@@ -737,7 +739,7 @@ func TestGatherer_NameByPath(t *testing.T) {
 
 	g := initTestGatherer(t)
 
-	cases := []struct {
+	testCases := []struct {
 		name string
 		path []int32
 		want string
@@ -753,22 +755,22 @@ func TestGatherer_NameByPath(t *testing.T) {
 			want: ".my.package.MyMessage",
 		},
 		{
-			name: "FieldInMessage",
+			name: "Field in Message",
 			path: []int32{4, 0, 2, 0},
 			want: ".my.package.MyMessage.my_field",
 		},
 		{
-			name: "OneOfFieldInMessage",
+			name: "OneOf Field in Message",
 			path: []int32{4, 0, 2, 1},
 			want: ".my.package.MyMessage.my_oneof_field",
 		},
 		{
-			name: "NestedMessageInMessage",
+			name: "NestedMessage in Message",
 			path: []int32{4, 0, 3, 0},
 			want: ".my.package.MyMessage.MyNestedMessage",
 		},
 		{
-			name: "OneOfInMessage",
+			name: "OneOf in Message",
 			path: []int32{4, 0, 8, 0},
 			want: ".my.package.MyMessage.my_oneof",
 		},
@@ -778,12 +780,12 @@ func TestGatherer_NameByPath(t *testing.T) {
 			want: ".my.package.MyEnum",
 		},
 		{
-			name: "EnumValue1InEnum",
+			name: "EnumValue1 in Enum",
 			path: []int32{5, 0, 2, 0},
 			want: ".my.package.MyEnum.FIRST",
 		},
 		{
-			name: "EnumValue1InEnum",
+			name: "EnumValue2 in Enum",
 			path: []int32{5, 0, 2, 1},
 			want: ".my.package.MyEnum.SECOND",
 		},
@@ -793,19 +795,19 @@ func TestGatherer_NameByPath(t *testing.T) {
 			want: ".my.package.MyService",
 		},
 		{
-			name: "MethodInService",
+			name: "Method in Service",
 			path: []int32{6, 0, 2, 0},
 			want: ".my.package.MyService.MyMethod",
 		},
 	}
 
-	var v string
-	var err error
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			v, err = g.nameByPath(file, tt.path)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			v, err := g.nameByPath(file, tc.path)
 			assert.NoError(t, err)
-			assert.Equal(t, tt.want, v)
+			assert.Equal(t, tc.want, v)
 		})
 	}
 
