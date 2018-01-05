@@ -23,6 +23,8 @@ type Package interface {
 	Files() []File
 
 	addFile(f File)
+
+	setComments(c string)
 }
 
 type pkg struct {
@@ -66,6 +68,10 @@ func (p *pkg) accept(v Visitor) (err error) {
 func (p *pkg) addFile(f File) {
 	f.setPackage(p)
 	p.files = append(p.files, f)
+}
+
+func (p *pkg) setComments(comments string) {
+	p.comments = comments
 }
 
 // packageFD stands in for a *generator.FileDescriptor. The FileDescriptor

@@ -58,9 +58,18 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 	// so that we don't give any precedence to whatsever file.
 	pcomments := comments[fmt.Sprintf(".%s", name)]
 	if p, ok := g.pkgs[name]; ok {
-		if pcomments != "" {
-			p.setComments(strings.Join([]string{p.Comments(), pcomments}, "\n"))
+		c := make([]string, 0, 2)
+
+		ccomments := p.Comments()
+		if ccomments != "" {
+			c = append(c, ccomments)
 		}
+
+		if pcomments != "" {
+			c = append(c, pcomments)
+		}
+
+		p.setComments(strings.Join(c, "\n"))
 		return p
 	}
 
