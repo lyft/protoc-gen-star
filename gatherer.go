@@ -163,7 +163,7 @@ func (g *gatherer) hydrateMessage(parent ParentEntity, md *descriptor.Descriptor
 	g.push("msg:" + m.Name().String())
 	defer g.pop()
 
-	name := m.lookupName()
+	name := m.FullyQualifiedName()
 	m.genDesc = g.Generator.ObjectNamed(name).(*generator.Descriptor)
 	m.comments = m.File().lookupComments(name)
 
@@ -206,13 +206,13 @@ func (g *gatherer) hydrateField(msg Message, fd *descriptor.FieldDescriptorProto
 	}
 	g.add(f)
 
-	f.comments = f.File().lookupComments(f.lookupName())
+	f.comments = f.File().lookupComments(f.FullyQualifiedName())
 
 	return f
 }
 
 func (g *gatherer) hydrateFieldType(fld Field) FieldType {
-	g.push("field-type:" + fld.lookupName())
+	g.push("field-type:" + fld.FullyQualifiedName())
 	defer g.pop()
 
 	msg := fld.Message().Descriptor()
@@ -336,7 +336,7 @@ func (g *gatherer) hydrateOneOf(msg Message, idx int32, od *descriptor.OneofDesc
 	g.push("oneof:" + o.Name().String())
 	defer g.pop()
 
-	o.comments = o.File().lookupComments(o.lookupName())
+	o.comments = o.File().lookupComments(o.FullyQualifiedName())
 
 	for _, f := range msg.Fields() {
 		if i := f.Descriptor().OneofIndex; i != nil && idx == *i {
@@ -361,7 +361,7 @@ func (g *gatherer) hydrateEnum(parent ParentEntity, ed *descriptor.EnumDescripto
 	g.push("enum:" + e.Name().String())
 	defer g.pop()
 
-	name := e.lookupName()
+	name := e.FullyQualifiedName()
 	e.genDesc = g.Generator.ObjectNamed(name).(*generator.EnumDescriptor)
 	e.comments = e.File().lookupComments(name)
 
@@ -383,7 +383,7 @@ func (g *gatherer) hydrateEnumValue(parent Enum, vd *descriptor.EnumValueDescrip
 	}
 	g.add(ev)
 
-	ev.comments = ev.File().lookupComments(ev.lookupName())
+	ev.comments = ev.File().lookupComments(ev.FullyQualifiedName())
 
 	return ev
 }
@@ -402,7 +402,7 @@ func (g *gatherer) hydrateService(parent File, sd *descriptor.ServiceDescriptorP
 	g.push("service:" + s.Name().String())
 	defer g.pop()
 
-	s.comments = s.File().lookupComments(s.lookupName())
+	s.comments = s.File().lookupComments(s.FullyQualifiedName())
 
 	for _, md := range sd.GetMethod() {
 		s.addMethod(g.hydrateMethod(s, md))
@@ -425,7 +425,7 @@ func (g *gatherer) hydrateMethod(parent Service, md *descriptor.MethodDescriptor
 	g.push("method:" + m.Name().String())
 	defer g.pop()
 
-	m.comments = m.File().lookupComments(m.lookupName())
+	m.comments = m.File().lookupComments(m.FullyQualifiedName())
 
 	in, ok := g.seenName(md.GetInputType())
 	g.Assert(ok, "input type", md.GetInputType(), "not hydrated")
@@ -442,7 +442,7 @@ func (g *gatherer) push(prefix string) { g.BuildContext = g.Push(prefix) }
 
 func (g *gatherer) pop() { g.BuildContext = g.Pop() }
 
-func (g *gatherer) seen(e Entity) (Entity, bool) { return g.seenName(g.resolveLookupName(e)) }
+func (g *gatherer) seen(e Entity) (Entity, bool) { return g.seenName(g.resolveFullyQualifiedName(e)) }
 
 func (g *gatherer) seenName(ln string) (Entity, bool) {
 	out, ok := g.entities[ln]
@@ -454,17 +454,17 @@ func (g *gatherer) seenObj(o generator.Object) (Entity, bool) {
 	g.Assert(ok, "dependent proto file not seen:", o.File().GetName())
 	fl := ent.File()
 
-	return g.seenName(fl.lookupName() + "." + strings.Join(o.TypeName(), "."))
+	return g.seenName(fl.FullyQualifiedName() + "." + strings.Join(o.TypeName(), "."))
 }
 
-func (g *gatherer) add(e Entity) { g.entities[g.resolveLookupName(e)] = e }
+func (g *gatherer) add(e Entity) { g.entities[g.resolveFullyQualifiedName(e)] = e }
 
-func (g *gatherer) resolveLookupName(e Entity) string {
+func (g *gatherer) resolveFullyQualifiedName(e Entity) string {
 	if f, ok := e.(File); ok {
 		return f.Name().String()
 	}
 
-	return e.lookupName()
+	return e.FullyQualifiedName()
 }
 
 func (g *gatherer) nameByPath(f *descriptor.FileDescriptorProto, path []int32) (string, error) {
