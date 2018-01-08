@@ -92,9 +92,9 @@ func TestGatherer_HydrateFile(t *testing.T) {
 	comments := map[string]string{}
 
 	pgg.objs = map[string]generator.Object{
-		df.lookupName() + ".Msg":          &generator.Descriptor{DescriptorProto: m},
-		df.lookupName() + ".Msg.MapEntry": &generator.Descriptor{DescriptorProto: me},
-		df.lookupName() + ".Enum":         &generator.EnumDescriptor{EnumDescriptorProto: e},
+		df.FullyQualifiedName() + ".Msg":          &generator.Descriptor{DescriptorProto: m},
+		df.FullyQualifiedName() + ".Msg.MapEntry": &generator.Descriptor{DescriptorProto: me},
+		df.FullyQualifiedName() + ".Enum":         &generator.EnumDescriptor{EnumDescriptorProto: e},
 	}
 
 	f := g.hydrateFile(pkg, desc, comments)
@@ -159,10 +159,10 @@ func TestGatherer_HydrateMessage(t *testing.T) {
 	f := dm.File()
 
 	pgg.objs = map[string]generator.Object{
-		lookupName(f, dm):              dm.Descriptor(),
-		lookupName(dm, de):             de.Descriptor(),
-		dm.lookupName() + ".NestedMsg": &generator.Descriptor{DescriptorProto: nm},
-		dm.lookupName() + ".MapEntry":  &generator.Descriptor{DescriptorProto: me},
+		fullyQualifiedName(f, dm):              dm.Descriptor(),
+		fullyQualifiedName(dm, de):             de.Descriptor(),
+		dm.FullyQualifiedName() + ".NestedMsg": &generator.Descriptor{DescriptorProto: nm},
+		dm.FullyQualifiedName() + ".MapEntry":  &generator.Descriptor{DescriptorProto: me},
 	}
 
 	m := g.hydrateMessage(f, desc)
@@ -519,7 +519,7 @@ func TestGatherer_HydrateEnum(t *testing.T) {
 	pgg := initGathererPGG(g)
 
 	de := dummyEnum()
-	pgg.objs[de.lookupName()] = de.genDesc
+	pgg.objs[de.FullyQualifiedName()] = de.genDesc
 	p := de.Parent()
 
 	desc := de.rawDesc
@@ -561,8 +561,8 @@ func TestGatherer_HydrateService(t *testing.T) {
 
 	desc := &descriptor.ServiceDescriptorProto{
 		Method: []*descriptor.MethodDescriptorProto{{
-			InputType:  proto.String(io.lookupName()),
-			OutputType: proto.String(io.lookupName()),
+			InputType:  proto.String(io.FullyQualifiedName()),
+			OutputType: proto.String(io.FullyQualifiedName()),
 		}},
 	}
 
@@ -585,8 +585,8 @@ func TestGatherer_HydrateMethod(t *testing.T) {
 
 	s := dummyService()
 	desc := &descriptor.MethodDescriptorProto{
-		InputType:  proto.String(io.lookupName()),
-		OutputType: proto.String(io.lookupName()),
+		InputType:  proto.String(io.FullyQualifiedName()),
+		OutputType: proto.String(io.FullyQualifiedName()),
 	}
 
 	m := g.hydrateMethod(s, desc)
@@ -624,15 +624,15 @@ func TestGatherer_Init(t *testing.T) {
 	assert.NotNil(t, g.entities)
 }
 
-func TestGatherer_ResolveLookupName(t *testing.T) {
+func TestGatherer_ResolveFullyQualifiedName(t *testing.T) {
 	t.Parallel()
 
 	f := dummyFile()
 	m := dummyMsg()
 
 	g := initTestGatherer(t)
-	assert.Equal(t, f.Name().String(), g.resolveLookupName(f))
-	assert.Equal(t, m.lookupName(), g.resolveLookupName(m))
+	assert.Equal(t, f.Name().String(), g.resolveFullyQualifiedName(f))
+	assert.Equal(t, m.FullyQualifiedName(), g.resolveFullyQualifiedName(m))
 }
 
 func TestGatherer_Add(t *testing.T) {
@@ -641,8 +641,8 @@ func TestGatherer_Add(t *testing.T) {
 	g := initTestGatherer(t)
 	m := dummyMsg()
 	g.add(m)
-	assert.Contains(t, g.entities, g.resolveLookupName(m))
-	assert.Equal(t, m, g.entities[g.resolveLookupName(m)])
+	assert.Contains(t, g.entities, g.resolveFullyQualifiedName(m))
+	assert.Equal(t, m, g.entities[g.resolveFullyQualifiedName(m)])
 }
 
 func TestGatherer_SeenName(t *testing.T) {
