@@ -42,7 +42,7 @@ func TestGatherer_Generate(t *testing.T) {
 	assert.Equal(t, g.targets["pkg"], g.pkgs[g.targets["pkg"].GoName().String()])
 	assert.Len(t, g.targets["pkg"].Files(), 1)
 
-	assert.Equal(t, g.targets["pkg"], g.hydratePackage(f, map[string]string{}))
+	assert.Equal(t, g.targets["pkg"], g.hydratePackage(f, map[string]*NodeMeta{}))
 }
 
 func TestGatherer_HydrateFile(t *testing.T) {
@@ -89,7 +89,7 @@ func TestGatherer_HydrateFile(t *testing.T) {
 
 	pkg := df.Package()
 
-	comments := map[string]string{}
+	nameToNodeMeta := map[string]*NodeMeta{}
 
 	pgg.objs = map[string]generator.Object{
 		df.FullyQualifiedName() + ".Msg":          &generator.Descriptor{DescriptorProto: m},
@@ -97,7 +97,7 @@ func TestGatherer_HydrateFile(t *testing.T) {
 		df.FullyQualifiedName() + ".Enum":         &generator.EnumDescriptor{EnumDescriptorProto: e},
 	}
 
-	f := g.hydrateFile(pkg, desc, comments)
+	f := g.hydrateFile(pkg, desc, nameToNodeMeta)
 	assert.Equal(t, pkg, f.Package())
 	assert.Equal(t, desc, f.Descriptor())
 	assert.Equal(t, goFileName(desc), f.OutputPath().String())
@@ -107,7 +107,7 @@ func TestGatherer_HydrateFile(t *testing.T) {
 
 	_, ok := g.seen(f)
 	assert.True(t, ok)
-	assert.Equal(t, f, g.hydrateFile(pkg, desc, comments))
+	assert.Equal(t, f, g.hydrateFile(pkg, desc, nameToNodeMeta))
 }
 
 func TestGatherer_HydrateFile_PackageMismatch(t *testing.T) {
@@ -123,7 +123,7 @@ func TestGatherer_HydrateFile_PackageMismatch(t *testing.T) {
 	desc := df.Descriptor()
 	desc.Package = proto.String("not_the_same_as_dp")
 
-	g.hydrateFile(dp, desc, map[string]string{})
+	g.hydrateFile(dp, desc, map[string]*NodeMeta{})
 	assert.True(t, md.failed)
 }
 

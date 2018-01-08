@@ -30,25 +30,23 @@ func (g *gatherer) Init(gen *generator.Generator) {
 }
 
 func (g *gatherer) Generate(f *generator.FileDescriptor) {
-	comments := make(map[string]string)
+	nameToNodeMeta := make(map[string]*NodeMeta)
 	for _, loc := range f.GetSourceCodeInfo().GetLocation() {
-		if loc.LeadingComments == nil {
-			continue
-		}
-
 		name, err := g.nameByPath(f.FileDescriptorProto, loc.Path)
 		if err != nil {
 			g.Debug("unable to convert path to name:", err.Error())
+			continue
 		}
-
-		comments[name] = strings.TrimSuffix(loc.GetLeadingComments(), "\n")
+		nameToNodeMeta[name] = &NodeMeta{
+			SourceCodeInfo_Location: loc,
+		}
 	}
 
-	pkg := g.hydratePackage(f, comments)
-	pkg.addFile(g.hydrateFile(pkg, f, comments))
+	pkg := g.hydratePackage(f, nameToNodeMeta)
+	pkg.addFile(g.hydrateFile(pkg, f, nameToNodeMeta))
 }
 
-func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[string]string) Package {
+func (g *gatherer) hydratePackage(f *generator.FileDescriptor, nameToNodeMeta map[string]*NodeMeta) Package {
 	name := g.Generator.packageName(f)
 	g.push("package:" + name)
 	defer g.pop()
@@ -56,7 +54,7 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 	// have we already hydrated this package. In case we already did, and if
 	// current file contains comments in the package statement, concatenate it
 	// so that we don't give any precedence to whatsever file.
-	pcomments := comments[fmt.Sprintf(".%s", name)]
+	nodeMeta := nameToNodeMeta[fmt.Sprintf(".%s", name)]
 	if p, ok := g.pkgs[name]; ok {
 		c := make([]string, 0, 2)
 
@@ -65,8 +63,8 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 			c = append(c, ccomments)
 		}
 
-		if pcomments != "" {
-			c = append(c, pcomments)
+		if nodeMeta != nil {
+			c = append(c, nodeMeta.Comments())
 		}
 
 		p.setComments(strings.Join(c, "\n"))
@@ -77,14 +75,14 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 		fd:         f,
 		name:       name,
 		importPath: goImportPath(g.Generator.Unwrap(), f),
-		comments:   pcomments,
+		nodeMeta:   nodeMeta,
 	}
 
 	g.pkgs[name] = p
 	return p
 }
 
-func (g *gatherer) hydrateFile(pkg Package, f *generator.FileDescriptor, comments map[string]string) File {
+func (g *gatherer) hydrateFile(pkg Package, f *generator.FileDescriptor, nameToNodeMeta map[string]*NodeMeta) File {
 	fl := &file{
 		pkg:        pkg,
 		desc:       f,
@@ -104,7 +102,7 @@ func (g *gatherer) hydrateFile(pkg Package, f *generator.FileDescriptor, comment
 		pkg.ProtoName().String(), ", ", f.GetPackage(), ")")
 
 	fl.buildTarget = g.BuildTarget(f.GetName())
-	fl.comments = comments
+	fl.nameToNodeMeta = nameToNodeMeta
 
 	if _, seen := g.targets[fl.pkg.GoName().String()]; fl.buildTarget && !seen {
 		g.Debug("adding target package:", fl.pkg.GoName())
@@ -165,7 +163,7 @@ func (g *gatherer) hydrateMessage(parent ParentEntity, md *descriptor.Descriptor
 
 	name := m.FullyQualifiedName()
 	m.genDesc = g.Generator.ObjectNamed(name).(*generator.Descriptor)
-	m.comments = m.File().lookupComments(name)
+	m.nodeMeta = m.File().lookupNodeMeta(name)
 
 	// populate all nested enums
 	for _, ed := range md.GetEnumType() {
@@ -206,7 +204,7 @@ func (g *gatherer) hydrateField(msg Message, fd *descriptor.FieldDescriptorProto
 	}
 	g.add(f)
 
-	f.comments = f.File().lookupComments(f.FullyQualifiedName())
+	f.nodeMeta = f.File().lookupNodeMeta(f.FullyQualifiedName())
 
 	return f
 }
@@ -336,7 +334,7 @@ func (g *gatherer) hydrateOneOf(msg Message, idx int32, od *descriptor.OneofDesc
 	g.push("oneof:" + o.Name().String())
 	defer g.pop()
 
-	o.comments = o.File().lookupComments(o.FullyQualifiedName())
+	o.nodeMeta = o.File().lookupNodeMeta(o.FullyQualifiedName())
 
 	for _, f := range msg.Fields() {
 		if i := f.Descriptor().OneofIndex; i != nil && idx == *i {
@@ -363,7 +361,7 @@ func (g *gatherer) hydrateEnum(parent ParentEntity, ed *descriptor.EnumDescripto
 
 	name := e.FullyQualifiedName()
 	e.genDesc = g.Generator.ObjectNamed(name).(*generator.EnumDescriptor)
-	e.comments = e.File().lookupComments(name)
+	e.nodeMeta = e.File().lookupNodeMeta(name)
 
 	for _, vd := range ed.GetValue() {
 		e.addValue(g.hydrateEnumValue(e, vd))
@@ -383,7 +381,7 @@ func (g *gatherer) hydrateEnumValue(parent Enum, vd *descriptor.EnumValueDescrip
 	}
 	g.add(ev)
 
-	ev.comments = ev.File().lookupComments(ev.FullyQualifiedName())
+	ev.nodeMeta = ev.File().lookupNodeMeta(ev.FullyQualfiedName())
 
 	return ev
 }
@@ -402,7 +400,7 @@ func (g *gatherer) hydrateService(parent File, sd *descriptor.ServiceDescriptorP
 	g.push("service:" + s.Name().String())
 	defer g.pop()
 
-	s.comments = s.File().lookupComments(s.FullyQualifiedName())
+	s.nodeMeta = s.File().lookupNodeMeta(s.FullyQualifiedName())
 
 	for _, md := range sd.GetMethod() {
 		s.addMethod(g.hydrateMethod(s, md))
@@ -425,7 +423,7 @@ func (g *gatherer) hydrateMethod(parent Service, md *descriptor.MethodDescriptor
 	g.push("method:" + m.Name().String())
 	defer g.pop()
 
-	m.comments = m.File().lookupComments(m.FullyQualifiedName())
+	m.nodeMeta = m.File().lookupNodeMeta(m.FullyQualifiedName())
 
 	in, ok := g.seenName(md.GetInputType())
 	g.Assert(ok, "input type", md.GetInputType(), "not hydrated")

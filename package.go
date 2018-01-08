@@ -34,6 +34,7 @@ type pkg struct {
 	files      []File
 
 	comments string
+	nodeMeta *NodeMeta
 }
 
 func (p *pkg) ProtoName() Name    { return Name(p.fd.GetPackage()) }

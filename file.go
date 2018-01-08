@@ -26,18 +26,18 @@ type File interface {
 
 	addService(s Service)
 
-	lookupComments(name string) string
+	lookupNodeMeta(name string) *NodeMeta
 }
 
 type file struct {
-	desc        *generator.FileDescriptor
-	pkg         Package
-	outputPath  FilePath
-	enums       []Enum
-	msgs        []Message
-	srvs        []Service
-	buildTarget bool
-	comments    map[string]string
+	desc           *generator.FileDescriptor
+	pkg            Package
+	outputPath     FilePath
+	enums          []Enum
+	msgs           []Message
+	srvs           []Service
+	buildTarget    bool
+	nameToNodeMeta map[string]*NodeMeta
 }
 
 func (f *file) Name() Name                            { return Name(f.desc.GetName()) }
@@ -149,4 +149,4 @@ func (f *file) addService(s Service) {
 
 func (f *file) addMapEntry(m Message) { panic("cannot add map entry directly to file") }
 
-func (f *file) lookupComments(name string) string { return f.comments[name] }
+func (f *file) lookupNodeMeta(name string) *NodeMeta { return f.nameToNodeMeta[name] }

@@ -39,7 +39,7 @@ type enum struct {
 
 	vals []EnumValue
 
-	comments string
+	nodeMeta *NodeMeta
 }
 
 func (e *enum) Name() Name                            { return Name(e.rawDesc.GetName()) }
@@ -48,7 +48,7 @@ func (e *enum) Syntax() Syntax                        { return e.parent.Syntax()
 func (e *enum) Package() Package                      { return e.parent.Package() }
 func (e *enum) File() File                            { return e.parent.File() }
 func (e *enum) BuildTarget() bool                     { return e.parent.BuildTarget() }
-func (e *enum) Comments() string                      { return e.comments }
+func (e *enum) Comments() string                      { return e.nodeMeta.Comments() }
 func (e *enum) Descriptor() *generator.EnumDescriptor { return e.genDesc }
 func (e *enum) Parent() ParentEntity                  { return e.parent }
 func (e *enum) Imports() []Package                    { return nil }

@@ -36,7 +36,7 @@ type method struct {
 
 	in, out Message
 
-	comments string
+	nodeMeta *NodeMeta
 }
 
 func (m *method) Name() Name                                    { return Name(m.desc.GetName()) }
@@ -45,7 +45,7 @@ func (m *method) Syntax() Syntax                                { return m.servi
 func (m *method) Package() Package                              { return m.service.Package() }
 func (m *method) File() File                                    { return m.service.File() }
 func (m *method) BuildTarget() bool                             { return m.service.BuildTarget() }
-func (m *method) Comments() string                              { return m.comments }
+func (m *method) Comments() string                              { return m.nodeMeta.Comments() }
 func (m *method) Descriptor() *descriptor.MethodDescriptorProto { return m.desc }
 func (m *method) Service() Service                              { return m.service }
 func (m *method) Input() Message                                { return m.in }
