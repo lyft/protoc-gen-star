@@ -73,6 +73,7 @@ func (m *msg) Syntax() Syntax                    { return m.parent.Syntax() }
 func (m *msg) Package() Package                  { return m.parent.Package() }
 func (m *msg) File() File                        { return m.parent.File() }
 func (m *msg) BuildTarget() bool                 { return m.parent.BuildTarget() }
+func (m *msg) NodeMeta() *NodeMeta               { return m.nodeMeta }
 func (m *msg) Comments() string                  { return m.nodeMeta.Comments() }
 func (m *msg) Descriptor() *generator.Descriptor { return m.genDesc }
 func (m *msg) Parent() ParentEntity              { return m.parent }

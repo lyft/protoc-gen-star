@@ -15,7 +15,6 @@ type Node interface {
 // NodeMeta contains metadata for a node.
 //
 // See the documentation for .google.protobuf.SourceCodeInfo for more details.
-//
 // https://github.com/google/protobuf/blob/master/src/google/protobuf/descriptor.proto
 type NodeMeta struct {
 	*descriptor.SourceCodeInfo_Location
@@ -26,10 +25,14 @@ func (n *NodeMeta) Line() int {
 	if n == nil || n.SourceCodeInfo_Location == nil {
 		return 0
 	}
-	if len(n.SourceCodeInfo_Location.Span) < 1 {
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		fallthrough
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[0]) + 1
+	default:
 		return 0
 	}
-	return int(n.SourceCodeInfo_Location.Span[0])
 }
 
 // Column returns the starting column for the node, or 0 if unknown.
@@ -37,23 +40,29 @@ func (n *NodeMeta) Column() int {
 	if n == nil || n.SourceCodeInfo_Location == nil {
 		return 0
 	}
-	if len(n.SourceCodeInfo_Location.Span) < 2 {
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		fallthrough
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[1]) + 1
+	default:
 		return 0
 	}
-	return int(n.SourceCodeInfo_Location.Span[1])
 }
-
-// TODO: should EndLine and EndColumn return Line and Column by default?
 
 // EndLine returns the ending line for the node, or 0 if unknown.
 func (n *NodeMeta) EndLine() int {
 	if n == nil || n.SourceCodeInfo_Location == nil {
 		return 0
 	}
-	if len(n.SourceCodeInfo_Location.Span) < 3 {
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		return int(n.SourceCodeInfo_Location.Span[0]) + 1
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[2]) + 1
+	default:
 		return 0
 	}
-	return int(n.SourceCodeInfo_Location.Span[2])
 }
 
 // EndColumn returns the ending column for the node, or 0 if unknown.
@@ -61,10 +70,14 @@ func (n *NodeMeta) EndColumn() int {
 	if n == nil || n.SourceCodeInfo_Location == nil {
 		return 0
 	}
-	if len(n.SourceCodeInfo_Location.Span) < 4 {
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		return int(n.SourceCodeInfo_Location.Span[2]) + 1
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[3]) + 1
+	default:
 		return 0
 	}
-	return int(n.SourceCodeInfo_Location.Span[3])
 }
 
 // Comments returns the leading comments for a node.

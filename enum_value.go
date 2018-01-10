@@ -34,6 +34,7 @@ func (ev *enumVal) Syntax() Syntax                                   { return ev
 func (ev *enumVal) Package() Package                                 { return ev.enum.Package() }
 func (ev *enumVal) File() File                                       { return ev.enum.File() }
 func (ev *enumVal) BuildTarget() bool                                { return ev.enum.BuildTarget() }
+func (ev *enumVal) NodeMeta() *NodeMeta                              { return ev.nodeMeta }
 func (ev *enumVal) Comments() string                                 { return ev.nodeMeta.Comments() }
 func (ev *enumVal) Descriptor() *descriptor.EnumValueDescriptorProto { return ev.desc }
 func (ev *enumVal) Enum() Enum                                       { return ev.enum }

@@ -46,8 +46,8 @@ func (o *oneof) Syntax() Syntax                               { return o.msg.Syn
 func (o *oneof) Package() Package                             { return o.msg.Package() }
 func (o *oneof) File() File                                   { return o.msg.File() }
 func (o *oneof) BuildTarget() bool                            { return o.msg.BuildTarget() }
+func (o *oneof) NodeMeta() *NodeMeta                          { return o.nodeMeta }
 func (o *oneof) Comments() string                             { return o.nodeMeta.Comments() }
-func (o *oneof) lookupName() string                           { return lookupName(o.msg, o) }
 func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }

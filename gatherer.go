@@ -381,7 +381,7 @@ func (g *gatherer) hydrateEnumValue(parent Enum, vd *descriptor.EnumValueDescrip
 	}
 	g.add(ev)
 
-	ev.nodeMeta = ev.File().lookupNodeMeta(ev.FullyQualfiedName())
+	ev.nodeMeta = ev.File().lookupNodeMeta(ev.FullyQualifiedName())
 
 	return ev
 }

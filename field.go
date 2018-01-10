@@ -47,6 +47,7 @@ func (f *field) Package() Package                             { return f.msg.Pac
 func (f *field) Imports() []Package                           { return f.typ.Imports() }
 func (f *field) File() File                                   { return f.msg.File() }
 func (f *field) BuildTarget() bool                            { return f.msg.BuildTarget() }
+func (f *field) NodeMeta() *NodeMeta                          { return f.nodeMeta }
 func (f *field) Comments() string                             { return f.nodeMeta.Comments() }
 func (f *field) Descriptor() *descriptor.FieldDescriptorProto { return f.desc }
 func (f *field) Message() Message                             { return f.msg }

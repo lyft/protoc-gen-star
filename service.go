@@ -33,6 +33,7 @@ func (s *service) Syntax() Syntax                                 { return s.fil
 func (s *service) Package() Package                               { return s.file.Package() }
 func (s *service) File() File                                     { return s.file }
 func (s *service) BuildTarget() bool                              { return s.file.BuildTarget() }
+func (s *service) NodeMeta() *NodeMeta                            { return s.nodeMeta }
 func (s *service) Comments() string                               { return s.nodeMeta.Comments() }
 func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.desc }
 
