@@ -49,13 +49,15 @@ func (g *gatherer) Generate(f *generator.FileDescriptor) {
 }
 
 func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[string]string) Package {
-	name := g.Generator.packageName(f)
+	importPath := goImportPath(g.Generator.Unwrap(), f)
+	name := string(g.Generator.GoPackageName(importPath))
+
 	g.push("package:" + name)
 	defer g.pop()
 
 	// have we already hydrated this package. In case we already did, and if
 	// current file contains comments in the package statement, concatenate it
-	// so that we don't give any precedence to whatsever file.
+	// so that we don't give any precedence to whatsoever file.
 	pcomments := comments[fmt.Sprintf(".%s", name)]
 	if p, ok := g.pkgs[name]; ok {
 		c := make([]string, 0, 2)
@@ -76,7 +78,7 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 	p := &pkg{
 		fd:         f,
 		name:       name,
-		importPath: goImportPath(g.Generator.Unwrap(), f),
+		importPath: string(importPath),
 		comments:   pcomments,
 	}
 
@@ -88,7 +90,7 @@ func (g *gatherer) hydrateFile(pkg Package, f *generator.FileDescriptor, comment
 	fl := &file{
 		pkg:        pkg,
 		desc:       f,
-		outputPath: FilePath(goFileName(f)),
+		outputPath: FilePath(goFileName(f, g.Parameters().Paths())),
 	}
 
 	if out, ok := g.seen(fl); ok {

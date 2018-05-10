@@ -12,4 +12,4 @@ before_install:
   - tar -xvf /tmp/glide.tar.gz --strip-components 1 -C ${GOPATH}/bin
 
 install: make install
-script: make lint tests
+script: make lint tests demo
