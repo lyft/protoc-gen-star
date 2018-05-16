@@ -33,13 +33,15 @@ type pkg struct {
 	name       string
 	files      []File
 
+	nodeMeta *NodeMeta
 	comments string
 }
 
-func (p *pkg) ProtoName() Name    { return Name(p.fd.GetPackage()) }
-func (p *pkg) GoName() Name       { return Name(p.name) }
-func (p *pkg) ImportPath() string { return p.importPath }
-func (p *pkg) Comments() string   { return p.comments }
+func (p *pkg) ProtoName() Name     { return Name(p.fd.GetPackage()) }
+func (p *pkg) GoName() Name        { return Name(p.name) }
+func (p *pkg) ImportPath() string  { return p.importPath }
+func (p *pkg) NodeMeta() *NodeMeta { return p.nodeMeta }
+func (p *pkg) Comments() string    { return p.comments }
 
 func (p *pkg) Files() []File {
 	fs := make([]File, len(p.files))

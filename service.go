@@ -24,7 +24,7 @@ type service struct {
 	methods []Method
 	file    File
 
-	comments string
+	nodeMeta *NodeMeta
 }
 
 func (s *service) Name() Name                                     { return Name(s.desc.GetName()) }
@@ -33,7 +33,8 @@ func (s *service) Syntax() Syntax                                 { return s.fil
 func (s *service) Package() Package                               { return s.file.Package() }
 func (s *service) File() File                                     { return s.file }
 func (s *service) BuildTarget() bool                              { return s.file.BuildTarget() }
-func (s *service) Comments() string                               { return s.comments }
+func (s *service) NodeMeta() *NodeMeta                            { return s.nodeMeta }
+func (s *service) Comments() string                               { return s.nodeMeta.Comments() }
 func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.desc }
 
 func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {

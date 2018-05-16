@@ -1,9 +1,91 @@
 package pgs
 
+import (
+	"strings"
+
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+)
+
 // Node represents any member of the proto descriptor AST. Typically, the
 // highest level Node is the Package.
 type Node interface {
 	accept(Visitor) error
+}
+
+// NodeMeta contains metadata for a node.
+//
+// See the documentation for .google.protobuf.SourceCodeInfo for more details.
+// https://github.com/google/protobuf/blob/master/src/google/protobuf/descriptor.proto
+type NodeMeta struct {
+	*descriptor.SourceCodeInfo_Location
+}
+
+// Line returns the starting line for the node, or 0 if unknown.
+func (n *NodeMeta) Line() int {
+	if n == nil || n.SourceCodeInfo_Location == nil {
+		return 0
+	}
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		fallthrough
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[0]) + 1
+	default:
+		return 0
+	}
+}
+
+// Column returns the starting column for the node, or 0 if unknown.
+func (n *NodeMeta) Column() int {
+	if n == nil || n.SourceCodeInfo_Location == nil {
+		return 0
+	}
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		fallthrough
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[1]) + 1
+	default:
+		return 0
+	}
+}
+
+// EndLine returns the ending line for the node, or 0 if unknown.
+func (n *NodeMeta) EndLine() int {
+	if n == nil || n.SourceCodeInfo_Location == nil {
+		return 0
+	}
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		return int(n.SourceCodeInfo_Location.Span[0]) + 1
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[2]) + 1
+	default:
+		return 0
+	}
+}
+
+// EndColumn returns the ending column for the node, or 0 if unknown.
+func (n *NodeMeta) EndColumn() int {
+	if n == nil || n.SourceCodeInfo_Location == nil {
+		return 0
+	}
+	switch len(n.SourceCodeInfo_Location.Span) {
+	case 3:
+		return int(n.SourceCodeInfo_Location.Span[2]) + 1
+	case 4:
+		return int(n.SourceCodeInfo_Location.Span[3]) + 1
+	default:
+		return 0
+	}
+}
+
+// Comments returns the leading comments for a node.
+func (n *NodeMeta) Comments() string {
+	if n == nil || n.SourceCodeInfo_Location == nil {
+		return ""
+	}
+	return strings.TrimSuffix(n.SourceCodeInfo_Location.GetLeadingComments(), "\n")
 }
 
 // A Visitor exposes methods to walk an AST Node and its children in a depth-
