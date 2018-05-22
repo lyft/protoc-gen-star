@@ -50,8 +50,8 @@ func (g *gatherer) Generate(f *generator.FileDescriptor) {
 
 func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[string]string) Package {
 	// TODO(btc): perhaps return error with specific info about failure
-	importPath, name, ok := goPackageOption(f)
-	if !ok {
+	importPath, name, found := goPackageOption(f)
+	if !found {
 		g.Fail("could not determine import path")
 	}
 
