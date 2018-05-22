@@ -1,12 +1,13 @@
-hash: 6ea51c7c237894b7b7f30005f6b9f754c79d7c6c21672c4ec220b4fbc6f06673
-updated: 2018-05-09T11:18:54.306177-07:00
+hash: a98be71ff763a2b4b183feef097ec7a862c3d26d01cb7c7484975b8e10dabeb5
+updated: 2018-05-09T12:54:16.045343-07:00
 imports:
 - name: github.com/golang/protobuf
-  version: 925541529c1fa6821df4e44ce2723319eb2be768
+  version: b4deda0973fb4c70b50d226b1af49f3da59f5265
   subpackages:
   - proto
   - protoc-gen-go/descriptor
   - protoc-gen-go/generator
+  - protoc-gen-go/generator/internal/remap
   - protoc-gen-go/plugin
 - name: github.com/spf13/afero
   version: 63644898a8da0bc22138abf860edaf5277b6102e
