@@ -49,8 +49,11 @@ func (g *gatherer) Generate(f *generator.FileDescriptor) {
 }
 
 func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[string]string) Package {
-	importPath := goImportPath(g.Generator.Unwrap(), f)
-	name := string(g.Generator.GoPackageName(importPath))
+	// TODO(btc): perhaps return error with specific info about failure
+	importPath, name, found := goPackageOption(f)
+	if !found {
+		g.Fail("could not determine import path")
+	}
 
 	g.push("package:" + name)
 	defer g.pop()
