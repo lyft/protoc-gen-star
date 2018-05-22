@@ -50,11 +50,15 @@ func (g *gatherer) Generate(f *generator.FileDescriptor) {
 
 func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[string]string) Package {
 	// TODO(btc): perhaps return error with specific info about failure
-	importPath, name, found := goPackageOption(f)
-	if !found {
-		path := goImportPath(g.Generator.Unwrap(), f)
-		name = string(g.Generator.GoPackageName(path))
-		importPath = string(path)
+	importPath := goImportPath(g.Generator.Unwrap(), f)
+	name := string(g.Generator.GoPackageName(importPath))
+	if p, n, found := goPackageOption(f); found {
+		if p != "" {
+			importPath = generator.GoImportPath(p)
+		}
+		if n != "" {
+			name = n
+		}
 	}
 
 	g.push("package:" + name)
@@ -83,7 +87,7 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 	p := &pkg{
 		fd:         f,
 		name:       name,
-		importPath: importPath,
+		importPath: string(importPath),
 		comments:   pcomments,
 	}
 
