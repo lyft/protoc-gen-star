@@ -49,7 +49,7 @@ func (g *gatherer) Generate(f *generator.FileDescriptor) {
 }
 
 func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[string]string) Package {
-	g.Debugf("Descriptor package name is %s in the beginning", f.GetPackage())
+	g.Debug("Descriptor package name is %s in the beginning", f.GetPackage())
 	// TODO(btc): perhaps return error with specific info about failure
 	importPath := goImportPath(g.Generator.Unwrap(), f)
 	name := string(g.Generator.GoPackageName(importPath))
@@ -91,7 +91,7 @@ func (g *gatherer) hydratePackage(f *generator.FileDescriptor, comments map[stri
 		importPath: string(importPath),
 		comments:   pcomments,
 	}
-	g.Debugf("Descriptor package name is %s in the end, and protoname is %s and protoname string is %s", p.fd.GetPackage(), p.ProtoName(), p.ProtoName().String())
+	g.Debug("Descriptor package name is %s in the end, and protoname is %s and protoname string is %s", p.fd.GetPackage(), p.ProtoName(), p.ProtoName().String())
 
 	g.pkgs[name] = p
 	return p
