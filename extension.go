@@ -77,3 +77,21 @@ func extension(opts proto.Message, e *proto.ExtensionDesc, out interface{}) (boo
 		v.Type().String(),
 		o.Type().String())
 }
+
+func extensionByTag(opts proto.Message, tag int32, out interface{}) (bool, error) {
+	exts, err := proto.ExtensionDescs(opts)
+	if err != nil {
+		return false, err
+	}
+	if len(exts) < 1 {
+		return false, errors.New("extension ID doesn't exist")
+	}
+	var match *proto.ExtensionDesc
+	for _, e := range exts {
+		if e.Field == tag {
+			match = e
+		}
+	}
+
+	return extension(opts, match, out)
+}

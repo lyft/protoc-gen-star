@@ -26,6 +26,10 @@ type Field interface {
 	// Type returns the FieldType of this Field.
 	Type() FieldType
 
+	// ExtensionByTag returns the value of the option extension, referenced by
+	// tag ID of the extension
+	ExtensionByTag(tag int32, ext interface{}) (ok bool, err error)
+
 	setMessage(m Message)
 	setOneOf(o OneOf)
 	addType(t FieldType)
@@ -63,6 +67,10 @@ func (f *field) addType(t FieldType) {
 
 func (f *field) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
 	return extension(f.desc.GetOptions(), desc, &ext)
+}
+
+func (f *field) ExtensionByTag(tag int32, ext interface{}) (ok bool, err error) {
+	return extensionByTag(f.desc.GetOptions(), tag, &ext)
 }
 
 func (f *field) accept(v Visitor) (err error) {
