@@ -45,6 +45,10 @@ func (g *gatherer) Generate(f *generator.FileDescriptor) {
 	}
 
 	pkg := g.hydratePackage(f, comments)
+	if f.GetPackage() != pkg.ProtoName().String() {
+		g.Debugf("proto package names should not be mixed in the same directory (%s, %s)", f.GetPackage(), pkg.ProtoName())
+		return
+	}
 	pkg.addFile(g.hydrateFile(pkg, f, comments))
 }
 
@@ -109,10 +113,6 @@ func (g *gatherer) hydrateFile(pkg Package, f *generator.FileDescriptor, comment
 
 	g.push("file:" + fl.Name().String())
 	defer g.pop()
-
-	g.Assert(f.GetPackage() == pkg.ProtoName().String(),
-		"proto package names should not be mixed in the same directory (",
-		pkg.ProtoName().String(), ", ", f.GetPackage(), ")")
 
 	fl.buildTarget = g.BuildTarget(f.GetName())
 	fl.comments = comments
