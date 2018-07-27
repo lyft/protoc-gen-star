@@ -5,7 +5,7 @@ import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 )
 
-// Service describes an proto service
+// Service describes a proto service
 type Service interface {
 	Entity
 
