@@ -1,5 +1,9 @@
 vendor/
 testdata/generated/
 
+.idea/**
+
+/bazel-*
+
 # coverage reports
 cover.*
