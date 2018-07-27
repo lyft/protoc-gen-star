@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 )
 
 func TestPkg_ProtoName(t *testing.T) {
@@ -20,6 +21,14 @@ func TestPkg_GoName(t *testing.T) {
 
 	p := &pkg{name: "foobar"}
 	assert.Equal(t, Name("foobar"), p.GoName())
+}
+
+func TestPkg_JavaName(t *testing.T) {
+	t.Parallel()
+	javaPackage := "com.some.package"
+	p := &pkg{fd: mockPackageFD{fo: &descriptor.FileOptions{JavaPackage: &javaPackage}}}
+
+	assert.Equal(t, Name(javaPackage), p.JavaName())
 }
 
 func TestPkg_ImportPath(t *testing.T) {
@@ -88,10 +97,12 @@ type mockPackageFD struct {
 	packageFD
 	pn string
 	gp string
+	fo *descriptor.FileOptions
 }
 
-func (mp mockPackageFD) PackageName() string { return mp.pn }
-func (mp mockPackageFD) GetPackage() string  { return mp.gp }
+func (mp mockPackageFD) PackageName() string                 { return mp.pn }
+func (mp mockPackageFD) GetPackage() string                  { return mp.gp }
+func (mp mockPackageFD) GetOptions() *descriptor.FileOptions { return mp.fo }
 
 func dummyPkg() *pkg {
 	return &pkg{

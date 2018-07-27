@@ -1,5 +1,7 @@
 package pgs
 
+import "github.com/golang/protobuf/protoc-gen-go/descriptor"
+
 // Package is a container that encapsulates all the files under a single
 // package namespace. Specifically, this would be all the proto files loaded
 // within the same directory (not recursively). While a proto file's package
@@ -15,6 +17,9 @@ type Package interface {
 
 	// The name of the Go package. This is guaranteed to be unique.
 	GoName() Name
+
+	// JavaName gets the java package as defined in the proto FileDescriptorProto.FileOptions.
+	JavaName() Name
 
 	// The fully qualified import path for this Go Package
 	ImportPath() string
@@ -38,6 +43,7 @@ type pkg struct {
 
 func (p *pkg) ProtoName() Name    { return Name(p.fd.GetPackage()) }
 func (p *pkg) GoName() Name       { return Name(p.name) }
+func (p *pkg) JavaName() Name     { return Name(p.fd.GetOptions().GetJavaPackage()) }
 func (p *pkg) ImportPath() string { return p.importPath }
 func (p *pkg) Comments() string   { return p.comments }
 
@@ -78,6 +84,7 @@ func (p *pkg) setComments(comments string) {
 // cannot be used directly as its PackageName method calls out to a global map.
 type packageFD interface {
 	GetPackage() string
+	GetOptions() *descriptor.FileOptions
 }
 
 var _ Package = (*pkg)(nil)
