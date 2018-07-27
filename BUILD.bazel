@@ -8,6 +8,13 @@ gazelle(
     prefix = "github.com/lyft/protoc-gen-star",
 )
 
+test_suite(
+    name = "all_tests",
+    tests = [
+        ":go_default_test"
+    ]
+)
+
 go_library(
     name = "go_default_library",
     srcs = [
