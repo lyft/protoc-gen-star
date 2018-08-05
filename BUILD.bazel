@@ -54,6 +54,7 @@ go_library(
     ],
     importpath = "github.com/lyft/protoc-gen-star",
     visibility = ["//visibility:public"],
+    # https://github.com/bazelbuild/rules_go/issues/1629
     # Keep referencing the plugin and descriptor libraries directly. using the WKT's declared in `io_bazel_rules_go`
     # causes problems.
     # gazelle will prefer these by default.
@@ -110,7 +111,7 @@ go_test(
         "workflow_test.go",
     ],
     embed = [":go_default_library"],
-    # see comment above
+    # see comment on :go_default_library
     #keep
     deps = [
         "@com_github_golang_protobuf//proto:go_default_library",
