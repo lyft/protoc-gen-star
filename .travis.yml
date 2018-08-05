@@ -19,3 +19,6 @@ install: make install
 script:
   - make lint tests
   - ${BAZEL_BIN} test --verbose_failures --test_output=errors --noshow_progress //:all_tests
+
+after_script:
+  - ${BAZEL_BIN} shutdown
