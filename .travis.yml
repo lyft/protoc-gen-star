@@ -5,14 +5,17 @@ env:
   global:
     - GLIDE_VER="v0.13.1"
     - GLIDE_ARCH="linux-amd64"
+    - BAZEL_VERSION="0.16.0"
+    - BAZEL_BIN="${GOPATH}/bin/bazel"
 
 before_install:
   - mkdir -p $GOPATH/bin
   - wget "https://github.com/Masterminds/glide/releases/download/${GLIDE_VER}/glide-${GLIDE_VER}-${GLIDE_ARCH}.tar.gz" -O /tmp/glide.tar.gz
   - tar -xvf /tmp/glide.tar.gz --strip-components 1 -C ${GOPATH}/bin
+  - wget "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-linux-x86_64" -O ${BAZEL_BIN} && chmod +x ${BAZEL_BIN}
 
 install: make install
 
 script:
   - make lint tests
-  - bazel test --verbose_failures --test_output=errors --noshow_progress //:all_tests
+  - ${BAZEL_BIN} test --verbose_failures --test_output=errors --noshow_progress //:all_tests
