@@ -8,28 +8,6 @@ import (
 	"time"
 )
 
-const (
-	importPrefixKey    = "import_prefix"
-	importPathKey      = "import_path"
-	importMapKeyPrefix = "M"
-)
-
-// PathType describes how the generated file paths should be constructed.
-type PathType string
-
-const (
-	// PathTypeParam is the plugin param that allows specifying the path type
-	// mode used in code generation.
-	pathTypeKey = "paths"
-
-	// ImportPath is the default and outputs the file based off the go import
-	// path defined in the go_package option.
-	ImportPath PathType = ""
-
-	// SourceRelative indicates files should be output relative to the path of
-	// the source file.
-	SourceRelative PathType = "source_relative"
-)
 const outputPathKey = "output_path"
 
 // Parameters provides a convenience for accessing and modifying the parameters
@@ -51,65 +29,6 @@ func ParseParameters(p string) (params Parameters) {
 	}
 
 	return
-}
-
-// EnableAllPlugins changes the parameters to enable all registered sub-plugins.
-func (p Parameters) EnableAllPlugins() { p.SetStr(pluginsKey, "") }
-
-// ImportPrefix returns the protoc-gen-go parameter. This prefix is added onto
-// the beginning of all Go import paths. This is useful for things like
-// generating protos in a subdirectory, or regenerating vendored protobufs
-// in-place. By default, this method returns an empty string.
-//
-// See: https://github.com/golang/protobuf#parameters
-func (p Parameters) ImportPrefix() string { return p.Str(importPrefixKey) }
-
-// SetImportPrefix sets the protoc-gen-go ImportPrefix parameter. This is
-// useful for overriding the behavior of the ImportPrefix at runtime.
-func (p Parameters) SetImportPrefix(prefix string) { p.SetStr(importPrefixKey, prefix) }
-
-// ImportPath returns the protoc-gen-go parameter. This value is used as the
-// package if the input proto files do not declare a go_package option. If it
-// contains slashes, everything up to the rightmost slash is ignored.
-//
-// See: https://github.com/golang/protobuf#parameters
-func (p Parameters) ImportPath() string { return p.Str(importPathKey) }
-
-// SetImportPath sets the protoc-gen-go ImportPath parameter. This is useful
-// for overriding the behavior of the ImportPath at runtime.
-func (p Parameters) SetImportPath(path string) { p.SetStr(importPathKey, path) }
-
-// Paths returns the protoc-gen-go parameter. This value is used to switch the
-// mode used to determine the output paths of the generated code. By default,
-// paths are derived from the import path specified by go_package. It can be
-// overridden to be "source_relative", ignoring the import path using the
-// source path exclusively.
-func (p Parameters) Paths() PathType { return PathType(p.Str(pathTypeKey)) }
-
-// SetPaths sets the protoc-gen-go Paths parameter. This is useful for
-// overriding the behavior of Paths at runtime.
-func (p Parameters) SetPaths(pt PathType) { p.SetStr(pathTypeKey, string(pt)) }
-
-// ImportMap returns the protoc-gen-go import map overrides. Each entry in the
-// map keys off a proto file (as loaded by protoc) with values of the Go
-// package to use. These values will be prefixed with the value of ImportPrefix
-// when generating the Go code.
-func (p Parameters) ImportMap() map[string]string {
-	out := map[string]string{}
-
-	for k, v := range p {
-		if strings.HasPrefix(k, importMapKeyPrefix) {
-			out[k[1:]] = v
-		}
-	}
-
-	return out
-}
-
-// AddImportMapping adds a proto file to Go package import mapping to the
-// parameters.
-func (p Parameters) AddImportMapping(proto, pkg string) {
-	p[fmt.Sprintf("%s%s", importMapKeyPrefix, proto)] = pkg
 }
 
 // OutputPath returns the protoc-gen-star special parameter. If not set in the
