@@ -44,13 +44,19 @@ type Message interface {
 	// to the wire format.
 	IsMapEntry() bool
 
+	// IsWellKnown identifies whether or not this Message is a WKT from the
+	// `google.protobuf` package. Most official plugins special case these types
+	// and they usually need to be handled differently.
+	IsWellKnown() bool
+
+	// WellKnownType returns the WellKnownType associated with this field. If
+	// IsWellKnown returns false, UnknownWKT is returned.
+	WellKnownType() WellKnownType
+
 	setParent(p ParentEntity)
 	addField(f Field)
 	addOneOf(o OneOf)
 }
-
-// An MessageParent is any Entity type that can contain messages. File and
-// Message types implement MessageParent.
 
 type msg struct {
 	parent ParentEntity
@@ -79,6 +85,16 @@ func (m *msg) Messages() []Message                     { return m.msgs }
 func (m *msg) Fields() []Field                         { return m.fields }
 func (m *msg) OneOfs() []OneOf                         { return m.oneofs }
 func (m *msg) MapEntries() []Message                   { return m.maps }
+
+func (m *msg) WellKnownType() WellKnownType {
+	if m.Package().ProtoName() == WellKnownTypePackage {
+		return LookupWKT(m.Name())
+	}
+	return UnknownWKT
+}
+
+func (m *msg) IsWellKnown() bool {
+	return m.WellKnownType().Valid()
 }
 
 func (m *msg) AllEnums() []Enum {
