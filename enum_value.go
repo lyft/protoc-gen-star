@@ -38,7 +38,7 @@ func (ev *enumVal) SourceCodeInfo() SourceCodeInfo                   { return ev
 func (ev *enumVal) Descriptor() *descriptor.EnumValueDescriptorProto { return ev.desc }
 func (ev *enumVal) Enum() Enum                                       { return ev.enum }
 func (ev *enumVal) Value() int32                                     { return ev.desc.GetNumber() }
-func (ev *enumVal) Imports() []Package                               { return nil }
+func (ev *enumVal) Imports() []File                                  { return nil }
 
 func (ev *enumVal) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(ev.desc.GetOptions(), desc, &ext)

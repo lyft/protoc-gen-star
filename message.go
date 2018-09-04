@@ -1,22 +1,19 @@
 package pgs
 
 import (
-	"strings"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"github.com/golang/protobuf/protoc-gen-go/generator"
 )
 
-// Message describes a proto message, akin to a struct in Go. Messages can be
-// contained in either another Message or File, and may house further Messages
-// and/or Enums. While all Fields technically live on the Message, some may be
-// contained within OneOf blocks.
+// Message describes a proto message. Messages can be contained in either
+// another Message or File, and may house further Messages and/or Enums. While
+// all Fields technically live on the Message, some may be contained within
+// OneOf blocks.
 type Message interface {
 	ParentEntity
 
 	// Descriptor returns the underlying proto descriptor for this message
-	Descriptor() *generator.Descriptor
+	Descriptor() *descriptor.DescriptorProto
 
 	// Parent returns either the File or Message that directly contains this
 	// Message.
@@ -55,6 +52,7 @@ type Message interface {
 }
 
 type msg struct {
+	desc   *descriptor.DescriptorProto
 	parent ParentEntity
 
 	msgs, preservedMsgs []Message
@@ -101,30 +99,12 @@ func (m *msg) AllEnums() []Enum {
 	return es
 }
 
-func (m *msg) Messages() []Message {
-	msgs := make([]Message, len(m.msgs))
-	copy(msgs, m.msgs)
-	return msgs
-}
-
 func (m *msg) AllMessages() []Message {
 	msgs := m.Messages()
 	for _, sm := range m.msgs {
 		msgs = append(msgs, sm.AllMessages()...)
 	}
 	return msgs
-}
-
-func (m *msg) MapEntries() []Message {
-	me := make([]Message, len(m.mapEntries))
-	copy(me, m.mapEntries)
-	return me
-}
-
-func (m *msg) Fields() []Field {
-	f := make([]Field, len(m.fields))
-	copy(f, m.fields)
-	return f
 }
 
 func (m *msg) NonOneOfFields() (f []Field) {
@@ -144,12 +124,6 @@ func (m *msg) OneOfFields() (f []Field) {
 	return f
 }
 
-func (m *msg) OneOfs() []OneOf {
-	o := make([]OneOf, len(m.oneofs))
-	copy(o, m.oneofs)
-	return o
-}
-
 func (m *msg) Imports() (i []File) {
 	for _, f := range m.fields {
 		i = append(i, f.Imports()...)
@@ -158,7 +132,7 @@ func (m *msg) Imports() (i []File) {
 }
 
 func (m *msg) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
-	return extension(m.rawDesc.GetOptions(), desc, &ext)
+	return extension(m.desc.GetOptions(), desc, &ext)
 }
 
 func (m *msg) accept(v Visitor) (err error) {
@@ -221,7 +195,8 @@ func (m *msg) addOneOf(o OneOf) {
 
 func (m *msg) addMapEntry(me Message) {
 	me.setParent(m)
-	m.mapEntries = append(m.mapEntries, me)
+	m.maps = append(m.maps, me)
+}
 
 func (m *msg) childAtPath(path []int32) Entity {
 	switch {

@@ -2,24 +2,21 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/generator"
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 )
 
 // File describes the contents of a single proto file.
 type File interface {
 	ParentEntity
 
-	// InputPath returns the input FilePath of the generated Go code. This is
-	// equivalent to the value returned by Name.
+	// InputPath returns the input FilePath. This is equivalent to the value
+	// returned by Name.
 	InputPath() FilePath
 
-	// OutputPath returns the output filepath of the generated Go code
-	OutputPath() FilePath
-
 	// Descriptor returns the underlying descriptor for the proto file
-	Descriptor() *generator.FileDescriptor
+	Descriptor() *descriptor.FileDescriptorProto
 
-	// Services returns the top-level services from this proto file.
+	// Services returns the services from this proto file.
 	Services() []Service
 
 	// SyntaxSourceCodeInfo returns the comment info attached to the `syntax`
@@ -38,13 +35,6 @@ type File interface {
 }
 
 type file struct {
-	desc        *generator.FileDescriptor
-	pkg         Package
-	outputPath  FilePath
-	enums       []Enum
-	msgs        []Message
-	srvs        []Service
-	buildTarget bool
 	desc                    *descriptor.FileDescriptorProto
 	pkg                     Package
 	enums                   []Enum
@@ -53,6 +43,7 @@ type file struct {
 	buildTarget             bool
 	syntaxInfo, packageInfo SourceCodeInfo
 }
+
 func (f *file) Name() Name                                  { return Name(f.desc.GetName()) }
 func (f *file) FullyQualifiedName() string                  { return "." + f.desc.GetPackage() }
 func (f *file) Syntax() Syntax                              { return Syntax(f.desc.GetSyntax()) }
@@ -67,9 +58,7 @@ func (f *file) SyntaxSourceCodeInfo() SourceCodeInfo        { return f.syntaxInf
 func (f *file) PackageSourceCodeInfo() SourceCodeInfo       { return f.packageInfo }
 
 func (f *file) Enums() []Enum {
-	es := make([]Enum, len(f.enums))
-	copy(es, f.enums)
-	return es
+	return f.enums
 }
 
 func (f *file) AllEnums() []Enum {
@@ -81,9 +70,7 @@ func (f *file) AllEnums() []Enum {
 }
 
 func (f *file) Messages() []Message {
-	msgs := make([]Message, len(f.msgs))
-	copy(msgs, f.msgs)
-	return msgs
+	return f.msgs
 }
 
 func (f *file) AllMessages() []Message {
@@ -95,9 +82,7 @@ func (f *file) AllMessages() []Message {
 }
 
 func (f *file) Services() []Service {
-	s := make([]Service, len(f.srvs))
-	copy(s, f.srvs)
-	return s
+	return f.srvs
 }
 
 func (f *file) Imports() (i []File) {
