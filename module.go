@@ -3,9 +3,7 @@ package pgs
 import "os"
 
 // Module describes the interface for a domain-specific code generation module
-// that can be registered with the pgs generator. A module should be used over
-// a generator.Plugin if generating code NOT included in the *.pg.go file is
-// desired.
+// that can be registered with the PG* generator.
 type Module interface {
 	// The Name of the Module, used when establishing the build context and used
 	// as the base prefix for all debugger output.
@@ -119,8 +117,8 @@ func (m *ModuleBase) AddGeneratorFile(name, content string) {
 }
 
 // OverwriteGeneratorFile behaves the same as AddGeneratorFile, however if a
-// previously executed Plugin or Module has created a file with the same name,
-// it will be overwritten with this one.
+// previously executed Module has created a file with the same name, it will be
+// overwritten with this one.
 func (m *ModuleBase) OverwriteGeneratorFile(name, content string) {
 	m.AddArtifact(GeneratorFile{
 		Name:      name,

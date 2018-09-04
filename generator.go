@@ -20,7 +20,6 @@ type Generator struct {
 	persister persister   // handles writing artifacts to their output
 	workflow  workflow    // handles the actual code generation execution
 
-	plugins []Plugin // registered pgg plugins
 	mods    []Module // registered pg* modules
 
 	in  io.Reader // protoc input reader
@@ -61,24 +60,6 @@ func Init(opts ...InitOption) *Generator {
 
 	return g
 }
-
-// RegisterPlugin attaches protoc-gen-go plugins to the Generator. If p
-// implements the protoc-gen-star Plugin interface, a Debugger will be passed
-// in. This method is solely a wrapper around generator.RegisterPlugin. When
-// designing these, all context should be cleared when Init is called. Note
-// that these are currently global in scope and not specific to this generator
-// instance.
-func (g *Generator) RegisterPlugin(p ...generator.Plugin) *Generator {
-	for _, pl := range p {
-		g.Assert(pl != nil, "nil plugin provided")
-		g.Debug("registering plugin:", pl.Name())
-
-		if ppl, ok := pl.(Plugin); ok {
-			g.plugins = append(g.plugins, ppl)
-		}
-
-		generator.RegisterPlugin(pl)
-	}
 
 	return g
 }

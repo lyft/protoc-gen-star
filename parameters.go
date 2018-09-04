@@ -11,10 +11,7 @@ import (
 const (
 	importPrefixKey    = "import_prefix"
 	importPathKey      = "import_path"
-	outputPathKey      = "output_path"
 	importMapKeyPrefix = "M"
-	pluginsKey         = "plugins"
-	pluginsSep         = "+"
 )
 
 // PathType describes how the generated file paths should be constructed.
@@ -33,12 +30,13 @@ const (
 	// the source file.
 	SourceRelative PathType = "source_relative"
 )
+const outputPathKey = "output_path"
 
 // Parameters provides a convenience for accessing and modifying the parameters
 // passed into the protoc-gen-star plugin.
 type Parameters map[string]string
 
-// ParseParameters converts the raw params string provided to protoc into a
+// ParseParameters converts the raw params string provided by protoc into a
 // representative mapping.
 func ParseParameters(p string) (params Parameters) {
 	parts := strings.Split(p, ",")
@@ -53,56 +51,6 @@ func ParseParameters(p string) (params Parameters) {
 	}
 
 	return
-}
-
-// Plugins returns the sub-plugins enabled for this protoc plugin. If the all
-// value is true, all registered plugins are considered enabled (ie, protoc was
-// called with an empty "plugins" parameter). Otherwise, plugins contains the
-// list of plugins enabled by name.
-func (p Parameters) Plugins() (plugins []string, all bool) {
-	s, ok := p[pluginsKey]
-	if !ok {
-		return
-	}
-
-	if all = s == ""; all {
-		return
-	}
-
-	plugins = strings.Split(s, pluginsSep)
-	return
-}
-
-// HasPlugin returns true if the plugin name is enabled in the parameters. This
-// method will always return true if all plugins are enabled.
-func (p Parameters) HasPlugin(name string) bool {
-	plugins, all := p.Plugins()
-	if all {
-		return true
-	}
-
-	for _, pl := range plugins {
-		if pl == name {
-			return true
-		}
-	}
-
-	return false
-}
-
-// AddPlugin adds name to the list of plugins in the parameters. If all plugins
-// are enabled, this method is a noop.
-func (p Parameters) AddPlugin(name ...string) {
-	if len(name) == 0 {
-		return
-	}
-
-	plugins, all := p.Plugins()
-	if all {
-		return
-	}
-
-	p.SetStr(pluginsKey, strings.Join(append(plugins, name...), pluginsSep))
 }
 
 // EnableAllPlugins changes the parameters to enable all registered sub-plugins.
