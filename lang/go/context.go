@@ -34,6 +34,11 @@ type Context interface {
 	// ClientName returns the name of the client interface for the Service.
 	ClientName(service pgs.Service) pgs.Name
 
+	// ServerStream returns the name of the grpc.ServerStream wrapper for this
+	// method. This name is only used if client or server streaming is
+	// implemented for this method.
+	ServerStream(method pgs.Method) pgs.Name
+
 	// OneofOption returns the struct name that wraps a OneOf option's value. These
 	// messages contain one field, matching the value returned by Name for this
 	// Field.

@@ -20,21 +20,21 @@ func (c context) Name(node pgs.Node) pgs.Name {
 	case pgs.File: // the package name for this file
 		return c.PackageName(en)
 	case ChildEntity: // Message or Enum types, which may be nested
-		n := pggUpperCamelCase(en.Name())
+		n := PGGUpperCamelCase(en.Name())
 		if p, ok := en.Parent().(pgs.Message); ok {
 			n = pgs.Name(joinNames(c.Name(p), n))
 		}
 		return n
 	case pgs.Field: // field names cannot conflict with other generated methods
-		return replaceProtected(pggUpperCamelCase(en.Name()))
+		return replaceProtected(PGGUpperCamelCase(en.Name()))
 	case pgs.OneOf: // oneof field names cannot conflict with other generated methods
-		return replaceProtected(pggUpperCamelCase(en.Name()))
+		return replaceProtected(PGGUpperCamelCase(en.Name()))
 	case pgs.EnumValue: // EnumValue are prefixed with the enum name
 		return pgs.Name(joinNames(c.Name(en.Enum()), en.Name()))
 	case pgs.Service: // always return the server name
 		return c.ServerName(en)
 	case pgs.Entity: // any other entity should be just upper-camel-cased
-		return pggUpperCamelCase(en.Name())
+		return PGGUpperCamelCase(en.Name())
 	default:
 		panic("unreachable")
 	}
@@ -45,16 +45,22 @@ func (c context) OneofOption(field pgs.Field) pgs.Name {
 }
 
 func (c context) ServerName(s pgs.Service) pgs.Name {
-	n := pggUpperCamelCase(s.Name())
+	n := PGGUpperCamelCase(s.Name())
 	return pgs.Name(fmt.Sprintf("%sServer", n))
 }
 
 func (c context) ClientName(s pgs.Service) pgs.Name {
-	n := pggUpperCamelCase(s.Name())
+	n := PGGUpperCamelCase(s.Name())
 	return pgs.Name(fmt.Sprintf("%sClient", n))
 }
 
-// pggUpperCamelCase converts Name n to the protoc-gen-go defined upper
+func (c context) ServerStream(m pgs.Method) pgs.Name {
+	s := PGGUpperCamelCase(m.Service().Name())
+	n := PGGUpperCamelCase(m.Name())
+	return joinNames(s, n) + "Server"
+}
+
+// PGGUpperCamelCase converts Name n to the protoc-gen-go defined upper
 // camelcase. The rules are slightly different from pgs.UpperCamelCase in that
 // leading underscores are converted to 'X', mid-string underscores followed by
 // lowercase letters are removed and the letter is capitalized, all other
@@ -63,7 +69,7 @@ func (c context) ClientName(s pgs.Service) pgs.Name {
 // names).
 //
 // See: https://godoc.org/github.com/golang/protobuf/protoc-gen-go/generator#CamelCase
-func pggUpperCamelCase(n pgs.Name) pgs.Name {
+func PGGUpperCamelCase(n pgs.Name) pgs.Name {
 	return pgs.Name(generator.CamelCase(n.String()))
 }
 
