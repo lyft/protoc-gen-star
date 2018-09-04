@@ -24,7 +24,7 @@ func TestPGGUpperCamelCase(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		assert.Equal(t, tc.ex, pggUpperCamelCase(pgs.Name(tc.in)).String())
+		assert.Equal(t, tc.ex, PGGUpperCamelCase(pgs.Name(tc.in)).String())
 	}
 }
 
@@ -199,6 +199,34 @@ func TestContext_ClientName(t *testing.T) {
 			require.True(t, ok, "could not find service")
 			s := e.(pgs.Service)
 			assert.Equal(t, tc.expected, ctx.ClientName(s))
+		})
+	}
+}
+
+func TestContext_ServerStream(t *testing.T) {
+	t.Parallel()
+
+	ast := buildGraph(t, "names", "entities")
+	ctx := loadContext(t, "names", "entities")
+
+	tests := []struct {
+		method   string
+		expected pgs.Name
+	}{
+		{"UpperCamel", "Service_UpperCamelServer"},
+		{"lowerCamel", "Service_LowerCamelServer"},
+		{"lower_snake", "Service_LowerSnakeServer"},
+	}
+
+	for _, test := range tests {
+		tc := test
+		t.Run(tc.method, func(t *testing.T) {
+			t.Parallel()
+
+			e, ok := ast.Lookup(".names.entities.Service." + tc.method)
+			require.True(t, ok, "could not find method")
+			m := e.(pgs.Method)
+			assert.Equal(t, tc.expected, ctx.ServerStream(m))
 		})
 	}
 }
