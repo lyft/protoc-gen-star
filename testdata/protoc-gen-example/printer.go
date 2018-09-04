@@ -1,10 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"strings"
+
+	"bytes"
 
 	"github.com/lyft/protoc-gen-star"
 )
@@ -17,25 +18,34 @@ func ASTPrinter() *PrinterModule { return &PrinterModule{ModuleBase: &pgs.Module
 
 func (p *PrinterModule) Name() string { return "printer" }
 
-func (p *PrinterModule) Execute(pkg pgs.Package, pkgs map[string]pgs.Package) []pgs.Artifact {
-	p.PushDir(pkg.Files()[0].OutputPath().Dir().String())
-	defer p.Pop()
-	p.Debug("printing:", pkg.GoName())
-
+func (p *PrinterModule) Execute(targets map[string]pgs.File, packages map[string]pgs.Package) []pgs.Artifact {
 	buf := &bytes.Buffer{}
+
+	for _, f := range targets {
+		p.printFile(f, buf)
+	}
+
+	return p.Artifacts()
+}
+
+func (p *PrinterModule) printFile(f pgs.File, buf *bytes.Buffer) {
+	p.Push(f.Name().String())
+	defer p.Pop()
+
+	buf.Reset()
 	v := initPrintVisitor(buf, "")
-	p.CheckErr(pgs.Walk(v, pkg), "unable to print AST tree")
+	p.CheckErr(pgs.Walk(v, f), "unable to print AST tree")
+
+	out := buf.String()
 
 	if ok, _ := p.Parameters().Bool("log_tree"); ok {
-		p.Logf("Proto Tree:\n%s", buf.String())
+		p.Logf("Proto Tree:\n%s", out)
 	}
 
 	p.AddGeneratorFile(
-		p.JoinPath(pkg.GoName().LowerSnakeCase().String()+".tree.txt"),
-		buf.String(),
+		f.InputPath().SetExt(".tree.txt").String(),
+		out,
 	)
-
-	return p.Artifacts()
 }
 
 const (
@@ -74,10 +84,6 @@ func (v PrinterVisitor) writeSubNode(str string) pgs.Visitor {
 
 func (v PrinterVisitor) writeLeaf(str string) {
 	fmt.Fprintf(v.w, "%s%s%s\n", v.leafPrefix(), leafNodeSpacer, str)
-}
-
-func (v PrinterVisitor) VisitPackage(p pgs.Package) (pgs.Visitor, error) {
-	return v.writeSubNode("Package: " + p.GoName().String()), nil
 }
 
 func (v PrinterVisitor) VisitFile(f pgs.File) (pgs.Visitor, error) {
