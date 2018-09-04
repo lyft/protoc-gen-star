@@ -51,7 +51,7 @@ func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }
 
-func (o *oneof) Imports() (i []Package) {
+func (o *oneof) Imports() (i []File) {
 	for _, f := range o.flds {
 		i = append(i, f.Imports()...)
 	}

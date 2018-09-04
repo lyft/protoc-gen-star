@@ -100,7 +100,7 @@ func (f *file) Services() []Service {
 	return s
 }
 
-func (f *file) Imports() (i []Package) {
+func (f *file) Imports() (i []File) {
 	for _, m := range f.AllMessages() {
 		i = append(i, m.Imports()...)
 	}

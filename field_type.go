@@ -43,8 +43,8 @@ type FieldType interface {
 	// ProtoLabel returns the ProtoLabel value for this field.
 	ProtoLabel() ProtoLabel
 
-	// Imports includes all external packages required by this field.
-	Imports() []Package
+	// Imports includes all external proto files required by this field.
+	Imports() []File
 
 	// Enum returns the Enum associated with this FieldType. If IsEnum returns
 	// false, this value will be nil.
@@ -89,7 +89,7 @@ func (s *scalarT) Name() TypeName         { return s.name }
 func (s *scalarT) IsSlice() bool          { return s.ProtoType().IsSlice() }
 func (s *scalarT) ProtoType() ProtoType   { return ProtoType(s.fld.Descriptor().GetType()) }
 func (s *scalarT) ProtoLabel() ProtoLabel { return ProtoLabel(s.fld.Descriptor().GetLabel()) }
-func (s *scalarT) Imports() []Package     { return nil }
+func (s *scalarT) Imports() []File        { return nil }
 func (s *scalarT) setField(f Field)       { s.fld = f }
 func (s *scalarT) Enum() Enum             { return nil }
 func (s *scalarT) Embed() Message         { return nil }
@@ -120,9 +120,9 @@ type enumT struct {
 func (e *enumT) Enum() Enum   { return e.enum }
 func (e *enumT) IsEnum() bool { return true }
 
-func (e *enumT) Imports() []Package {
-	if pkg := e.enum.Package(); pkg.GoName() != e.fld.Package().GoName() {
-		return []Package{pkg}
+func (e *enumT) Imports() []File {
+	if f := e.enum.File(); f.Name() != e.fld.File().Name() {
+		return []File{f}
 	}
 	return nil
 }
@@ -142,9 +142,9 @@ type embedT struct {
 func (e *embedT) Embed() Message { return e.msg }
 func (e *embedT) IsEmbed() bool  { return true }
 
-func (e *embedT) Imports() []Package {
-	if pkg := e.msg.Package(); pkg.GoName() != e.fld.Package().GoName() {
-		return []Package{pkg}
+func (e *embedT) Imports() []File {
+	if f := e.msg.File(); f.Name() != e.fld.File().Name() {
+		return []File{f}
 	}
 	return nil
 }
@@ -165,7 +165,7 @@ func (r *repT) IsRepeated() bool       { return true }
 func (r *repT) Element() FieldTypeElem { return r.el }
 func (r *repT) IsSlice() bool          { return true }
 
-func (r *repT) Imports() []Package { return r.el.Imports() }
+func (r *repT) Imports() []File { return r.el.Imports() }
 
 func (r *repT) toElem() FieldTypeElem { panic("cannot convert repeated FieldType to FieldTypeElem") }
 

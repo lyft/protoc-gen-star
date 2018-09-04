@@ -18,13 +18,13 @@ type Method interface {
 	// Input returns the Message representing the input type for this.
 	Input() Message
 
-	// Output returns the Message representing this output type for this.
+	// Output returns the Message representing the output type for this.
 	Output() Message
 
-	// ClientStreaming indicates if this method allows clients to stream inputs
+	// ClientStreaming indicates if this method allows clients to stream inputs.
 	ClientStreaming() bool
 
-	// ServerStreaming indicates if this method allows servers to stream outputs
+	// ServerStreaming indicates if this method allows servers to stream outputs.
 	ServerStreaming() bool
 
 	setService(Service)
@@ -54,14 +54,14 @@ func (m *method) ClientStreaming() bool                         { return m.desc.
 func (m *method) ServerStreaming() bool                         { return m.desc.GetServerStreaming() }
 func (m *method) BiDirStreaming() bool                          { return m.ClientStreaming() && m.ServerStreaming() }
 
-func (m *method) Imports() (i []Package) {
-	mine := m.Package().GoName()
+func (m *method) Imports() (i []File) {
+	mine := m.File().Name()
 
-	if input := m.Input().Package(); mine != input.GoName() {
+	if input := m.Input().File(); mine != input.Name() {
 		i = append(i, input)
 	}
 
-	if output := m.Output().Package(); mine != output.GoName() {
+	if output := m.Output().File(); mine != output.Name() {
 		i = append(i, output)
 	}
 

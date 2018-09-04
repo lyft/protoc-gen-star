@@ -40,7 +40,7 @@ func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, e
 	return extension(s.desc.GetOptions(), desc, &ext)
 }
 
-func (s *service) Imports() (i []Package) {
+func (s *service) Imports() (i []File) {
 	for _, m := range s.methods {
 		i = append(i, m.Imports()...)
 	}

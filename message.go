@@ -154,7 +154,7 @@ func (m *msg) OneOfs() []OneOf {
 	return o
 }
 
-func (m *msg) Imports() (i []Package) {
+func (m *msg) Imports() (i []File) {
 	for _, f := range m.fields {
 		i = append(i, f.Imports()...)
 	}
