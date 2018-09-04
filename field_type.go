@@ -6,10 +6,6 @@ type FieldType interface {
 	// equivalent, each instance of a FieldType is tied to its Field.
 	Field() Field
 
-	// Name returns the TypeName for this Field, which represents the type of the
-	// field as it would exist in Go source code.
-	Name() TypeName
-
 	// IsRepeated returns true if and only if the field is marked as "repeated".
 	// While map fields may be labeled as repeated, this method will not return
 	// true for them.
@@ -32,10 +28,6 @@ type FieldType interface {
 
 	// IsRequired returns true if and only if the field is prefixed as required.
 	IsRequired() bool
-
-	// IsSlice returns true if the field is represented in Go as a slice. This
-	// method returns true only for repeated and bytes-type fields.
-	IsSlice() bool
 
 	// ProtoType returns the ProtoType value for this field.
 	ProtoType() ProtoType
@@ -75,18 +67,13 @@ type FieldType interface {
 	toElem() FieldTypeElem
 }
 
-type scalarT struct {
-	fld  Field
-	name TypeName
-}
+type scalarT struct{ fld Field }
 
 func (s *scalarT) Field() Field           { return s.fld }
 func (s *scalarT) IsRepeated() bool       { return false }
 func (s *scalarT) IsMap() bool            { return false }
 func (s *scalarT) IsEnum() bool           { return false }
 func (s *scalarT) IsEmbed() bool          { return false }
-func (s *scalarT) Name() TypeName         { return s.name }
-func (s *scalarT) IsSlice() bool          { return s.ProtoType().IsSlice() }
 func (s *scalarT) ProtoType() ProtoType   { return ProtoType(s.fld.Descriptor().GetType()) }
 func (s *scalarT) ProtoLabel() ProtoLabel { return ProtoLabel(s.fld.Descriptor().GetLabel()) }
 func (s *scalarT) Imports() []File        { return nil }
@@ -108,7 +95,6 @@ func (s *scalarT) toElem() FieldTypeElem {
 	return &scalarE{
 		typ:   s,
 		ptype: s.ProtoType(),
-		name:  s.name,
 	}
 }
 
@@ -163,7 +149,6 @@ type repT struct {
 
 func (r *repT) IsRepeated() bool       { return true }
 func (r *repT) Element() FieldTypeElem { return r.el }
-func (r *repT) IsSlice() bool          { return true }
 
 func (r *repT) Imports() []File { return r.el.Imports() }
 
@@ -176,7 +161,6 @@ type mapT struct {
 
 func (m *mapT) IsRepeated() bool   { return false }
 func (m *mapT) IsMap() bool        { return true }
-func (m *mapT) IsSlice() bool      { return false }
 func (m *mapT) Key() FieldTypeElem { return m.key }
 
 var (

@@ -26,6 +26,10 @@ type Field interface {
 	// Type returns the FieldType of this Field.
 	Type() FieldType
 
+	// Required returns whether or not the field is labeled as required. This
+	// will only be true if the syntax is proto2.
+	Required() bool
+
 	setMessage(m Message)
 	setOneOf(o OneOf)
 	addType(t FieldType)
@@ -55,6 +59,11 @@ func (f *field) OneOf() OneOf                                 { return f.oneof }
 func (f *field) Type() FieldType                              { return f.typ }
 func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
+
+func (f *field) Required() bool {
+	return f.Syntax().SupportsRequiredPrefix() &&
+		f.desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REQUIRED
+}
 
 func (f *field) addType(t FieldType) {
 	t.setField(f)

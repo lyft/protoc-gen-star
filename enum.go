@@ -50,7 +50,6 @@ func (e *enum) File() File                            { return e.parent.File() }
 func (e *enum) BuildTarget() bool                     { return e.parent.BuildTarget() }
 func (e *enum) Descriptor() *generator.EnumDescriptor { return e.genDesc }
 func (e *enum) Parent() ParentEntity                  { return e.parent }
-func (e *enum) TypeName() TypeName                    { return TypeName(strings.Join(e.genDesc.TypeName(), "_")) }
 
 func (e *enum) Values() []EnumValue {
 	ev := make([]EnumValue, len(e.vals))

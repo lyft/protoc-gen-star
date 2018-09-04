@@ -15,10 +15,6 @@ import (
 type Message interface {
 	ParentEntity
 
-	// TypeName returns the type of this message as it would be created in Go.
-	// This value will only differ from Name for nested messages.
-	TypeName() TypeName
-
 	// Descriptor returns the underlying proto descriptor for this message
 	Descriptor() *generator.Descriptor
 

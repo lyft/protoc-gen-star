@@ -15,10 +15,6 @@ type FieldTypeElem interface {
 	// IsEnum returns true if the component is an enum value.
 	IsEnum() bool
 
-	// Name returns the TypeName describing this component (independent of the
-	// parent FieldType).
-	Name() TypeName
-
 	// Imports includes all external Files required by this field.
 	Imports() []File
 
@@ -36,14 +32,12 @@ type FieldTypeElem interface {
 type scalarE struct {
 	typ   FieldType
 	ptype ProtoType
-	name  TypeName
 }
 
 func (s *scalarE) ParentType() FieldType { return s.typ }
 func (s *scalarE) ProtoType() ProtoType  { return s.ptype }
 func (s *scalarE) IsEmbed() bool         { return false }
 func (s *scalarE) IsEnum() bool          { return false }
-func (s *scalarE) Name() TypeName        { return s.name }
 func (s *scalarE) setType(t FieldType)   { s.typ = t }
 func (s *scalarE) Imports() []File       { return nil }
 func (s *scalarE) Enum() Enum            { return nil }
