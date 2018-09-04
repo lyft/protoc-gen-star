@@ -55,34 +55,30 @@ type Message interface {
 type msg struct {
 	parent ParentEntity
 
-	msgs       []Message
-	enums      []Enum
-	fields     []Field
-	oneofs     []OneOf
-	mapEntries []Message
+	msgs, preservedMsgs []Message
+	enums               []Enum
+	fields              []Field
+	oneofs              []OneOf
+	maps                []Message
 
-	rawDesc *descriptor.DescriptorProto
-	genDesc *generator.Descriptor
-
-	comments string
+	info SourceCodeInfo
 }
 
-func (m *msg) Name() Name                        { return Name(m.rawDesc.GetName()) }
-func (m *msg) FullyQualifiedName() string        { return fullyQualifiedName(m.parent, m) }
-func (m *msg) Syntax() Syntax                    { return m.parent.Syntax() }
-func (m *msg) Package() Package                  { return m.parent.Package() }
-func (m *msg) File() File                        { return m.parent.File() }
-func (m *msg) BuildTarget() bool                 { return m.parent.BuildTarget() }
-func (m *msg) Comments() string                  { return m.comments }
-func (m *msg) Descriptor() *generator.Descriptor { return m.genDesc }
-func (m *msg) Parent() ParentEntity              { return m.parent }
-func (m *msg) IsMapEntry() bool                  { return m.rawDesc.GetOptions().GetMapEntry() }
-func (m *msg) TypeName() TypeName                { return TypeName(strings.Join(m.genDesc.TypeName(), "_")) }
-
-func (m *msg) Enums() []Enum {
-	es := make([]Enum, len(m.enums))
-	copy(es, m.enums)
-	return es
+func (m *msg) Name() Name                              { return Name(m.desc.GetName()) }
+func (m *msg) FullyQualifiedName() string              { return fullyQualifiedName(m.parent, m) }
+func (m *msg) Syntax() Syntax                          { return m.parent.Syntax() }
+func (m *msg) Package() Package                        { return m.parent.Package() }
+func (m *msg) File() File                              { return m.parent.File() }
+func (m *msg) BuildTarget() bool                       { return m.parent.BuildTarget() }
+func (m *msg) SourceCodeInfo() SourceCodeInfo          { return m.info }
+func (m *msg) Descriptor() *descriptor.DescriptorProto { return m.desc }
+func (m *msg) Parent() ParentEntity                    { return m.parent }
+func (m *msg) IsMapEntry() bool                        { return m.desc.GetOptions().GetMapEntry() }
+func (m *msg) Enums() []Enum                           { return m.enums }
+func (m *msg) Messages() []Message                     { return m.msgs }
+func (m *msg) Fields() []Field                         { return m.fields }
+func (m *msg) OneOfs() []OneOf                         { return m.oneofs }
+func (m *msg) MapEntries() []Message                   { return m.maps }
 }
 
 func (m *msg) AllEnums() []Enum {
@@ -214,6 +210,32 @@ func (m *msg) addOneOf(o OneOf) {
 func (m *msg) addMapEntry(me Message) {
 	me.setParent(m)
 	m.mapEntries = append(m.mapEntries, me)
+
+func (m *msg) childAtPath(path []int32) Entity {
+	switch {
+	case len(path) == 0:
+		return m
+	case len(path)%2 != 0:
+		return nil
+	}
+
+	var child Entity
+	switch path[0] {
+	case messageTypeFieldPath:
+		child = m.fields[path[1]]
+	case messageTypeNestedTypePath:
+		child = m.preservedMsgs[path[1]]
+	case messageTypeEnumTypePath:
+		child = m.enums[path[1]]
+	case messageTypeOneofDeclPath:
+		child = m.oneofs[path[1]]
+	default:
+		return nil
+	}
+
+	return child.childAtPath(path[2:])
 }
+
+func (m *msg) addSourceCodeInfo(info SourceCodeInfo) { m.info = info }
 
 var _ Message = (*msg)(nil)

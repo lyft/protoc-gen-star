@@ -36,7 +36,7 @@ type method struct {
 
 	in, out Message
 
-	comments string
+	info SourceCodeInfo
 }
 
 func (m *method) Name() Name                                    { return Name(m.desc.GetName()) }
@@ -45,7 +45,7 @@ func (m *method) Syntax() Syntax                                { return m.servi
 func (m *method) Package() Package                              { return m.service.Package() }
 func (m *method) File() File                                    { return m.service.File() }
 func (m *method) BuildTarget() bool                             { return m.service.BuildTarget() }
-func (m *method) Comments() string                              { return m.comments }
+func (m *method) SourceCodeInfo() SourceCodeInfo                { return m.info }
 func (m *method) Descriptor() *descriptor.MethodDescriptorProto { return m.desc }
 func (m *method) Service() Service                              { return m.service }
 func (m *method) Input() Message                                { return m.in }
@@ -82,3 +82,14 @@ func (m *method) accept(v Visitor) (err error) {
 }
 
 func (m *method) setService(s Service) { m.service = s }
+
+func (m *method) childAtPath(path []int32) Entity {
+	if len(path) == 0 {
+		return m
+	}
+	return nil
+}
+
+func (m *method) addSourceCodeInfo(info SourceCodeInfo) { m.info = info }
+
+var m Method = (*method)(nil)

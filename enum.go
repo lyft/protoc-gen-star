@@ -39,7 +39,7 @@ type enum struct {
 
 	vals []EnumValue
 
-	comments string
+	info   SourceCodeInfo
 }
 
 func (e *enum) Name() Name                            { return Name(e.rawDesc.GetName()) }
@@ -48,7 +48,6 @@ func (e *enum) Syntax() Syntax                        { return e.parent.Syntax()
 func (e *enum) Package() Package                      { return e.parent.Package() }
 func (e *enum) File() File                            { return e.parent.File() }
 func (e *enum) BuildTarget() bool                     { return e.parent.BuildTarget() }
-func (e *enum) Comments() string                      { return e.comments }
 func (e *enum) Descriptor() *generator.EnumDescriptor { return e.genDesc }
 func (e *enum) Parent() ParentEntity                  { return e.parent }
 func (e *enum) Imports() []Package                    { return nil }
@@ -59,6 +58,7 @@ func (e *enum) Values() []EnumValue {
 	copy(ev, e.vals)
 	return ev
 }
+func (e *enum) SourceCodeInfo() SourceCodeInfo              { return e.info }
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(e.rawDesc.GetOptions(), desc, &ext)
@@ -88,5 +88,20 @@ func (e *enum) addValue(v EnumValue) {
 }
 
 func (e *enum) setParent(p ParentEntity) { e.parent = p }
+
+func (e *enum) childAtPath(path []int32) Entity {
+	switch {
+	case len(path) == 0:
+		return e
+	case len(path)%2 != 0:
+		return nil
+	case path[0] == enumTypeValuePath:
+		return e.vals[path[1]].childAtPath(path[2:])
+	default:
+		return nil
+	}
+}
+
+func (e *enum) addSourceCodeInfo(info SourceCodeInfo) { e.info = info }
 
 var _ Enum = (*enum)(nil)
