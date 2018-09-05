@@ -35,8 +35,8 @@ func TestName(t *testing.T) {
 	ctx := loadContext(t, "names", "entities")
 
 	f := ast.Targets()["entities.proto"]
-	assert.Equal(t, pgs.Name("entities"), ctx.Name(f))
-	assert.Equal(t, pgs.Name("entities"), ctx.Name(f.Package()))
+	assert.Equal(t, pgs.Name("BAD_pack__age_name_"), ctx.Name(f))
+	assert.Equal(t, pgs.Name("BAD_pack__age_name_"), ctx.Name(f.Package()))
 
 	assert.Panics(t, func() {
 		ctx.Name(nil)

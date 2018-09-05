@@ -90,5 +90,7 @@ func (c context) optionPackage(e pgs.Entity) (path, pkg string) {
 		return
 	}
 
+	pkg = nonAlphaNumPattern.ReplaceAllString(pkg, "_")
+
 	return
 }

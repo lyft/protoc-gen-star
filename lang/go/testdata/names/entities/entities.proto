@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package names.entities;
-option go_package = "entities";
+option go_package = "BAD.pack--age.name$";
 
 message UpperCamelCaseMessage {}
 
