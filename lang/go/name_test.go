@@ -63,6 +63,7 @@ func TestName(t *testing.T) {
 		{"Nested._underscore", "Nested_XUnderscore"},
 		{"Nested.String", "Nested_String"},
 		{"Nested.Message.Message", "Nested_Message_Message"},
+		{"Nested.lowerMsg", "NestedLowerMsg"},
 
 		// Enums
 		{"UpperCamelCaseEnum", "UpperCamelCaseEnum"},
@@ -84,9 +85,11 @@ func TestName(t *testing.T) {
 
 		// Nested Enums
 		{"Nested.Enum", "Nested_Enum"},
-		{"Nested.Enum.VALUE", "Nested_Enum_VALUE"},
+		{"Nested.Enum.VALUE", "Nested_VALUE"},
 		{"Nested.Message.Enum", "Nested_Message_Enum"},
-		{"Nested.Message.Enum.VALUE", "Nested_Message_Enum_VALUE"},
+		{"Nested.Message.Enum.NESTED", "Nested_Message_NESTED"},
+		{"Nested.lowercase", "NestedLowercase"},
+		{"Nested.lowercase.lower", "Nested_lower"},
 
 		// Field Names
 		{"Fields.lower_snake_case", "LowerSnakeCase"},

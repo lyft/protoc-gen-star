@@ -2,6 +2,8 @@ package pgsgo
 
 import (
 	"fmt"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/golang/protobuf/protoc-gen-go/generator"
 	"github.com/lyft/protoc-gen-star"
@@ -20,17 +22,19 @@ func (c context) Name(node pgs.Node) pgs.Name {
 	case pgs.File: // the package name for this file
 		return c.PackageName(en)
 	case ChildEntity: // Message or Enum types, which may be nested
-		n := PGGUpperCamelCase(en.Name())
 		if p, ok := en.Parent().(pgs.Message); ok {
-			n = pgs.Name(joinNames(c.Name(p), n))
+			return pgs.Name(joinChild(c.Name(p), en.Name()))
 		}
-		return n
+		return PGGUpperCamelCase(en.Name())
 	case pgs.Field: // field names cannot conflict with other generated methods
 		return replaceProtected(PGGUpperCamelCase(en.Name()))
 	case pgs.OneOf: // oneof field names cannot conflict with other generated methods
 		return replaceProtected(PGGUpperCamelCase(en.Name()))
 	case pgs.EnumValue: // EnumValue are prefixed with the enum name
-		return pgs.Name(joinNames(c.Name(en.Enum()), en.Name()))
+		if _, ok := en.Enum().Parent().(pgs.File); ok {
+			return pgs.Name(joinNames(c.Name(en.Enum()), en.Name()))
+		}
+		return pgs.Name(joinNames(c.Name(en.Enum().Parent()), en.Name()))
 	case pgs.Service: // always return the server name
 		return c.ServerName(en)
 	case pgs.Entity: // any other entity should be just upper-camel-cased
@@ -89,6 +93,13 @@ func replaceProtected(n pgs.Name) pgs.Name {
 		return use
 	}
 	return n
+}
+
+func joinChild(a, b pgs.Name) pgs.Name {
+	if r, _ := utf8.DecodeRuneInString(b.String()); unicode.IsLetter(r) && unicode.IsLower(r) {
+		return pgs.Name(fmt.Sprintf("%s%s", a, PGGUpperCamelCase(b)))
+	}
+	return joinNames(a, PGGUpperCamelCase(b))
 }
 
 func joinNames(a, b pgs.Name) pgs.Name {

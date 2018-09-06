@@ -27,7 +27,7 @@ message Nested {
     message Message {
         message Message {}
 
-        enum Enum { VALUE = 0; }
+        enum Enum { NESTED = 0; }
     }
 
     message _underscore {}
@@ -35,6 +35,10 @@ message Nested {
     message String {} // protected name
 
     enum Enum { VALUE = 0; }
+
+    enum lowercase { lower = 0; }
+
+    message lowerMsg {}
 }
 
 enum UpperCamelCaseEnum {

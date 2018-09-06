@@ -2,6 +2,9 @@
 PKG  := $(shell go list .)
 PKGS := $(shell go list ./...)
 
+.PHONY: bootstrap
+bootstrap: vendor testdata # set up the project for development
+
 .PHONY: lint
 lint: # lints the package for common code smells
 	set -e; for f in `find . -name "*.go" -not -name "*.pb.go" | grep -v vendor`; do \
