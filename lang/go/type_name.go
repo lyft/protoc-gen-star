@@ -2,7 +2,6 @@ package pgsgo
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/lyft/protoc-gen-star"
