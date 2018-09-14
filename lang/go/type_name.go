@@ -26,7 +26,6 @@ func (c context) Type(f pgs.Field) TypeName {
 		t = scalarType(ft.ProtoType())
 	}
 
-	log.Println(f.File().Descriptor().GetSyntax())
 	if f.Syntax() == pgs.Proto2 {
 		return t.Pointer()
 	}
