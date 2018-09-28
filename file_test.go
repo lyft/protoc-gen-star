@@ -166,7 +166,7 @@ func TestFile_Imports(t *testing.T) {
 
 	f.addMessage(m)
 	f.addService(svc)
-	assert.Len(t, f.Imports(), 2)
+	assert.Len(t, f.Imports(), 1)
 }
 
 func TestFile_Accept(t *testing.T) {
