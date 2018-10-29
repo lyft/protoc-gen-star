@@ -103,7 +103,9 @@ func (c context) resolveGoPackageOption(e pgs.Entity) string {
 		return pkg
 	}
 
-	// protoc-gen-go will use the go_package option from _any_ file in the same execution since it's assumed that
+	// protoc-gen-go will use the go_package option from _any_ file in the same
+	// execution since it's assumed that all the files are in the same Go
+	// package. PG* will only verify this against files in the same proto package
 	for _, f := range e.Package().Files() {
 		if pkg := f.Descriptor().GetOptions().GetGoPackage(); pkg != "" {
 			return pkg
