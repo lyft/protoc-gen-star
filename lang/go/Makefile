@@ -4,6 +4,7 @@ testdata-names: ../../bin/protoc-gen-debug # parse the proto file sets in testda
 	set -e; for subdir in `find . -type d -mindepth 1 -maxdepth 1`; do \
 		cd $$subdir; \
 		params=`cat params`; \
+		echo $$params; \
 		protoc -I . \
 			--plugin=protoc-gen-debug=../../../../../bin/protoc-gen-debug \
 			--debug_out=".:." \
