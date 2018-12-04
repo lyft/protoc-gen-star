@@ -52,8 +52,15 @@ func (o *oneof) Message() Message                             { return o.msg }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }
 
 func (o *oneof) Imports() (i []File) {
+	// Mapping for avoiding duplicate entries
+	mp := make(map[string]File, len(o.flds))
 	for _, f := range o.flds {
-		i = append(i, f.Imports()...)
+		for _, imp := range f.Imports() {
+			mp[imp.File().Name().String()] = imp
+		}
+	}
+	for _, f := range mp {
+		i = append(i, f)
 	}
 	return
 }

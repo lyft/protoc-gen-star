@@ -86,13 +86,8 @@ func (f *file) Services() []Service {
 }
 
 func (f *file) Imports() (i []File) {
-
-	// Bug Fix: Multiple imports of the same file is checked
-	// There is a possibility that two different messages are importing the same file
-	// and hence, []File slice, 'i' will have multiple occurrences of the same file.
-	// Thus, a check is added to remove such occurrences.
-
-	importMap := make(map[string]File, len(f.AllMessages()))
+	// Mapping for avoiding duplicate entries
+	importMap := make(map[string]File, len(f.AllMessages()) + len(f.srvs))
 	for _, m := range f.AllMessages() {
 		for _, imp := range m.Imports() {
 			importMap[imp.File().Name().String()] = imp

@@ -41,8 +41,15 @@ func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, e
 }
 
 func (s *service) Imports() (i []File) {
+	// Mapping for avoiding duplicate entries
+	mp := make(map[string]File, len(s.methods))
 	for _, m := range s.methods {
-		i = append(i, m.Imports()...)
+		for _, imp := range m.Imports() {
+			mp[imp.File().Name().String()] = imp
+		}
+	}
+	for _, f := range mp {
+		i = append(i, f)
 	}
 	return
 }

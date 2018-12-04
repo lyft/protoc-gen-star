@@ -125,8 +125,15 @@ func (m *msg) OneOfFields() (f []Field) {
 }
 
 func (m *msg) Imports() (i []File) {
+	// Mapping for avoiding duplicate entries
+	mp := make(map[string]File, len(m.fields))
 	for _, f := range m.fields {
-		i = append(i, f.Imports()...)
+		for _, imp := range f.Imports() {
+			mp[imp.File().Name().String()] = imp
+		}
+	}
+	for _, f := range mp {
+		i = append(i, f)
 	}
 	return
 }
