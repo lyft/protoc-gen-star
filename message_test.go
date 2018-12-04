@@ -299,7 +299,7 @@ func TestMsg_Imports(t *testing.T) {
 	nf := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
-	m.addField(&mockField{i: []File{nf,nf}})
+	m.addField(&mockField{i: []File{nf, nf}})
 	assert.Len(t, m.Imports(), 2)
 }
 

@@ -62,7 +62,7 @@ func (m *method) Imports() (i []File) {
 	if mine != input.Name() {
 		i = append(i, input)
 	}
-	if  mine != output.Name() && input.Name() != output.Name() {
+	if mine != output.Name() && input.Name() != output.Name() {
 		i = append(i, output)
 	}
 	return

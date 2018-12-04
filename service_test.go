@@ -96,7 +96,7 @@ func TestService_Imports(t *testing.T) {
 	nf := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
-	s.addMethod(&mockMethod{i: []File{nf,nf}})
+	s.addMethod(&mockMethod{i: []File{nf, nf}})
 	assert.Len(t, s.Imports(), 2)
 }
 
