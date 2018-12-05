@@ -96,6 +96,12 @@ func TestOneof_Imports(t *testing.T) {
 	assert.Empty(t, o.Imports())
 
 	o.addField(&mockField{i: []File{&file{}, &file{}}, Field: &field{}})
+	assert.Len(t, o.Imports(), 1)
+
+	f := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("foobar"),
+	}}
+	o.addField(&mockField{i: []File{f}, Field: &field{}})
 	assert.Len(t, o.Imports(), 2)
 }
 

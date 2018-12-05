@@ -56,15 +56,15 @@ func (m *method) BiDirStreaming() bool                          { return m.Clien
 
 func (m *method) Imports() (i []File) {
 	mine := m.File().Name()
+	input := m.Input().File()
+	output := m.Output().File()
 
-	if input := m.Input().File(); mine != input.Name() {
+	if mine != input.Name() {
 		i = append(i, input)
 	}
-
-	if output := m.Output().File(); mine != output.Name() {
+	if mine != output.Name() && input.Name() != output.Name() {
 		i = append(i, output)
 	}
-
 	return
 }
 

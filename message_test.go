@@ -294,6 +294,12 @@ func TestMsg_Imports(t *testing.T) {
 	assert.Empty(t, m.Imports())
 
 	m.addField(&mockField{i: []File{&file{}, &file{}}})
+	assert.Len(t, m.Imports(), 1)
+
+	nf := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("foobar"),
+	}}
+	m.addField(&mockField{i: []File{nf, nf}})
 	assert.Len(t, m.Imports(), 2)
 }
 

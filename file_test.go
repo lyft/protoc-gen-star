@@ -166,6 +166,12 @@ func TestFile_Imports(t *testing.T) {
 
 	f.addMessage(m)
 	f.addService(svc)
+	assert.Len(t, f.Imports(), 1)
+
+	nf := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("foobar"),
+	}}
+	f.addMessage(&mockMessage{i: []File{nf}, Message: &msg{}})
 	assert.Len(t, f.Imports(), 2)
 }
 

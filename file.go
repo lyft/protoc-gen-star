@@ -86,11 +86,20 @@ func (f *file) Services() []Service {
 }
 
 func (f *file) Imports() (i []File) {
+	// Mapping for avoiding duplicate entries
+	importMap := make(map[string]File, len(f.AllMessages())+len(f.srvs))
 	for _, m := range f.AllMessages() {
-		i = append(i, m.Imports()...)
+		for _, imp := range m.Imports() {
+			importMap[imp.File().Name().String()] = imp
+		}
 	}
 	for _, s := range f.srvs {
-		i = append(i, s.Imports()...)
+		for _, imp := range s.Imports() {
+			importMap[imp.File().Name().String()] = imp
+		}
+	}
+	for _, imp := range importMap {
+		i = append(i, imp)
 	}
 	return
 }

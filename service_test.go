@@ -92,6 +92,12 @@ func TestService_Imports(t *testing.T) {
 	assert.Empty(t, s.Imports())
 	s.addMethod(&mockMethod{i: []File{&file{}}})
 	assert.Len(t, s.Imports(), 1)
+
+	nf := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("foobar"),
+	}}
+	s.addMethod(&mockMethod{i: []File{nf, nf}})
+	assert.Len(t, s.Imports(), 2)
 }
 
 func TestService_Methods(t *testing.T) {

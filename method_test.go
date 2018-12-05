@@ -134,11 +134,18 @@ func TestMethod_Imports(t *testing.T) {
 	}
 	s.addMethod(m)
 
+	f := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("foobar"),
+	}}
 	assert.Empty(t, m.Imports())
-	m.in = &msg{parent: &file{pkg: &pkg{comments: "not_the_same"}}}
+	m.in = &msg{parent: f}
 	assert.Len(t, m.Imports(), 1)
-	m.out = &msg{parent: &file{pkg: &pkg{comments: "other_import"}}}
+
+	m.out = &msg{parent: &file{}}
 	assert.Len(t, m.Imports(), 2)
+
+	m.out = &msg{parent: f}
+	assert.Len(t, m.Imports(), 1)
 }
 
 func TestMethod_Extension(t *testing.T) {
