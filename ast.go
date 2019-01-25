@@ -2,7 +2,7 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"github.com/golang/protobuf/protoc-gen-go/plugin"
+	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 )
 
 // AST encapsulates the entirety of the input CodeGeneratorRequest from protoc,

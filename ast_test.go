@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/plugin"
+	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -257,4 +257,31 @@ func TestGraph_HydrateFieldType_Group(t *testing.T) {
 
 	assert.Nil(t, g.hydrateFieldType(f))
 	assert.True(t, md.Failed())
+}
+
+func TestGraph_Packageless(t *testing.T) {
+	t.Parallel()
+
+	g := buildGraph(t, "packageless")
+
+	tests := []struct {
+		name        string
+		entityIFace interface{}
+	}{
+		{".RootMessage", (*Message)(nil)},
+		{".RootEnum", (*Enum)(nil)},
+		{".RootMessage.field", (*Field)(nil)},
+		{".RootEnum.VALUE", (*EnumValue)(nil)},
+		{".RootMessage.NestedMsg", (*Message)(nil)},
+		{".RootMessage.NestedEnum", (*Enum)(nil)},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ent, ok := g.Lookup(tc.name)
+			assert.True(t, ok)
+			assert.NotNil(t, ent)
+			assert.Implements(t, tc.entityIFace, ent)
+		})
+	}
 }
