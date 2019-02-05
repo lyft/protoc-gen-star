@@ -40,9 +40,14 @@ func (g *graph) Lookup(name string) (Entity, bool) {
 	return e, ok
 }
 
-// ProcessDescriptors converts a CodeGeneratorRequest from protoc into a fully
-// connected AST entity graph. An error is returned if the input is malformed.
+// ProcessDescriptors is deprecated; use ProcessCodeGeneratorRequest instead
 func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
+	return ProcessCodeGeneratorRequest(debug, req)
+}
+
+// ProcessCodeGeneratorRequest converts a CodeGeneratorRequest from protoc into a fully
+// connected AST entity graph. An error is returned if the input is malformed.
+func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
 	g := &graph{
 		d:        debug,
 		targets:  make(map[string]File, len(req.GetFileToGenerate())),
@@ -60,6 +65,21 @@ func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST
 	}
 
 	return g
+}
+
+// ProcessFileDescriptorSet conversts a FileDescriptorSet from protoc into a
+// fully connected AST entity graph. An error is returned if the input is
+// malformed or missing dependencies. To generate a self-contained
+// FileDescriptorSet, run the following command:
+//
+//   protoc -o path/to/fdset.bin --include_imports $PROTO_FILES
+//
+// The emitted AST will have no values in the Targets map, but Packages will be
+// populated. If used for testing purposes, the Targets map can be manually
+// populated.
+func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
+	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
+	return ProcessCodeGeneratorRequest(debug, &req)
 }
 
 func (g *graph) hydratePackage(f *descriptor.FileDescriptorProto) Package {
