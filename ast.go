@@ -40,9 +40,14 @@ func (g *graph) Lookup(name string) (Entity, bool) {
 	return e, ok
 }
 
-// ProcessDescriptors converts a CodeGeneratorRequest from protoc into a fully
-// connected AST entity graph. An error is returned if the input is malformed.
+// ProcessDescriptors is deprecated; use ProcessCodeGeneratorRequest instead
 func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
+	return ProcessCodeGeneratorRequest(debug, req)
+}
+
+// ProcessCodeGeneratorRequest converts a CodeGeneratorRequest from protoc into a fully
+// connected AST entity graph. An error is returned if the input is malformed.
+func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
 	g := &graph{
 		d:        debug,
 		targets:  make(map[string]File, len(req.GetFileToGenerate())),
@@ -60,6 +65,11 @@ func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST
 	}
 
 	return g
+}
+
+func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
+	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
+	return ProcessCodeGeneratorRequest(debug, &req)
 }
 
 func (g *graph) hydratePackage(f *descriptor.FileDescriptorProto) Package {
