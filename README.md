@@ -300,15 +300,12 @@ PG* seeks to provide all the tools necessary to rapidly and ergonomically extend
 
 ### Setup
 
-For developing on PG*, you should install the package within the `GOPATH`. PG* uses [glide][glide] for dependency management.
+For developing on PG*, you should install the package within the `GOPATH`.
 
 ```sh
 go get -u github.com/lyft/protoc-gen-star
 cd $GOPATH/src/github.com/lyft/protoc-gen-star
-make vendor
 ```
-
-To upgrade dependencies, please make the necessary modifications in `glide.yaml` and run `glide update`.
 
 ### Linting & Static Analysis
 
@@ -364,7 +361,6 @@ make testdata/generated
 
 PG* uses [TravisCI][travis] to validate all code changes. Please view the [configuration][travis.yml] for what tests are involved in the validation.
 
-[glide]: http://glide.sh
 [pgg]: https://github.com/golang/protobuf/tree/master/protoc-gen-go
 [pge]: https://github.com/lyft/protoc-gen-star/tree/master/testdata/protoc-gen-example
 [travis]: https://travis-ci.com/lyft/protoc-gen-star
