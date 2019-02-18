@@ -2,29 +2,30 @@
 PKG  := $(shell go list .)
 PKGS := $(shell go list ./...)
 
+export GO111MODULE = on
+
 .PHONY: bootstrap
-bootstrap: vendor testdata # set up the project for development
+bootstrap: testdata # set up the project for development
 
 .PHONY: lint
-lint: # lints the package for common code smells
+lint: bin/shadow # lints the package for common code smells
 	set -e; for f in `find . -name "*.go" -not -name "*.pb.go" | grep -v vendor`; do \
 		out=`gofmt -s -d $$f`; \
 		test -z "$$out" || (echo $$out && exit 1); \
 	done
-	which golint || go get -u golang.org/x/lint/golint
-	golint -set_exit_status $(PKGS)
-	go vet -all -shadow -shadowstrict $(PKGS)
+	go run golang.org/x/lint/golint -set_exit_status $(PKGS)
+	go vet -all -vettool=bin/shadow $(PKGS)
 
 .PHONY: quick
-quick: vendor testdata # runs all tests without the race detector or coverage
+quick: testdata # runs all tests without the race detector or coverage
 	go test $(PKGS)
 
 .PHONY: tests
-tests: vendor testdata # runs all tests against the package with race detection and coverage percentage
+tests: testdata # runs all tests against the package with race detection and coverage percentage
 	go test -race -cover $(PKGS)
 
 .PHONY: cover
-cover: vendor testdata # runs all tests against the package, generating a coverage report and opening it in the browser
+cover: testdata # runs all tests against the package, generating a coverage report and opening it in the browser
 	go test -race -covermode=atomic -coverprofile=cover.out $(PKGS) || true
 	go tool cover -html cover.out -o cover.html
 	open cover.html
@@ -46,14 +47,14 @@ testdata-graph: bin/protoc-gen-debug # parses the proto file sets in testdata/gr
 			`find $$subdir -name "*.proto"`; \
 	done
 
-testdata/generated: protoc-gen-go bin/protoc-gen-example
-	which protoc-gen-go || (go install github.com/golang/protobuf/protoc-gen-go)
+testdata/generated: bin/protoc-gen-go bin/protoc-gen-example
 	rm -rf ./testdata/generated && mkdir -p ./testdata/generated
 	# generate the official go code, must be one directory at a time
 	set -e; for subdir in `find ./testdata/protos -type d -mindepth 1`; do \
 		files=`find $$subdir -name "*.proto" -maxdepth 1`; \
 		[ ! -z "$$files" ] && \
 		protoc -I ./testdata/protos \
+			--plugin=protoc-gen-go=./bin/protoc-gen-go \
 			--go_out="$$GOPATH/src" \
 			$$files; \
 	done
@@ -72,25 +73,23 @@ testdata/fdset.bin:
 		testdata/protos/**/*.proto
 
 .PHONY: testdata-go
-testdata-go: protoc-gen-go bin/protoc-gen-debug # generate go-specific testdata
+testdata-go: bin/protoc-gen-go bin/protoc-gen-debug # generate go-specific testdata
 	cd lang/go && $(MAKE) \
 		testdata-names \
 		testdata-packages \
 		testdata-outputs
 
-vendor: # install project dependencies
-	which glide || (curl https://glide.sh/get | sh)
-	glide install
+bin/protoc-gen-go: # creates the protoc-gen-go plugin using the vendored version
+	go build -o $@ github.com/golang/protobuf/protoc-gen-go
 
-.PHONY: protoc-gen-go
-protoc-gen-go:
-	which protoc-gen-go || (go get -u github.com/golang/protobuf/protoc-gen-go)
+bin/protoc-gen-example: # creates the demo protoc plugin for demonstrating uses of PG*
+	go build -o $@ ./testdata/protoc-gen-example
 
-bin/protoc-gen-example: vendor # creates the demo protoc plugin for demonstrating uses of PG*
-	go build -o ./bin/protoc-gen-example ./testdata/protoc-gen-example
+bin/protoc-gen-debug: # creates the protoc-gen-debug protoc plugin for output ProtoGeneratorRequest messages
+	go build -o $@ ./protoc-gen-debug
 
-bin/protoc-gen-debug: vendor # creates the protoc-gen-debug protoc plugin for output ProtoGeneratorRequest messages
-	go build -o ./bin/protoc-gen-debug ./protoc-gen-debug
+bin/shadow: # creates the linter used for variable shadowing analysis.
+	go build -o $@ golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
 
 .PHONY: clean
 clean:
