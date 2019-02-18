@@ -7,3 +7,4 @@ testdata/generated/
 **/code_generator_request.pb.bin
 .idea/
 .vscode/
+.work/
