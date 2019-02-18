@@ -6,6 +6,7 @@ import (
 	"unicode/utf8"
 
 	pgs "github.com/lyft/protoc-gen-star"
+	"github.com/lyft/protoc-gen-star/gogoproto"
 )
 
 func (c context) Name(node pgs.Node) pgs.Name {
@@ -43,22 +44,72 @@ func (c context) Name(node pgs.Node) pgs.Name {
 	}
 }
 
-func (c context) OneofOption(field pgs.Field) pgs.Name {
-	n := pgs.Name(joinNames(c.Name(field.Message()), c.Name(field)))
+func (c gogoContext) Name(node pgs.Node) pgs.Name {
+	switch en := node.(type) {
+	case pgs.Field:
+		var embed bool
+		ok, err := en.Extension(gogoproto.E_Embed, &embed)
+		if err != nil {
+			panic(fmt.Errorf("failed to parse embed extension value: %s", err))
+		}
+		if ok && embed {
+			return ""
+		}
 
-	for _, msg := range field.Message().Messages() {
+		var customname string
+		ok, err = en.Extension(gogoproto.E_Customname, &customname)
+		if err != nil {
+			panic(fmt.Errorf("failed to parse customname extension value: %s", err))
+		}
+		if ok {
+			return pgs.Name(customname)
+		}
+	case pgs.Enum:
+		var customname string
+		ok, err := en.Extension(gogoproto.E_EnumCustomname, &customname)
+		if err != nil {
+			panic(fmt.Errorf("failed to parse enum_customname extension value: %s", err))
+		}
+		if ok {
+			return pgs.Name(customname)
+		}
+	case pgs.EnumValue:
+		var customname string
+		ok, err := en.Extension(gogoproto.E_EnumvalueCustomname, &customname)
+		if err != nil {
+			panic(fmt.Errorf("failed to parse enumvalue_customname extension value: %s", err))
+		}
+		if ok {
+			return pgs.Name(customname)
+		}
+	}
+	return c.context.Name(node)
+}
+
+func oneofOption(c Context, f pgs.Field) pgs.Name {
+	n := pgs.Name(joinNames(c.Name(f.Message()), c.Name(f)))
+
+	for _, msg := range f.Message().Messages() {
 		if c.Name(msg) == n {
 			return n + "_"
 		}
 	}
 
-	for _, en := range field.Message().Enums() {
+	for _, en := range f.Message().Enums() {
 		if c.Name(en) == n {
 			return n + "_"
 		}
 	}
 
 	return n
+}
+
+func (c context) OneofOption(field pgs.Field) pgs.Name {
+	return oneofOption(c, field)
+}
+
+func (c gogoContext) OneofOption(field pgs.Field) pgs.Name {
+	return oneofOption(c, field)
 }
 
 func (c context) ServerName(s pgs.Service) pgs.Name {

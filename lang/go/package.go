@@ -1,6 +1,7 @@
 package pgsgo
 
 import (
+	"fmt"
 	"go/token"
 	"regexp"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	"unicode/utf8"
 
 	pgs "github.com/lyft/protoc-gen-star"
+	"github.com/lyft/protoc-gen-star/gogoproto"
 )
 
 var nonAlphaNumPattern = regexp.MustCompile("[^a-zA-Z0-9]")
@@ -40,10 +42,98 @@ func (c context) PackageName(node pgs.Node) pgs.Name {
 	return pgs.Name(pkg)
 }
 
+func gogoType(f pgs.Field) (pgs.FilePath, TypeName, bool) {
+	ft := f.Type()
+	switch {
+	case ft.IsMap():
+		return "", "", false
+	case ft.IsRepeated():
+		return "", "", false
+	case ft.IsEnum():
+		return "", "", false
+	case ft.IsEmbed():
+		em := ft.Embed()
+		if em.IsWellKnown() {
+			switch em.WellKnownType() {
+			case pgs.TimestampWKT:
+				var stdtime bool
+				ok, err := f.Extension(gogoproto.E_Stdtime, &stdtime)
+				if err != nil {
+					panic(fmt.Errorf("failed to parse stdtime extension value: %s", err))
+				}
+				if ok && stdtime {
+					return pgs.FilePath("time"), TypeName("time.Time"), true
+				}
+
+			case pgs.DurationWKT:
+				var stdduration bool
+				ok, err := f.Extension(gogoproto.E_Stdduration, &stdduration)
+				if err != nil {
+					panic(fmt.Errorf("failed to parse stdduration extension value: %s", err))
+				}
+				if ok && stdduration {
+					return pgs.FilePath("time"), TypeName("time.Duration"), true
+				}
+			}
+		}
+	}
+
+	var customtype string
+	hasCustomType, err := f.Extension(gogoproto.E_Customtype, &customtype)
+	if err != nil {
+		panic(fmt.Errorf("failed to parse customtype extension value: %s", err))
+	}
+	var casttype string
+	hasCastType, err := f.Extension(gogoproto.E_Casttype, &casttype)
+	if err != nil {
+		panic(fmt.Errorf("failed to parse casttype extension value: %s", err))
+	}
+	if hasCustomType && hasCastType {
+		panic(fmt.Errorf("both casttype and customtype specifed"))
+	}
+	if !hasCustomType && !hasCastType {
+		return "", "", false
+	}
+
+	typeName := customtype
+	if hasCastType {
+		typeName = casttype
+	}
+	if i := strings.LastIndex(typeName, "."); i > 0 {
+		pkg := typeName[:i]
+		return pgs.FilePath(pkg), TypeName(fmt.Sprintf("%s.%s", nonAlphaNumPattern.ReplaceAllString(pkg, "_"), typeName[i+1:])), true
+	}
+	return "", TypeName(typeName), true
+}
+
+func (c gogoContext) PackageName(node pgs.Node) pgs.Name {
+	f, ok := node.(pgs.Field)
+	if !ok {
+		return c.context.PackageName(node)
+	}
+	pkg, _, ok := gogoType(f)
+	if !ok {
+		return c.context.PackageName(node)
+	}
+	return pgs.Name(nonAlphaNumPattern.ReplaceAllString(string(pkg), "_"))
+}
+
 func (c context) ImportPath(e pgs.Entity) pgs.FilePath {
 	path, _ := c.optionPackage(e)
 	path = c.p.Str("import_prefix") + path
 	return pgs.FilePath(path)
+}
+
+func (c gogoContext) ImportPath(e pgs.Entity) pgs.FilePath {
+	f, ok := e.(pgs.Field)
+	if !ok {
+		return c.context.ImportPath(e)
+	}
+	pkg, _, ok := gogoType(f)
+	if !ok {
+		return c.context.ImportPath(e)
+	}
+	return pkg
 }
 
 func (c context) OutputPath(e pgs.Entity) pgs.FilePath {

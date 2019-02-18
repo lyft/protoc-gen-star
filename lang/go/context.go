@@ -71,3 +71,11 @@ func InitContext(params pgs.Parameters) Context {
 }
 
 func (c context) Params() pgs.Parameters { return c.p }
+
+type gogoContext struct{ context }
+
+// InitGoGoContext configures a GoGo Context that should be used for deriving GoGo names
+// for all Packages and Entities.
+func InitGoGoContext(params pgs.Parameters) Context {
+	return gogoContext{context{params}}
+}
