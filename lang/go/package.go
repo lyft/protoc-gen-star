@@ -40,10 +40,43 @@ func (c context) PackageName(node pgs.Node) pgs.Name {
 	return pgs.Name(pkg)
 }
 
+func fieldEntity(f pgs.Field) (pgs.Entity, bool) {
+	switch ft := f.Type(); {
+	case ft.IsEmbed():
+		return ft.Embed(), true
+	case ft.IsEnum():
+		return ft.Enum(), true
+	case ft.IsRepeated(), ft.IsMap():
+		switch el := ft.Element(); {
+		case el.IsEmbed():
+			return el.Embed(), true
+		case el.IsEnum():
+			return el.Enum(), true
+		}
+	}
+	return nil, false
+}
+
+func (c context) FieldTypePackageName(f pgs.Field) pgs.Name {
+	en, ok := fieldEntity(f)
+	if !ok {
+		return pgs.Name("")
+	}
+	return c.PackageName(en)
+}
+
 func (c context) ImportPath(e pgs.Entity) pgs.FilePath {
 	path, _ := c.optionPackage(e)
 	path = c.p.Str("import_prefix") + path
 	return pgs.FilePath(path)
+}
+
+func (c context) FieldTypeImportPath(f pgs.Field) pgs.FilePath {
+	en, ok := fieldEntity(f)
+	if !ok {
+		return pgs.FilePath("")
+	}
+	return c.ImportPath(en)
 }
 
 func (c context) OutputPath(e pgs.Entity) pgs.FilePath {
