@@ -85,6 +85,13 @@ func TestService_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { s.Extension(nil, nil) })
 }
 
+func TestService_Extensions(t *testing.T) {
+	t.Parallel()
+
+	s := &service{}
+	assert.Nil(t, s.exts)
+}
+
 func TestService_Imports(t *testing.T) {
 	t.Parallel()
 

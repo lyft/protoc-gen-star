@@ -220,6 +220,13 @@ func TestMsg_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { m.Extension(nil, nil) })
 }
 
+func TestMsg_Extensions(t *testing.T) {
+	t.Parallel()
+
+	m := &msg{}
+	assert.Nil(t, m.exts)
+}
+
 func TestMsg_Accept(t *testing.T) {
 	t.Parallel()
 

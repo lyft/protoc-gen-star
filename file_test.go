@@ -240,6 +240,13 @@ func TestFile_Extension(t *testing.T) {
 	})
 }
 
+func TestFile_Extensions(t *testing.T) {
+	t.Parallel()
+
+	f := &file{}
+	assert.Nil(t, f.exts)
+}
+
 // needed to wrap since there is a File method
 type mFile interface {
 	File

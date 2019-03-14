@@ -112,6 +112,13 @@ func TestOneof_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { o.Extension(nil, nil) })
 }
 
+func TestOneof_Extensions(t *testing.T) {
+	t.Parallel()
+
+	o := &oneof{}
+	assert.Nil(t, o.exts)
+}
+
 func TestOneof_Fields(t *testing.T) {
 	t.Parallel()
 
