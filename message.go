@@ -57,6 +57,7 @@ type msg struct {
 
 	msgs, preservedMsgs []Message
 	enums               []Enum
+	exts 				[]Extension
 	fields              []Field
 	oneofs              []OneOf
 	maps                []Message
@@ -140,6 +141,10 @@ func (m *msg) Imports() (i []File) {
 
 func (m *msg) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(m.desc.GetOptions(), desc, &ext)
+}
+
+func (m *msg) Extensions() []Extension {
+	return m.exts
 }
 
 func (m *msg) accept(v Visitor) (err error) {

@@ -273,6 +273,15 @@ func (g *graph) hydrateOneOf(m Message, od *descriptor.OneofDescriptorProto) One
 	return o
 }
 
+func (g *graph) hydrateExtension(e Entity) Extension {
+	ext := &ext{
+		file: e.File(),
+		// TODO(alexkarim): add other things this needs for hydration
+	}
+
+	return ext
+}
+
 func (g *graph) hydrateFieldType(fld Field) FieldType {
 	s := &scalarT{fld: fld}
 

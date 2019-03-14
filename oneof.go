@@ -27,6 +27,7 @@ type oneof struct {
 	desc *descriptor.OneofDescriptorProto
 	msg  Message
 	flds []Field
+	exts []Extension
 
 	info SourceCodeInfo
 }
@@ -67,6 +68,10 @@ func (o *oneof) Imports() (i []File) {
 
 func (o *oneof) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
 	return extension(o.desc.GetOptions(), desc, &ext)
+}
+
+func (o *oneof) Extensions() []Extension {
+	return o.exts
 }
 
 func (o *oneof) Fields() []Field {

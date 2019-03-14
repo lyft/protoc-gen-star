@@ -33,6 +33,7 @@ type Method interface {
 type method struct {
 	desc    *descriptor.MethodDescriptorProto
 	service Service
+	exts 	[]Extension
 
 	in, out Message
 
@@ -70,6 +71,10 @@ func (m *method) Imports() (i []File) {
 
 func (m *method) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
 	return extension(m.desc.GetOptions(), desc, &ext)
+}
+
+func (m *method) Extensions() []Extension {
+	return m.exts
 }
 
 func (m *method) accept(v Visitor) (err error) {

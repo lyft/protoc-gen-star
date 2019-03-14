@@ -29,6 +29,7 @@ type enum struct {
 	parent ParentEntity
 	vals   []EnumValue
 	info   SourceCodeInfo
+	exts   []Extension
 }
 
 func (e *enum) Name() Name                                  { return Name(e.desc.GetName()) }
@@ -45,6 +46,10 @@ func (e *enum) Values() []EnumValue                         { return e.vals }
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(e.desc.GetOptions(), desc, &ext)
+}
+
+func (e *enum) Extensions() []Extension {
+	return e.exts
 }
 
 func (e *enum) accept(v Visitor) (err error) {

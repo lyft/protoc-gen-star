@@ -37,6 +37,7 @@ type Field interface {
 
 type field struct {
 	desc  *descriptor.FieldDescriptorProto
+	exts  []Extension
 	msg   Message
 	oneof OneOf
 	typ   FieldType
@@ -72,6 +73,10 @@ func (f *field) addType(t FieldType) {
 
 func (f *field) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
 	return extension(f.desc.GetOptions(), desc, &ext)
+}
+
+func (f *field) Extensions() []Extension {
+	return f.exts
 }
 
 func (f *field) accept(v Visitor) (err error) {
