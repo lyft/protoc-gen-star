@@ -97,7 +97,11 @@ func TestEnumVal_Extensions(t *testing.T) {
 	t.Parallel()
 
 	ev := &enumVal{}
-	assert.Nil(t, ev.exts)
+	assert.Empty(t, ev.Extensions())
+
+	ext := &ext{}
+	ev.addExtension(ext)
+	assert.Len(t, ev.Extensions(), 1)
 }
 
 func TestEnumVal_Accept(t *testing.T) {

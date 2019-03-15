@@ -159,7 +159,11 @@ func TestMethod_Extensions(t *testing.T) {
 	t.Parallel()
 
 	m := &method{}
-	assert.Nil(t, m.exts)
+	assert.Empty(t, m.Extensions())
+
+	ext := &ext{}
+	m.addExtension(ext)
+	assert.Len(t, m.Extensions(), 1)
 }
 
 func TestMethod_Accept(t *testing.T) {

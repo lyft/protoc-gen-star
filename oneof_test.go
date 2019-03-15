@@ -116,7 +116,11 @@ func TestOneof_Extensions(t *testing.T) {
 	t.Parallel()
 
 	o := &oneof{}
-	assert.Nil(t, o.exts)
+	assert.Empty(t, o.Extensions())
+
+	ext := &ext{}
+	o.addExtension(ext)
+	assert.Len(t, o.Extensions(), 1)
 }
 
 func TestOneof_Fields(t *testing.T) {

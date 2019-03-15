@@ -89,7 +89,11 @@ func TestService_Extensions(t *testing.T) {
 	t.Parallel()
 
 	s := &service{}
-	assert.Nil(t, s.exts)
+	assert.Empty(t, s.Extensions())
+
+	ext := &ext{}
+	s.addExtension(ext)
+	assert.Len(t, s.Extensions(), 1)
 }
 
 func TestService_Imports(t *testing.T) {

@@ -12,28 +12,13 @@ import (
 // An Extension is a custom option annotation that can be applied to an Entity to provide additional
 // semantic details and metadata about the Entity. https://godoc.org/github.com/golang/protobuf/proto#ExtensionDesc
 type Extension interface {
-
-	// Descriptor returns the proto descriptor for this extension
-	Descriptor() *descriptor.FieldDescriptorProto
-
-	// File returns the File containing this extension
-	File() File
-
-	// potentially also include name, number, and type
+	// potentially include file, descriptor, name, number, and type
 	// https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.proto#L177-L178
 }
 
 type ext struct {
 	desc *descriptor.FieldDescriptorProto
 	file File
-}
-
-func (e *ext) Descriptor() *descriptor.FieldDescriptorProto {
-	return e.desc
-}
-
-func (e *ext) File() File {
-	return e.file
 }
 
 var extractor extExtractor

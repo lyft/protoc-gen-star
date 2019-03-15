@@ -244,7 +244,11 @@ func TestFile_Extensions(t *testing.T) {
 	t.Parallel()
 
 	f := &file{}
-	assert.Nil(t, f.exts)
+	assert.Empty(t, f.Extensions())
+
+	ext := &ext{}
+	f.addExtension(ext)
+	assert.Len(t, f.Extensions(), 1)
 }
 
 // needed to wrap since there is a File method
