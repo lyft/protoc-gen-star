@@ -149,6 +149,10 @@ func (f *file) accept(v Visitor) (err error) {
 	return
 }
 
+func (f *file) addExtension(ext Extension)  {
+	f.exts = append(f.exts, ext)
+}
+
 func (f *file) setPackage(pkg Package) { f.pkg = pkg }
 
 func (f *file) addEnum(e Enum) {

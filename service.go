@@ -90,6 +90,10 @@ func (s *service) accept(v Visitor) (err error) {
 	return
 }
 
+func (s *service) addExtension(ext Extension)  {
+	s.exts = append(s.exts, ext)
+}
+
 func (s *service) childAtPath(path []int32) Entity {
 	switch {
 	case len(path) == 0:

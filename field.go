@@ -88,6 +88,10 @@ func (f *field) accept(v Visitor) (err error) {
 	return
 }
 
+func (f *field) addExtension(ext Extension)  {
+	f.exts = append(f.exts, ext)
+}
+
 func (f *field) childAtPath(path []int32) Entity {
 	if len(path) == 0 {
 		return f

@@ -59,6 +59,10 @@ func (ev *enumVal) accept(v Visitor) (err error) {
 	return
 }
 
+func (ev *enumVal) addExtension(ext Extension)  {
+	ev.exts = append(ev.exts, ext)
+}
+
 func (ev *enumVal) setEnum(e Enum) { ev.enum = e }
 
 func (ev *enumVal) childAtPath(path []int32) Entity {

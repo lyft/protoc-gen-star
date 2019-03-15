@@ -86,6 +86,10 @@ func (m *method) accept(v Visitor) (err error) {
 	return
 }
 
+func (m *method) addExtension(ext Extension)  {
+	m.exts = append(m.exts, ext)
+}
+
 func (m *method) setService(s Service) { m.service = s }
 
 func (m *method) childAtPath(path []int32) Entity {

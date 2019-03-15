@@ -183,6 +183,10 @@ func (m *msg) accept(v Visitor) (err error) {
 	return
 }
 
+func (m *msg) addExtension(ext Extension)  {
+	m.exts = append(m.exts, ext)
+}
+
 func (m *msg) setParent(p ParentEntity) { m.parent = p }
 
 func (m *msg) addEnum(e Enum) {

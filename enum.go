@@ -70,6 +70,10 @@ func (e *enum) accept(v Visitor) (err error) {
 	return
 }
 
+func (e *enum) addExtension(ext Extension)  {
+	e.exts = append(e.exts, ext)
+}
+
 func (e *enum) addValue(v EnumValue) {
 	v.setEnum(e)
 	e.vals = append(e.vals, v)
