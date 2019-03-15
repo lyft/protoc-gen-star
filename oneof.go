@@ -85,7 +85,7 @@ func (o *oneof) addField(f Field) {
 	o.flds = append(o.flds, f)
 }
 
-func (o *oneof) addExtension(ext Extension)  {
+func (o *oneof) addExtension(ext Extension) {
 	o.exts = append(o.exts, ext)
 }
 

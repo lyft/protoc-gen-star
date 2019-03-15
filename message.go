@@ -57,7 +57,7 @@ type msg struct {
 
 	msgs, preservedMsgs []Message
 	enums               []Enum
-	exts 				[]Extension
+	exts                []Extension
 	fields              []Field
 	oneofs              []OneOf
 	maps                []Message
@@ -183,7 +183,7 @@ func (m *msg) accept(v Visitor) (err error) {
 	return
 }
 
-func (m *msg) addExtension(ext Extension)  {
+func (m *msg) addExtension(ext Extension) {
 	m.exts = append(m.exts, ext)
 }
 

@@ -23,7 +23,7 @@ type service struct {
 	desc    *descriptor.ServiceDescriptorProto
 	methods []Method
 	file    File
-	exts 	[]Extension
+	exts    []Extension
 
 	info SourceCodeInfo
 }
@@ -90,7 +90,7 @@ func (s *service) accept(v Visitor) (err error) {
 	return
 }
 
-func (s *service) addExtension(ext Extension)  {
+func (s *service) addExtension(ext Extension) {
 	s.exts = append(s.exts, ext)
 }
 

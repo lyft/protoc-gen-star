@@ -88,7 +88,7 @@ func (f *field) accept(v Visitor) (err error) {
 	return
 }
 
-func (f *field) addExtension(ext Extension)  {
+func (f *field) addExtension(ext Extension) {
 	f.exts = append(f.exts, ext)
 }
 

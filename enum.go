@@ -70,7 +70,7 @@ func (e *enum) accept(v Visitor) (err error) {
 	return
 }
 
-func (e *enum) addExtension(ext Extension)  {
+func (e *enum) addExtension(ext Extension) {
 	e.exts = append(e.exts, ext)
 }
 

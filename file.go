@@ -38,7 +38,7 @@ type file struct {
 	desc                    *descriptor.FileDescriptorProto
 	pkg                     Package
 	enums                   []Enum
-	exts []Extension
+	exts                    []Extension
 	msgs                    []Message
 	srvs                    []Service
 	buildTarget             bool
@@ -149,7 +149,7 @@ func (f *file) accept(v Visitor) (err error) {
 	return
 }
 
-func (f *file) addExtension(ext Extension)  {
+func (f *file) addExtension(ext Extension) {
 	f.exts = append(f.exts, ext)
 }
 
