@@ -58,6 +58,7 @@ type msg struct {
 	msgs, preservedMsgs []Message
 	enums               []Enum
 	exts                []Extension
+	defExts             []Extension
 	fields              []Field
 	oneofs              []OneOf
 	maps                []Message
@@ -147,6 +148,10 @@ func (m *msg) Extensions() []Extension {
 	return m.exts
 }
 
+func (m *msg) DefinedExtensions() []Extension {
+	return m.defExts
+}
+
 func (m *msg) accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
@@ -185,6 +190,10 @@ func (m *msg) accept(v Visitor) (err error) {
 
 func (m *msg) addExtension(ext Extension) {
 	m.exts = append(m.exts, ext)
+}
+
+func (m *msg) addDefExtension(ext Extension) {
+	m.defExts = append(m.defExts, ext)
 }
 
 func (m *msg) setParent(p ParentEntity) { m.parent = p }

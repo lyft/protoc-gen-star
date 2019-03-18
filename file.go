@@ -39,6 +39,7 @@ type file struct {
 	pkg                     Package
 	enums                   []Enum
 	exts                    []Extension
+	defExts                 []Extension
 	msgs                    []Message
 	srvs                    []Service
 	buildTarget             bool
@@ -119,6 +120,10 @@ func (f *file) Extensions() []Extension {
 	return f.exts
 }
 
+func (f *file) DefinedExtensions() []Extension {
+	return f.defExts
+}
+
 func (f *file) accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
@@ -151,6 +156,10 @@ func (f *file) accept(v Visitor) (err error) {
 
 func (f *file) addExtension(ext Extension) {
 	f.exts = append(f.exts, ext)
+}
+
+func (f *file) addDefExtension(ext Extension) {
+	f.defExts = append(f.defExts, ext)
 }
 
 func (f *file) setPackage(pkg Package) { f.pkg = pkg }
