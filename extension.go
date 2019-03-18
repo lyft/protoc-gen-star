@@ -13,7 +13,7 @@ import (
 )
 
 // An Extension is a custom option annotation that can be applied to an Entity to provide additional
-// semantic details and metadata about the Entity. https://godoc.org/github.com/golang/protobuf/proto#ExtensionDesc
+// semantic details and metadata about the Entity.
 type Extension interface {
 	Field
 

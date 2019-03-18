@@ -111,6 +111,14 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		fl.addEnum(g.hydrateEnum(fl, e))
 	}
 
+	exts := f.GetExtension()
+	fl.defExts = make([]Extension, 0, len(exts))
+	for _, ext := range exts {
+		e := g.hydrateExtension(fl, ext)
+		e.addType(g.hydrateFieldType(e))
+		fl.addDefExtension(e)
+	}
+
 	msgs := f.GetMessageType()
 	fl.msgs = make([]Message, 0, len(f.GetMessageType()))
 	for _, msg := range msgs {
@@ -250,6 +258,14 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 		}
 	}
 
+	exts := md.GetExtension()
+	m.defExts = make([]Extension, 0, len(exts))
+	for _, ext := range md.GetExtension() {
+		e := g.hydrateExtension(m, ext)
+		e.addType(g.hydrateFieldType(e))
+		m.addDefExtension(e)
+	}
+
 	return m
 }
 
@@ -273,11 +289,13 @@ func (g *graph) hydrateOneOf(m Message, od *descriptor.OneofDescriptorProto) One
 	return o
 }
 
-// TODO(alexkarim): fill this out
-func (g *graph) hydrateExtension(e Entity) Extension {
+func (g *graph) hydrateExtension(parent ParentEntity, fd *descriptor.FieldDescriptorProto) Extension {
 	ext := &ext{
-		file: e.File(),
+		desc:     fd,
+		parent:   parent,
+		extendee: g.entities[fd.GetExtendee()].(Message),
 	}
+	g.add(ext)
 
 	return ext
 }

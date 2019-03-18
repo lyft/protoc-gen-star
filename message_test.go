@@ -231,6 +231,17 @@ func TestMsg_Extensions(t *testing.T) {
 	assert.Len(t, m.Extensions(), 1)
 }
 
+func TestMsg_DefinedExtensions(t *testing.T) {
+	t.Parallel()
+
+	m := &msg{}
+	assert.Empty(t, m.DefinedExtensions())
+
+	ext := &ext{}
+	m.addDefExtension(ext)
+	assert.Len(t, m.DefinedExtensions(), 1)
+}
+
 func TestMsg_Accept(t *testing.T) {
 	t.Parallel()
 

@@ -251,6 +251,17 @@ func TestFile_Extensions(t *testing.T) {
 	assert.Len(t, f.Extensions(), 1)
 }
 
+func TestFile_DefinedExtensions(t *testing.T) {
+	t.Parallel()
+
+	f := &file{}
+	assert.Empty(t, f.DefinedExtensions())
+
+	ext := &ext{}
+	f.addDefExtension(ext)
+	assert.Len(t, f.DefinedExtensions(), 1)
+}
+
 // needed to wrap since there is a File method
 type mFile interface {
 	File

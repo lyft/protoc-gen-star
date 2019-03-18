@@ -68,6 +68,10 @@ func TestNilVisitor(t *testing.T) {
 	assert.Nil(t, v)
 	assert.NoError(t, err)
 
+	v, err = nv.VisitExtension(&ext{})
+	assert.Nil(t, v)
+	assert.NoError(t, err)
+
 	v, err = nv.VisitOneOf(&oneof{})
 	assert.Nil(t, v)
 	assert.NoError(t, err)
@@ -108,6 +112,10 @@ func TestPassThroughVisitor(t *testing.T) {
 	assert.NoError(t, err)
 
 	v, err = pv.VisitField(&field{})
+	assert.Equal(t, nv, v)
+	assert.NoError(t, err)
+
+	v, err = pv.VisitExtension(&ext{})
 	assert.Equal(t, nv, v)
 	assert.NoError(t, err)
 
