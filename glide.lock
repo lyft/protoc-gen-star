@@ -1,5 +1,5 @@
 hash: a98be71ff763a2b4b183feef097ec7a862c3d26d01cb7c7484975b8e10dabeb5
-updated: 2019-03-18T15:09:35.946416-07:00
+updated: 2019-03-19T18:13:23.892274-07:00
 imports:
 - name: github.com/golang/protobuf
   version: b5d812f8a3706043e23a9cd5babf2e5423744d30
@@ -10,18 +10,11 @@ imports:
   - protoc-gen-go/generator
   - protoc-gen-go/generator/internal/remap
   - protoc-gen-go/plugin
-  - ptypes
   - ptypes/any
-  - ptypes/duration
-  - ptypes/timestamp
 - name: github.com/spf13/afero
   version: f4711e4db9e9a1d3887343acb72b2bbfc2f686f5
   subpackages:
   - mem
-- name: golang.org/x/net
-  version: d26f9f9a57f3fab6a695bec0d84433c2c50f8bbf
-  subpackages:
-  - context
 - name: golang.org/x/sync
   version: 37e7f081c4d4c64e13b10787722085407fe5d15f
   subpackages:
@@ -31,15 +24,6 @@ imports:
   subpackages:
   - transform
   - unicode/norm
-- name: google.golang.org/genproto
-  version: 4b09977fb92221987e99d190c8f88f2c92727a29
-  subpackages:
-  - googleapis/rpc/status
-- name: google.golang.org/grpc
-  version: 2e463a05d100327ca47ac218281906921038fd95
-  subpackages:
-  - codes
-  - status
 testImports:
 - name: github.com/davecgh/go-spew
   version: d8f796af33cc11cb798c1aaeb27a4ebc5099927d
