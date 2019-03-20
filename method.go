@@ -33,7 +33,6 @@ type Method interface {
 type method struct {
 	desc    *descriptor.MethodDescriptorProto
 	service Service
-	exts    []Extension
 
 	in, out Message
 
@@ -73,10 +72,6 @@ func (m *method) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool,
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
 
-func (m *method) Extensions() []Extension {
-	return m.exts
-}
-
 func (m *method) accept(v Visitor) (err error) {
 	if v == nil {
 		return
@@ -84,10 +79,6 @@ func (m *method) accept(v Visitor) (err error) {
 
 	_, err = v.VisitMethod(m)
 	return
-}
-
-func (m *method) addExtension(ext Extension) {
-	m.exts = append(m.exts, ext)
 }
 
 func (m *method) setService(s Service) { m.service = s }

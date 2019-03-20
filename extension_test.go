@@ -57,7 +57,7 @@ func TestExt_ParentEntity(t *testing.T) {
 
 	msg := dummyMsg()
 	e := &ext{parent: msg}
-	assert.Equal(t, msg, e.ParentEntity())
+	assert.Equal(t, msg, e.DefinedIn())
 }
 
 func TestExt_Extendee(t *testing.T) {
@@ -66,15 +66,6 @@ func TestExt_Extendee(t *testing.T) {
 	msg := dummyMsg()
 	e := &ext{extendee: msg}
 	assert.Equal(t, msg, e.Extendee())
-}
-
-func TestExt_Number(t *testing.T) {
-	t.Parallel()
-
-	x := int32(3)
-	e := &ext{}
-	e.desc = &descriptor.FieldDescriptorProto{Number: &x}
-	assert.Equal(t, x, e.Number())
 }
 
 func TestExt_Message(t *testing.T) {
@@ -96,13 +87,6 @@ func TestExt_OneOf(t *testing.T) {
 
 	e := &ext{}
 	assert.Nil(t, e.OneOf())
-}
-
-func TestExt_Extensions(t *testing.T) {
-	t.Parallel()
-
-	e := &ext{}
-	assert.Nil(t, e.Extensions())
 }
 
 func TestExt_Accept(t *testing.T) {

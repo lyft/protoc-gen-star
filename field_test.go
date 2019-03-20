@@ -118,17 +118,6 @@ func TestField_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { f.Extension(nil, nil) })
 }
 
-func TestField_Extensions(t *testing.T) {
-	t.Parallel()
-
-	f := &field{}
-	assert.Empty(t, f.Extensions())
-
-	ext := &ext{}
-	f.addExtension(ext)
-	assert.Len(t, f.Extensions(), 1)
-}
-
 func TestField_Accept(t *testing.T) {
 	t.Parallel()
 

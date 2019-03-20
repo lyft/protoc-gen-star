@@ -292,7 +292,7 @@ func (g *graph) hydrateOneOf(m Message, od *descriptor.OneofDescriptorProto) One
 func (g *graph) hydrateExtension(parent ParentEntity, fd *descriptor.FieldDescriptorProto) Extension {
 	ext := &ext{
 		parent:   parent,
-		extendee: g.entities[fd.GetExtendee()].(Message),
+		extendee: g.mustSeen(fd.GetExtendee()).(Message),
 	}
 	ext.desc = fd
 	g.add(ext)

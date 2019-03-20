@@ -14,13 +14,10 @@ type Extension interface {
 	Field
 
 	// ParentEntity returns the ParentEntity where the Extension is defined
-	ParentEntity() ParentEntity
+	DefinedIn() ParentEntity
 
 	// Extendee returns the Message that the Extension is extending
 	Extendee() Message
-
-	// Number returns the tag number of the Extension
-	Number() int32
 }
 
 type ext struct {
@@ -35,9 +32,8 @@ func (e *ext) Syntax() Syntax             { return e.parent.Syntax() }
 func (e *ext) Package() Package           { return e.parent.Package() }
 func (e *ext) File() File                 { return e.parent.File() }
 func (e *ext) BuildTarget() bool          { return e.parent.BuildTarget() }
-func (e *ext) ParentEntity() ParentEntity { return e.parent }
+func (e *ext) DefinedIn() ParentEntity    { return e.parent }
 func (e *ext) Extendee() Message          { return e.extendee }
-func (e *ext) Number() int32              { return e.desc.GetNumber() }
 func (e *ext) Message() Message           { return nil }
 func (e *ext) InOneOf() bool              { return false }
 func (e *ext) OneOf() OneOf               { return nil }

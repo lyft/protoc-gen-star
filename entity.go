@@ -36,9 +36,6 @@ type Entity interface {
 	// desc and ext. The ok value will be true if the extension was found.
 	Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error)
 
-	// Extensions returns all of the Extensions on this entity.
-	Extensions() []Extension
-
 	// BuildTarget identifies whether or not generation should be performed on
 	// this entity. Use this flag to determine if the file was targeted in the
 	// protoc run or if it was loaded as an external dependency.
@@ -50,7 +47,6 @@ type Entity interface {
 
 	childAtPath(path []int32) Entity
 	addSourceCodeInfo(info SourceCodeInfo)
-	addExtension(ext Extension)
 }
 
 // A ParentEntity is any Entity type that can contain messages and/or enums.

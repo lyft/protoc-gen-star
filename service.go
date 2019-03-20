@@ -23,7 +23,6 @@ type service struct {
 	desc    *descriptor.ServiceDescriptorProto
 	methods []Method
 	file    File
-	exts    []Extension
 
 	info SourceCodeInfo
 }
@@ -39,10 +38,6 @@ func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.des
 
 func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(s.desc.GetOptions(), desc, &ext)
-}
-
-func (s *service) Extensions() []Extension {
-	return s.exts
 }
 
 func (s *service) Imports() (i []File) {
@@ -88,10 +83,6 @@ func (s *service) accept(v Visitor) (err error) {
 	}
 
 	return
-}
-
-func (s *service) addExtension(ext Extension) {
-	s.exts = append(s.exts, ext)
 }
 
 func (s *service) childAtPath(path []int32) Entity {

@@ -24,7 +24,6 @@ type EnumValue interface {
 type enumVal struct {
 	desc *descriptor.EnumValueDescriptorProto
 	enum Enum
-	exts []Extension
 
 	info SourceCodeInfo
 }
@@ -45,10 +44,6 @@ func (ev *enumVal) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, 
 	return extension(ev.desc.GetOptions(), desc, &ext)
 }
 
-func (ev *enumVal) Extensions() []Extension {
-	return ev.exts
-}
-
 func (ev *enumVal) accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
@@ -57,10 +52,6 @@ func (ev *enumVal) accept(v Visitor) (err error) {
 	_, err = v.VisitEnumValue(ev)
 
 	return
-}
-
-func (ev *enumVal) addExtension(ext Extension) {
-	ev.exts = append(ev.exts, ext)
 }
 
 func (ev *enumVal) setEnum(e Enum) { ev.enum = e }

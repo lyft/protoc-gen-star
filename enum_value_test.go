@@ -93,17 +93,6 @@ func TestEnumVal_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { ev.Extension(nil, nil) })
 }
 
-func TestEnumVal_Extensions(t *testing.T) {
-	t.Parallel()
-
-	ev := &enumVal{}
-	assert.Empty(t, ev.Extensions())
-
-	ext := &ext{}
-	ev.addExtension(ext)
-	assert.Len(t, ev.Extensions(), 1)
-}
-
 func TestEnumVal_Accept(t *testing.T) {
 	t.Parallel()
 

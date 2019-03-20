@@ -240,17 +240,6 @@ func TestFile_Extension(t *testing.T) {
 	})
 }
 
-func TestFile_Extensions(t *testing.T) {
-	t.Parallel()
-
-	f := &file{}
-	assert.Empty(t, f.Extensions())
-
-	ext := &ext{}
-	f.addExtension(ext)
-	assert.Len(t, f.Extensions(), 1)
-}
-
 func TestFile_DefinedExtensions(t *testing.T) {
 	t.Parallel()
 

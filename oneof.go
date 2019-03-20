@@ -27,7 +27,6 @@ type oneof struct {
 	desc *descriptor.OneofDescriptorProto
 	msg  Message
 	flds []Field
-	exts []Extension
 
 	info SourceCodeInfo
 }
@@ -70,10 +69,6 @@ func (o *oneof) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, 
 	return extension(o.desc.GetOptions(), desc, &ext)
 }
 
-func (o *oneof) Extensions() []Extension {
-	return o.exts
-}
-
 func (o *oneof) Fields() []Field {
 	f := make([]Field, len(o.flds))
 	copy(f, o.flds)
@@ -83,10 +78,6 @@ func (o *oneof) Fields() []Field {
 func (o *oneof) addField(f Field) {
 	f.setOneOf(o)
 	o.flds = append(o.flds, f)
-}
-
-func (o *oneof) addExtension(ext Extension) {
-	o.exts = append(o.exts, ext)
 }
 
 func (o *oneof) childAtPath(path []int32) Entity {

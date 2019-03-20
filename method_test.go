@@ -155,17 +155,6 @@ func TestMethod_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { m.Extension(nil, nil) })
 }
 
-func TestMethod_Extensions(t *testing.T) {
-	t.Parallel()
-
-	m := &method{}
-	assert.Empty(t, m.Extensions())
-
-	ext := &ext{}
-	m.addExtension(ext)
-	assert.Len(t, m.Extensions(), 1)
-}
-
 func TestMethod_Accept(t *testing.T) {
 	t.Parallel()
 
