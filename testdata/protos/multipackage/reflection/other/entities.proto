@@ -1,0 +1,9 @@
+syntax = "proto3";
+package other;
+option go_package = "github.com/lyft/protoc-gen-star/testdata/generated/multipackage/reflection/other";
+
+message Message {}
+
+enum Enum {
+    ZERO = 0;
+}
