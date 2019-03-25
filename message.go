@@ -51,6 +51,7 @@ type Message interface {
 
 	setParent(p ParentEntity)
 	addField(f Field)
+	addExtension(e Extension)
 	addOneOf(o OneOf)
 }
 

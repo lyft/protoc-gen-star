@@ -1,0 +1,13 @@
+syntax = "proto3";
+package reflection.ext;
+option go_package = "github.com/lyft/protoc-gen-star/testdata/generated/reflection/ext";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.ServiceOptions {
+    string host = 111111;
+}
+
+extend google.protobuf.MethodOptions {
+    string header = 222222;
+}

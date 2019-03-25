@@ -64,7 +64,8 @@ func TestExt_Extendee(t *testing.T) {
 	t.Parallel()
 
 	msg := dummyMsg()
-	e := &ext{extendee: msg}
+	e := &ext{}
+	e.setExtendee(msg)
 	assert.Equal(t, msg, e.Extendee())
 }
 

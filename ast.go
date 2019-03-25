@@ -26,9 +26,10 @@ type AST interface {
 type graph struct {
 	d Debugger
 
-	targets  map[string]File
-	packages map[string]Package
-	entities map[string]Entity
+	targets    map[string]File
+	packages   map[string]Package
+	entities   map[string]Entity
+	extensions []Extension
 }
 
 func (g *graph) Targets() map[string]File { return g.targets }
@@ -49,10 +50,11 @@ func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST
 // connected AST entity graph. An error is returned if the input is malformed.
 func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
 	g := &graph{
-		d:        debug,
-		targets:  make(map[string]File, len(req.GetFileToGenerate())),
-		packages: make(map[string]Package),
-		entities: make(map[string]Entity),
+		d:          debug,
+		targets:    make(map[string]File, len(req.GetFileToGenerate())),
+		packages:   make(map[string]Package),
+		entities:   make(map[string]Entity),
+		extensions: []Extension{},
 	}
 
 	for _, f := range req.GetFileToGenerate() {
@@ -62,6 +64,14 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 	for _, f := range req.GetProtoFile() {
 		pkg := g.hydratePackage(f)
 		pkg.addFile(g.hydrateFile(pkg, f))
+	}
+
+	for _, e := range g.extensions {
+		extendee := g.mustSeen(e.Descriptor().GetExtendee()).(Message)
+		e.setExtendee(extendee)
+		if extendee != nil {
+			extendee.addExtension(e)
+		}
 	}
 
 	return g
@@ -291,11 +301,11 @@ func (g *graph) hydrateOneOf(m Message, od *descriptor.OneofDescriptorProto) One
 
 func (g *graph) hydrateExtension(parent ParentEntity, fd *descriptor.FieldDescriptorProto) Extension {
 	ext := &ext{
-		parent:   parent,
-		extendee: g.mustSeen(fd.GetExtendee()).(Message),
+		parent: parent,
 	}
 	ext.desc = fd
 	g.add(ext)
+	g.extensions = append(g.extensions, ext)
 
 	return ext
 }
