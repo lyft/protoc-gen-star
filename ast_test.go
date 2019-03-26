@@ -316,7 +316,12 @@ func TestGraph_Extensions(t *testing.T) {
 	g := buildGraph(t, "extensions")
 	assert.NotNil(t, g)
 
-	ent, ok := g.Lookup(".extensions.Request")
+	ent, ok := g.Lookup("extensions/ext/data.proto")
+	assert.True(t, ok)
+	assert.NotNil(t, ent.(File).DefinedExtensions())
+	assert.Len(t, ent.(File).DefinedExtensions(), 6)
+
+	ent, ok = g.Lookup(".extensions.Request")
 	assert.True(t, ok)
 	assert.NotNil(t, ent.(Message).DefinedExtensions())
 	assert.Len(t, ent.(Message).DefinedExtensions(), 1)
