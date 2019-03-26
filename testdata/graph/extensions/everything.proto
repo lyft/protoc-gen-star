@@ -4,6 +4,7 @@ package extensions;
 option go_package = "extensions";
 option (extensions.ext.owner) = "IDL Tools";
 
+import "google/protobuf/descriptor.proto";
 import "google/protobuf/wrappers.proto";
 import "extensions/ext/api.proto";
 import "extensions/ext/data.proto";
@@ -23,9 +24,6 @@ message RootMessage {
 
     NestedMessage nested_msg = 1 [(extensions.ext.name) = "reflection"];
     NestedEnum nested_enum = 2;
-
-//    other.Message other_msg = 3;
-//    other.Enum other_enum = 4;
 
     oneof union {
         option (extensions.ext.float) = 5.67;
@@ -53,6 +51,9 @@ enum RootEnum {
 }
 
 message Request {
+    extend google.protobuf.FieldOptions {
+        string footer = 222333;
+    }
 }
 
 message Response {
