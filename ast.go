@@ -1,10 +1,8 @@
 package pgs
 
 import (
-	"fmt"
-
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"github.com/golang/protobuf/protoc-gen-go/plugin"
 )
 
 // AST encapsulates the entirety of the input CodeGeneratorRequest from protoc,
@@ -64,12 +62,12 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 	}
 
 	for _, f := range req.GetProtoFile() {
-		fmt.Println(f.GetName())
 		pkg := g.hydratePackage(f)
 		pkg.addFile(g.hydrateFile(pkg, f))
 	}
 
 	for _, e := range g.extensions {
+		e.addType(g.hydrateFieldType(e))
 		extendee := g.mustSeen(e.Descriptor().GetExtendee()).(Message)
 		e.setExtendee(extendee)
 		if extendee != nil {
@@ -128,7 +126,6 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	fl.defExts = make([]Extension, 0, len(exts))
 	for _, ext := range exts {
 		e := g.hydrateExtension(fl, ext)
-		e.addType(g.hydrateFieldType(e))
 		fl.addDefExtension(e)
 	}
 
@@ -275,7 +272,6 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 	m.defExts = make([]Extension, 0, len(exts))
 	for _, ext := range md.GetExtension() {
 		e := g.hydrateExtension(m, ext)
-		e.addType(g.hydrateFieldType(e))
 		m.addDefExtension(e)
 	}
 

@@ -1,33 +1,34 @@
+
 syntax = "proto3";
-package graph.reflection;
-option (ext.owner) = "IDL Tools";
+package extensions;
+option go_package = "extensions";
+option (extensions.ext.owner) = "IDL Tools";
 
 import "google/protobuf/wrappers.proto";
-import "reflection/other/entities.proto";
-import "reflection/ext/api.proto";
-import "reflection/ext/data.proto";
+import "extensions/ext/api.proto";
+import "extensions/ext/data.proto";
 
 message RootMessage {
-    option (ext.annotated) = true;
+    option (extensions.ext.annotated) = true;
 
     message NestedMessage {}
 
     enum NestedEnum {
-        option (ext.ext) = {};
+        option (extensions.ext.ext) = {};
 
-        ZERO = 0 [(ext.numbers) = 1];
+        ZERO = 0 [(extensions.ext.numbers) = 1];
         ONE = 1;
         TWO = 2;
     }
 
-    NestedMessage nested_msg = 1 [(ext.name) = "reflection"];
+    NestedMessage nested_msg = 1 [(extensions.ext.name) = "reflection"];
     NestedEnum nested_enum = 2;
 
-    other.Message other_msg = 3;
-    other.Enum other_enum = 4;
+//    other.Message other_msg = 3;
+//    other.Enum other_enum = 4;
 
     oneof union {
-        option (ext.float) = 5.67;
+        option (extensions.ext.float) = 5.67;
 
         bool boolean = 5;
         string str = 6;
@@ -58,10 +59,10 @@ message Response {
 }
 
 service API {
-    option (ext.host) = "Alex Trebek";
+    option (extensions.ext.host) = "Alex Trebek";
 
     rpc Do (Request) returns (Response) {
-        option (ext.header) = "X-Foo=BAR";
+        option (extensions.ext.header) = "X-Foo=BAR";
     }
 
     rpc Client (stream Request) returns (Response);

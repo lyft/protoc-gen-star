@@ -309,3 +309,10 @@ func TestGraph_Packageless(t *testing.T) {
 		})
 	}
 }
+
+func TestGraph_Extensions(t *testing.T) {
+	t.Parallel()
+
+	g := buildGraph(t, "extensions")
+	assert.NotNil(t, g)
+}

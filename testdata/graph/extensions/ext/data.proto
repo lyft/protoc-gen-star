@@ -1,5 +1,6 @@
 syntax = "proto3";
-package graph.reflection.ext;
+package extensions.ext;
+option go_package = "ext";
 
 import "google/protobuf/descriptor.proto";
 

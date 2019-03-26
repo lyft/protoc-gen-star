@@ -1,8 +1,0 @@
-syntax = "proto3";
-package graph.reflection.other;
-
-message Message {}
-
-enum Enum {
-    ZERO = 0;
-}
