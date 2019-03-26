@@ -1,6 +1,8 @@
 package pgs
 
 import (
+	"fmt"
+
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 )
@@ -62,6 +64,7 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 	}
 
 	for _, f := range req.GetProtoFile() {
+		fmt.Println(f.GetName())
 		pkg := g.hydratePackage(f)
 		pkg.addFile(g.hydrateFile(pkg, f))
 	}

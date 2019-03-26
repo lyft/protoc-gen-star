@@ -1,6 +1,5 @@
 syntax = "proto3";
-package ext;
-option go_package = "github.com/lyft/protoc-gen-star/testdata/generated/multipackage/reflection/ext";
+package graph.reflection.ext;
 
 import "google/protobuf/descriptor.proto";
 

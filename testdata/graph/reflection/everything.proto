@@ -1,12 +1,11 @@
 syntax = "proto3";
-package reflection;
-option go_package = "github.com/lyft/protoc-gen-star/testdata/generated/multipackage/reflection";
+package graph.reflection;
 option (ext.owner) = "IDL Tools";
 
 import "google/protobuf/wrappers.proto";
-import "multipackage/reflection/other/entities.proto";
-import "multipackage/reflection/ext/api.proto";
-import "multipackage/reflection/ext/data.proto";
+import "reflection/other/entities.proto";
+import "reflection/ext/api.proto";
+import "reflection/ext/data.proto";
 
 message RootMessage {
     option (ext.annotated) = true;
