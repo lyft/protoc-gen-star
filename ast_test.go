@@ -315,4 +315,12 @@ func TestGraph_Extensions(t *testing.T) {
 
 	g := buildGraph(t, "extensions")
 	assert.NotNil(t, g)
+
+	ent, ok := g.Lookup(".extensions.Request")
+	assert.True(t, ok)
+	assert.NotNil(t, ent.(Message).DefinedExtensions())
+
+	ent, ok = g.Lookup(".google.protobuf.MessageOptions")
+	assert.True(t, ok)
+	assert.NotNil(t, ent.(Message).Extensions())
 }
