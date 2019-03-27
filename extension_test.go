@@ -5,9 +5,102 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestExt_FullyQualifiedName(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{parent: msg}
+	e.desc = &descriptor.FieldDescriptorProto{Name: proto.String("foo")}
+	assert.Equal(t, msg.FullyQualifiedName()+".foo", e.FullyQualifiedName())
+}
+
+func TestExt_Syntax(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{parent: msg}
+	assert.Equal(t, msg.Syntax(), e.Syntax())
+}
+
+func TestExt_Package(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{parent: msg}
+	assert.Equal(t, msg.Package(), e.Package())
+}
+
+func TestExt_File(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{parent: msg}
+	assert.Equal(t, msg.File(), e.File())
+}
+
+func TestExt_BuildTarget(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{parent: msg}
+	assert.Equal(t, msg.BuildTarget(), e.BuildTarget())
+}
+
+func TestExt_ParentEntity(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{parent: msg}
+	assert.Equal(t, msg, e.DefinedIn())
+}
+
+func TestExt_Extendee(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{}
+	e.setExtendee(msg)
+	assert.Equal(t, msg, e.Extendee())
+}
+
+func TestExt_Message(t *testing.T) {
+	t.Parallel()
+
+	e := &ext{}
+	assert.Nil(t, e.Message())
+}
+
+func TestExt_InOneOf(t *testing.T) {
+	t.Parallel()
+
+	e := &ext{}
+	assert.False(t, e.InOneOf())
+}
+
+func TestExt_OneOf(t *testing.T) {
+	t.Parallel()
+
+	e := &ext{}
+	assert.Nil(t, e.OneOf())
+}
+
+func TestExt_Accept(t *testing.T) {
+	t.Parallel()
+
+	e := &ext{}
+
+	assert.NoError(t, e.accept(nil))
+
+	v := &mockVisitor{err: errors.New("")}
+	assert.Error(t, e.accept(v))
+	assert.Equal(t, 1, v.extension)
+}
 
 type mockExtractor struct {
 	has bool

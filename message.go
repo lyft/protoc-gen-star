@@ -32,6 +32,9 @@ type Message interface {
 	// OneOfs returns the OneOfs contained within this Message.
 	OneOfs() []OneOf
 
+	// Extensions returns all of the Extensions applied to this Message.
+	Extensions() []Extension
+
 	// IsMapEntry identifies this message as a MapEntry. If true, this message is
 	// not generated as code, and is used exclusively when marshaling a map field
 	// to the wire format.
@@ -48,6 +51,7 @@ type Message interface {
 
 	setParent(p ParentEntity)
 	addField(f Field)
+	addExtension(e Extension)
 	addOneOf(o OneOf)
 }
 
@@ -57,6 +61,8 @@ type msg struct {
 
 	msgs, preservedMsgs []Message
 	enums               []Enum
+	exts                []Extension
+	defExts             []Extension
 	fields              []Field
 	oneofs              []OneOf
 	maps                []Message
@@ -142,6 +148,14 @@ func (m *msg) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
 
+func (m *msg) Extensions() []Extension {
+	return m.exts
+}
+
+func (m *msg) DefinedExtensions() []Extension {
+	return m.defExts
+}
+
 func (m *msg) accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
@@ -176,6 +190,14 @@ func (m *msg) accept(v Visitor) (err error) {
 	}
 
 	return
+}
+
+func (m *msg) addExtension(ext Extension) {
+	m.exts = append(m.exts, ext)
+}
+
+func (m *msg) addDefExtension(ext Extension) {
+	m.defExts = append(m.defExts, ext)
 }
 
 func (m *msg) setParent(p ParentEntity) { m.parent = p }

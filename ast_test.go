@@ -309,3 +309,25 @@ func TestGraph_Packageless(t *testing.T) {
 		})
 	}
 }
+
+func TestGraph_Extensions(t *testing.T) {
+	t.Parallel()
+
+	g := buildGraph(t, "extensions")
+	assert.NotNil(t, g)
+
+	ent, ok := g.Lookup("extensions/ext/data.proto")
+	assert.True(t, ok)
+	assert.NotNil(t, ent.(File).DefinedExtensions())
+	assert.Len(t, ent.(File).DefinedExtensions(), 6)
+
+	ent, ok = g.Lookup(".extensions.Request")
+	assert.True(t, ok)
+	assert.NotNil(t, ent.(Message).DefinedExtensions())
+	assert.Len(t, ent.(Message).DefinedExtensions(), 1)
+
+	ent, ok = g.Lookup(".google.protobuf.MessageOptions")
+	assert.True(t, ok)
+	assert.NotNil(t, ent.(Message).Extensions())
+	assert.Len(t, ent.(Message).Extensions(), 1)
+}

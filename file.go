@@ -38,6 +38,7 @@ type file struct {
 	desc                    *descriptor.FileDescriptorProto
 	pkg                     Package
 	enums                   []Enum
+	defExts                 []Extension
 	msgs                    []Message
 	srvs                    []Service
 	buildTarget             bool
@@ -114,6 +115,10 @@ func (f *file) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, erro
 	return extension(f.desc.GetOptions(), desc, &ext)
 }
 
+func (f *file) DefinedExtensions() []Extension {
+	return f.defExts
+}
+
 func (f *file) accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
@@ -142,6 +147,10 @@ func (f *file) accept(v Visitor) (err error) {
 	}
 
 	return
+}
+
+func (f *file) addDefExtension(ext Extension) {
+	f.defExts = append(f.defExts, ext)
 }
 
 func (f *file) setPackage(pkg Package) { f.pkg = pkg }

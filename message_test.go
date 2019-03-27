@@ -220,6 +220,28 @@ func TestMsg_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { m.Extension(nil, nil) })
 }
 
+func TestMsg_Extensions(t *testing.T) {
+	t.Parallel()
+
+	m := &msg{}
+	assert.Empty(t, m.Extensions())
+
+	ext := &ext{}
+	m.addExtension(ext)
+	assert.Len(t, m.Extensions(), 1)
+}
+
+func TestMsg_DefinedExtensions(t *testing.T) {
+	t.Parallel()
+
+	m := &msg{}
+	assert.Empty(t, m.DefinedExtensions())
+
+	ext := &ext{}
+	m.addDefExtension(ext)
+	assert.Len(t, m.DefinedExtensions(), 1)
+}
+
 func TestMsg_Accept(t *testing.T) {
 	t.Parallel()
 
