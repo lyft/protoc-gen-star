@@ -191,3 +191,21 @@ func TestProtoExtExtractor(t *testing.T) {
 	assert.NotPanics(t, func() { e.HasExtension(nil, nil) })
 	assert.NotPanics(t, func() { e.GetExtension(nil, nil) })
 }
+
+// needed to wrapped since there is a Extension method
+type mExt interface {
+	Extension
+}
+
+type mockExtension struct {
+	mExt
+	err error
+}
+
+func (e *mockExtension) accept(v Visitor) error {
+	_, err := v.VisitExtension(e)
+	if e.err != nil {
+		return e.err
+	}
+	return err
+}

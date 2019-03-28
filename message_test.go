@@ -250,6 +250,7 @@ func TestMsg_Accept(t *testing.T) {
 	m.addEnum(&enum{})
 	m.addField(&field{})
 	m.addOneOf(&oneof{})
+	m.addDefExtension(&ext{})
 
 	assert.NoError(t, m.accept(nil))
 
@@ -259,6 +260,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Zero(t, v.enum)
 	assert.Zero(t, v.field)
 	assert.Zero(t, v.oneof)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	v.v = v
@@ -268,6 +270,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Zero(t, v.enum)
 	assert.Zero(t, v.field)
 	assert.Zero(t, v.oneof)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	assert.NoError(t, m.accept(v))
@@ -275,6 +278,16 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.field)
 	assert.Equal(t, 1, v.oneof)
+	assert.Equal(t, 1, v.extension)
+
+	v.Reset()
+	m.addDefExtension(&mockExtension{err: errors.New("")})
+	assert.Error(t, m.accept(v))
+	assert.Equal(t, 2, v.message)
+	assert.Equal(t, 1, v.enum)
+	assert.Equal(t, 1, v.field)
+	assert.Equal(t, 1, v.oneof)
+	assert.Equal(t, 2, v.extension)
 
 	v.Reset()
 	m.addOneOf(&mockOneOf{err: errors.New("")})
@@ -283,6 +296,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.field)
 	assert.Equal(t, 2, v.oneof)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	m.addField(&mockField{err: errors.New("")})
@@ -291,6 +305,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 2, v.field)
 	assert.Zero(t, v.oneof)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	m.addMessage(&mockMessage{err: errors.New("")})
@@ -299,6 +314,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.enum)
 	assert.Zero(t, v.field)
 	assert.Zero(t, v.oneof)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	m.addEnum(&mockEnum{err: errors.New("")})
@@ -307,6 +323,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.message)
 	assert.Zero(t, v.field)
 	assert.Zero(t, v.oneof)
+	assert.Zero(t, v.extension)
 }
 
 func TestMsg_Imports(t *testing.T) {
