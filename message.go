@@ -189,6 +189,12 @@ func (m *msg) accept(v Visitor) (err error) {
 		}
 	}
 
+	for _, ext := range m.defExts {
+		if err = ext.accept(v); err != nil {
+			return
+		}
+	}
+
 	return
 }
 

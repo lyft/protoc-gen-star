@@ -146,6 +146,12 @@ func (f *file) accept(v Visitor) (err error) {
 		}
 	}
 
+	for _, ext := range f.defExts {
+		if err = ext.accept(v); err != nil {
+			return
+		}
+	}
+
 	return
 }
 

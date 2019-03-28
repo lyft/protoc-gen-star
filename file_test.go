@@ -194,16 +194,28 @@ func TestFile_Accept(t *testing.T) {
 	assert.Zero(t, v.enum)
 	assert.Zero(t, v.message)
 	assert.Zero(t, v.service)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	f.addEnum(&enum{})
 	f.addMessage(&msg{})
 	f.addService(&service{})
+	f.addDefExtension(&ext{})
 	assert.NoError(t, f.accept(v))
 	assert.Equal(t, 1, v.file)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.message)
 	assert.Equal(t, 1, v.service)
+	assert.Equal(t, 1, v.extension)
+
+	v.Reset()
+	f.addDefExtension(&mockExtension{err: errors.New("fizz")})
+	assert.EqualError(t, f.accept(v), "fizz")
+	assert.Equal(t, 1, v.file)
+	assert.Equal(t, 1, v.enum)
+	assert.Equal(t, 1, v.message)
+	assert.Equal(t, 1, v.service)
+	assert.Equal(t, 2, v.extension)
 
 	v.Reset()
 	f.addService(&mockService{err: errors.New("fizz")})
@@ -212,6 +224,7 @@ func TestFile_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.message)
 	assert.Equal(t, 2, v.service)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	f.addMessage(&mockMessage{err: errors.New("bar")})
@@ -220,6 +233,7 @@ func TestFile_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 2, v.message)
 	assert.Zero(t, v.service)
+	assert.Zero(t, v.extension)
 
 	v.Reset()
 	f.addEnum(&mockEnum{err: errors.New("baz")})
@@ -228,6 +242,7 @@ func TestFile_Accept(t *testing.T) {
 	assert.Equal(t, 2, v.enum)
 	assert.Zero(t, v.message)
 	assert.Zero(t, v.service)
+	assert.Zero(t, v.extension)
 }
 
 func TestFile_Extension(t *testing.T) {
