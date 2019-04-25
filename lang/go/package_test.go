@@ -25,6 +25,8 @@ func TestPackageName(t *testing.T) {
 		{"mapped", "unaffected"},             // M mapped params are ignored for build targets
 		{"import_path_mapped", "go_package"}, // mixed import_path and M parameters should lose to go_package
 		{"transitive_package", "foobar"},     // go_option gets picked up from other files if present
+		{"digit", "_2019fizz"},               // digit at the start are prefixed with _
+		{"path_dash", "path_dash"},           // if basename of go_package contains invalid characters, replace with _
 	}
 
 	for _, test := range tests {
