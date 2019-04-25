@@ -20,11 +20,8 @@ func TestService_Name(t *testing.T) {
 func TestService_FullyQualifiedName(t *testing.T) {
 	t.Parallel()
 
-	f := dummyFile()
-	s := &service{desc: &descriptor.ServiceDescriptorProto{Name: proto.String("foo")}}
-	f.addService(s)
-
-	assert.Equal(t, f.FullyQualifiedName()+".foo", s.FullyQualifiedName())
+	s := &service{fqn: "foo"}
+	assert.Equal(t, s.fqn, s.FullyQualifiedName())
 }
 
 func TestService_Syntax(t *testing.T) {

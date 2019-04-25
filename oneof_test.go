@@ -20,11 +20,8 @@ func TestOneof_Name(t *testing.T) {
 func TestOneOf_FullyQualifiedName(t *testing.T) {
 	t.Parallel()
 
-	m := dummyMsg()
-	o := &oneof{desc: &descriptor.OneofDescriptorProto{Name: proto.String("one_of")}}
-	m.addOneOf(o)
-
-	assert.Equal(t, m.FullyQualifiedName()+".one_of", o.FullyQualifiedName())
+	o := &oneof{fqn: "one_of"}
+	assert.Equal(t, o.fqn, o.FullyQualifiedName())
 }
 
 func TestOneof_Syntax(t *testing.T) {

@@ -5,8 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 )
@@ -14,10 +12,8 @@ import (
 func TestExt_FullyQualifiedName(t *testing.T) {
 	t.Parallel()
 
-	msg := dummyMsg()
-	e := &ext{parent: msg}
-	e.desc = &descriptor.FieldDescriptorProto{Name: proto.String("foo")}
-	assert.Equal(t, msg.FullyQualifiedName()+".foo", e.FullyQualifiedName())
+	e := &ext{fqn: "foo"}
+	assert.Equal(t, e.fqn, e.FullyQualifiedName())
 }
 
 func TestExt_Syntax(t *testing.T) {

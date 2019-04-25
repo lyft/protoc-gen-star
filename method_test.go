@@ -19,11 +19,8 @@ func TestMethod_Name(t *testing.T) {
 func TestMethod_FullyQualifiedName(t *testing.T) {
 	t.Parallel()
 
-	s := dummyService()
-	m := &method{desc: &descriptor.MethodDescriptorProto{Name: proto.String("fizz")}}
-	s.addMethod(m)
-
-	assert.Equal(t, s.FullyQualifiedName()+".fizz", m.FullyQualifiedName())
+	m := &method{fqn: "fizz"}
+	assert.Equal(t, m.fqn, m.FullyQualifiedName())
 }
 
 func TestMethod_Syntax(t *testing.T) {
