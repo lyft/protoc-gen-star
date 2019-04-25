@@ -58,6 +58,7 @@ type Message interface {
 type msg struct {
 	desc   *descriptor.DescriptorProto
 	parent ParentEntity
+	fqn    string
 
 	msgs, preservedMsgs []Message
 	enums               []Enum
@@ -71,7 +72,7 @@ type msg struct {
 }
 
 func (m *msg) Name() Name                              { return Name(m.desc.GetName()) }
-func (m *msg) FullyQualifiedName() string              { return fullyQualifiedName(m.parent, m) }
+func (m *msg) FullyQualifiedName() string              { return m.fqn }
 func (m *msg) Syntax() Syntax                          { return m.parent.Syntax() }
 func (m *msg) Package() Package                        { return m.parent.Package() }
 func (m *msg) File() File                              { return m.parent.File() }

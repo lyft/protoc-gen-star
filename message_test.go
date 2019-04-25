@@ -22,11 +22,8 @@ func TestMsg_Name(t *testing.T) {
 func TestMsg_FullyQualifiedName(t *testing.T) {
 	t.Parallel()
 
-	m := &msg{desc: &descriptor.DescriptorProto{Name: proto.String("msg")}}
-	f := dummyFile()
-	f.addMessage(m)
-
-	assert.Equal(t, f.FullyQualifiedName()+".msg", m.FullyQualifiedName())
+	m := &msg{fqn: "msg"}
+	assert.Equal(t, m.fqn, m.FullyQualifiedName())
 }
 
 func TestMsg_Syntax(t *testing.T) {

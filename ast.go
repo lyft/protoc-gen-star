@@ -2,7 +2,7 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"github.com/golang/protobuf/protoc-gen-go/plugin"
+	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 )
 
 // AST encapsulates the entirety of the input CodeGeneratorRequest from protoc,
@@ -110,6 +110,11 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		pkg:  pkg,
 		desc: f,
 	}
+	if pkg := f.GetPackage(); pkg != "" {
+		fl.fqn = "." + pkg
+	} else {
+		fl.fqn = ""
+	}
 	g.add(fl)
 
 	if _, fl.buildTarget = g.targets[f.GetName()]; fl.buildTarget {
@@ -185,6 +190,7 @@ func (g *graph) hydrateEnum(p ParentEntity, ed *descriptor.EnumDescriptorProto) 
 		desc:   ed,
 		parent: p,
 	}
+	e.fqn = fullyQualifiedName(p, e)
 	g.add(e)
 
 	vals := ed.GetValue()
@@ -201,6 +207,7 @@ func (g *graph) hydrateEnumValue(e Enum, vd *descriptor.EnumValueDescriptorProto
 		desc: vd,
 		enum: e,
 	}
+	ev.fqn = fullyQualifiedName(e, ev)
 	g.add(ev)
 
 	return ev
@@ -211,6 +218,7 @@ func (g *graph) hydrateService(f File, sd *descriptor.ServiceDescriptorProto) Se
 		desc: sd,
 		file: f,
 	}
+	s.fqn = fullyQualifiedName(f, s)
 	g.add(s)
 
 	for _, md := range sd.GetMethod() {
@@ -225,6 +233,7 @@ func (g *graph) hydrateMethod(s Service, md *descriptor.MethodDescriptorProto) M
 		desc:    md,
 		service: s,
 	}
+	m.fqn = fullyQualifiedName(s, m)
 	g.add(m)
 
 	m.in = g.mustSeen(md.GetInputType()).(Message)
@@ -238,6 +247,7 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 		desc:   md,
 		parent: p,
 	}
+	m.fqn = fullyQualifiedName(p, m)
 	g.add(m)
 
 	for _, ed := range md.GetEnumType() {
@@ -283,6 +293,7 @@ func (g *graph) hydrateField(m Message, fd *descriptor.FieldDescriptorProto) Fie
 		desc: fd,
 		msg:  m,
 	}
+	f.fqn = fullyQualifiedName(f.msg, f)
 	g.add(f)
 
 	return f
@@ -293,6 +304,7 @@ func (g *graph) hydrateOneOf(m Message, od *descriptor.OneofDescriptorProto) One
 		desc: od,
 		msg:  m,
 	}
+	o.fqn = fullyQualifiedName(m, o)
 	g.add(o)
 
 	return o
@@ -303,6 +315,7 @@ func (g *graph) hydrateExtension(parent ParentEntity, fd *descriptor.FieldDescri
 		parent: parent,
 	}
 	ext.desc = fd
+	ext.fqn = fullyQualifiedName(parent, ext)
 	g.add(ext)
 	g.extensions = append(g.extensions, ext)
 

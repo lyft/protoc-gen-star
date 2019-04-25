@@ -23,11 +23,8 @@ func TestFile_Name(t *testing.T) {
 func TestFile_FullyQualifiedName(t *testing.T) {
 	t.Parallel()
 
-	f := &file{desc: &descriptor.FileDescriptorProto{
-		Package: proto.String("foo"),
-	}}
-
-	assert.Equal(t, ".foo", f.FullyQualifiedName())
+	f := &file{fqn: "foo"}
+	assert.Equal(t, f.fqn, f.FullyQualifiedName())
 }
 
 func TestFile_Syntax(t *testing.T) {
