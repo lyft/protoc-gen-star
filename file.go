@@ -36,6 +36,7 @@ type File interface {
 
 type file struct {
 	desc                    *descriptor.FileDescriptorProto
+	fqn                     string
 	pkg                     Package
 	enums                   []Enum
 	defExts                 []Extension
@@ -46,6 +47,7 @@ type file struct {
 }
 
 func (f *file) Name() Name                                  { return Name(f.desc.GetName()) }
+func (f *file) FullyQualifiedName() string                  { return f.fqn }
 func (f *file) Syntax() Syntax                              { return Syntax(f.desc.GetSyntax()) }
 func (f *file) Package() Package                            { return f.pkg }
 func (f *file) File() File                                  { return f }
@@ -56,13 +58,6 @@ func (f *file) MapEntries() (me []Message)                  { return nil }
 func (f *file) SourceCodeInfo() SourceCodeInfo              { return f.SyntaxSourceCodeInfo() }
 func (f *file) SyntaxSourceCodeInfo() SourceCodeInfo        { return f.syntaxInfo }
 func (f *file) PackageSourceCodeInfo() SourceCodeInfo       { return f.packageInfo }
-
-func (f *file) FullyQualifiedName() string {
-	if pkg := f.desc.GetPackage(); pkg != "" {
-		return "." + pkg
-	}
-	return ""
-}
 
 func (f *file) Enums() []Enum {
 	return f.enums

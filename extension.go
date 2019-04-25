@@ -27,9 +27,10 @@ type ext struct {
 
 	parent   ParentEntity
 	extendee Message
+	fqn      string
 }
 
-func (e *ext) FullyQualifiedName() string { return fullyQualifiedName(e.parent, e) }
+func (e *ext) FullyQualifiedName() string { return e.fqn }
 func (e *ext) Syntax() Syntax             { return e.parent.Syntax() }
 func (e *ext) Package() Package           { return e.parent.Package() }
 func (e *ext) File() File                 { return e.parent.File() }
