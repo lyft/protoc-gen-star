@@ -157,19 +157,21 @@ func TestFile_Imports(t *testing.T) {
 	m := &msg{}
 	m.addMessage(&mockMessage{i: []File{&file{}}, Message: &msg{}})
 	svc := &mockService{i: []File{&file{}}, Service: &service{}}
+	flDep := dummyFile()
 
 	f := &file{}
 	assert.Empty(t, f.Imports())
 
 	f.addMessage(m)
 	f.addService(svc)
-	assert.Len(t, f.Imports(), 1)
+	f.addFileDep(flDep)
+	assert.Len(t, f.Imports(), 2)
 
 	nf := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
 	f.addMessage(&mockMessage{i: []File{nf}, Message: &msg{}})
-	assert.Len(t, f.Imports(), 2)
+	assert.Len(t, f.Imports(), 3)
 }
 
 func TestFile_Accept(t *testing.T) {

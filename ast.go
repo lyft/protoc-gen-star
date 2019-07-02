@@ -61,9 +61,19 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 		g.targets[f] = nil
 	}
 
+	var allFiles []File
 	for _, f := range req.GetProtoFile() {
 		pkg := g.hydratePackage(f)
-		pkg.addFile(g.hydrateFile(pkg, f))
+		fl := g.hydrateFile(pkg, f)
+		allFiles = append(allFiles, fl)
+		pkg.addFile(fl)
+	}
+
+	for _, f := range allFiles {
+		for _, dep := range f.Descriptor().GetDependency() {
+			fileDep := g.mustSeen(dep).(File)
+			f.addFileDep(fileDep)
+		}
 	}
 
 	for _, e := range g.extensions {
@@ -157,6 +167,8 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 			fld.addType(g.hydrateFieldType(fld))
 		}
 	}
+
+	fl.fileDeps = make([]File, 0)
 
 	g.hydrateSourceCodeInfo(fl, f)
 
