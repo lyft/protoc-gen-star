@@ -29,6 +29,8 @@ type File interface {
 
 	setPackage(p Package)
 
+	addFileDep(fl File)
+
 	addService(s Service)
 
 	addPackageSourceCodeInfo(info SourceCodeInfo)
@@ -40,6 +42,7 @@ type file struct {
 	pkg                     Package
 	enums                   []Enum
 	defExts                 []Extension
+	fileDeps                []File
 	msgs                    []Message
 	srvs                    []Service
 	buildTarget             bool
@@ -90,6 +93,9 @@ func (f *file) Services() []Service {
 func (f *file) Imports() (i []File) {
 	// Mapping for avoiding duplicate entries
 	importMap := make(map[string]File, len(f.AllMessages())+len(f.srvs))
+	for _, fl := range f.fileDeps {
+		importMap[fl.Name().String()] = fl
+	}
 	for _, m := range f.AllMessages() {
 		for _, imp := range m.Imports() {
 			importMap[imp.File().Name().String()] = imp
@@ -159,6 +165,10 @@ func (f *file) setPackage(pkg Package) { f.pkg = pkg }
 func (f *file) addEnum(e Enum) {
 	e.setParent(f)
 	f.enums = append(f.enums, e)
+}
+
+func (f *file) addFileDep(fl File) {
+	f.fileDeps = append(f.fileDeps, fl)
 }
 
 func (f *file) addMessage(m Message) {
