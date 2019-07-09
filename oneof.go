@@ -50,6 +50,7 @@ func (o *oneof) BuildTarget() bool                            { return o.msg.Bui
 func (o *oneof) SourceCodeInfo() SourceCodeInfo               { return o.info }
 func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
+func (o *oneof) Dependents() []Entity                         { return append(o.msg.Dependents(), o.msg) }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }
 
 func (o *oneof) Imports() (i []File) {

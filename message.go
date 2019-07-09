@@ -86,6 +86,7 @@ func (m *msg) Messages() []Message                     { return m.msgs }
 func (m *msg) Fields() []Field                         { return m.fields }
 func (m *msg) OneOfs() []OneOf                         { return m.oneofs }
 func (m *msg) MapEntries() []Message                   { return m.maps }
+func (m *msg) Dependents() []Entity                    { return append(m.parent.Dependents(), m.parent) }
 
 func (m *msg) WellKnownType() WellKnownType {
 	if m.Package().ProtoName() == WellKnownTypePackage {

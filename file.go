@@ -61,6 +61,7 @@ func (f *file) MapEntries() (me []Message)                  { return nil }
 func (f *file) SourceCodeInfo() SourceCodeInfo              { return f.SyntaxSourceCodeInfo() }
 func (f *file) SyntaxSourceCodeInfo() SourceCodeInfo        { return f.syntaxInfo }
 func (f *file) PackageSourceCodeInfo() SourceCodeInfo       { return f.packageInfo }
+func (f *file) Dependents() []Entity                        { return nil }
 
 func (f *file) Enums() []Enum {
 	return f.enums

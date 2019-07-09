@@ -36,6 +36,7 @@ func (s *service) File() File                                     { return s.fil
 func (s *service) BuildTarget() bool                              { return s.file.BuildTarget() }
 func (s *service) SourceCodeInfo() SourceCodeInfo                 { return s.info }
 func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.desc }
+func (s *service) Dependents() []Entity                           { return append(s.file.Dependents(), s.file) }
 
 func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(s.desc.GetOptions(), desc, &ext)

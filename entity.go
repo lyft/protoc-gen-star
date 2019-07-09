@@ -27,6 +27,9 @@ type Entity interface {
 	// Imports includes all external files required by this entity.
 	Imports() []File
 
+	// Dependents includes all entities that require this entity.
+	Dependents() []Entity
+
 	// File returns the File containing this entity.
 	File() File
 

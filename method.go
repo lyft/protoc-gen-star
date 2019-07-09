@@ -54,6 +54,7 @@ func (m *method) Output() Message                               { return m.out }
 func (m *method) ClientStreaming() bool                         { return m.desc.GetClientStreaming() }
 func (m *method) ServerStreaming() bool                         { return m.desc.GetServerStreaming() }
 func (m *method) BiDirStreaming() bool                          { return m.ClientStreaming() && m.ServerStreaming() }
+func (m *method) Dependents() []Entity                          { return append(m.service.Dependents(), m.service) }
 
 func (m *method) Imports() (i []File) {
 	mine := m.File().Name()

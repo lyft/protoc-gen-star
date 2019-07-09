@@ -38,7 +38,7 @@ func (wf *standardWorkflow) Init(g *Generator) AST {
 		pm(wf.params)
 	}
 
-	return ProcessCodeGeneratorRequest(g, req)
+	return ProcessCodeGeneratorRequest(g, req, false)
 }
 
 func (wf *standardWorkflow) Run(ast AST) (arts []Artifact) {

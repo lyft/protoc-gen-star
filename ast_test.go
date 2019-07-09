@@ -39,7 +39,7 @@ func readFileDescSet(t *testing.T, filename string) *descriptor.FileDescriptorSe
 
 func buildGraph(t *testing.T, dir string) AST {
 	d := InitMockDebugger()
-	ast := ProcessCodeGeneratorRequest(d, readCodeGenReq(t, dir))
+	ast := ProcessCodeGeneratorRequest(d, readCodeGenReq(t, dir), false)
 	require.False(t, d.Failed(), "failed to build graph (see previous log statements)")
 	return ast
 }

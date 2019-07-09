@@ -61,6 +61,13 @@ func (f *field) Type() FieldType                              { return f.typ }
 func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 
+func (f *field) Dependents() []Entity {
+	if f.InOneOf() {
+		return append(f.oneof.Dependents(), f.oneof)
+	}
+	return append(f.msg.Dependents(), f.msg)
+}
+
 func (f *field) Required() bool {
 	return f.Syntax().SupportsRequiredPrefix() &&
 		f.desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REQUIRED

@@ -43,6 +43,7 @@ func (e *enum) Descriptor() *descriptor.EnumDescriptorProto { return e.desc }
 func (e *enum) Parent() ParentEntity                        { return e.parent }
 func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
+func (e *enum) Dependents() []Entity                        { return append(e.parent.Dependents(), e.parent) }
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(e.desc.GetOptions(), desc, &ext)
