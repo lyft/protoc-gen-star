@@ -47,7 +47,9 @@ func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST
 }
 
 // ProcessCodeGeneratorRequest converts a CodeGeneratorRequest from protoc into a fully
-// connected AST entity graph. An error is returned if the input is malformed.
+// connected AST entity graph. Set bidirectional to True for the AST to be built with
+// a complete list of a given entity's dependents rather than a shallow list. An error
+// is returned if the input is malformed.
 func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest, bidirectional bool) AST {
 	g := &graph{
 		d:          debug,
@@ -107,9 +109,11 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 }
 
 // ProcessFileDescriptorSet conversts a FileDescriptorSet from protoc into a
-// fully connected AST entity graph. An error is returned if the input is
-// malformed or missing dependencies. To generate a self-contained
-// FileDescriptorSet, run the following command:
+// fully connected AST entity graph. Set bidirectional to True for the AST to
+// be built with a complete list of a given entity's dependents rather than a
+// shallow list. An error is returned if the input is malformed or missing
+// dependencies. To generate a self-contained FileDescriptorSet, run the
+// following command:
 //
 //   protoc -o path/to/fdset.bin --include_imports $PROTO_FILES
 //
