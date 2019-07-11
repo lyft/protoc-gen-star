@@ -47,7 +47,7 @@ func buildGraph(t *testing.T, dir string) AST {
 func TestGraph_FDSet(t *testing.T) {
 	fdset := readFileDescSet(t, "testdata/fdset.bin")
 	d := InitMockDebugger()
-	ast := ProcessFileDescriptorSet(d, fdset)
+	ast := ProcessFileDescriptorSet(d, fdset, false)
 
 	require.False(t, d.Failed(), "failed to build graph from FDSet")
 	msg, found := ast.Lookup(".kitchen.Sink")

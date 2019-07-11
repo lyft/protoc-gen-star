@@ -74,6 +74,27 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 			fileDep := g.mustSeen(dep).(File)
 			f.addFileDep(fileDep)
 		}
+
+		// don't need to go through services bc imports are handled during method hydration
+		if bidirectional { // TODO: figure out how to handle file level imports, maybe do something w/ the enumval
+			for _, m := range f.AllMessages() {
+				if len(m.Imports()) > 0 {
+					for _, field := range m.NonOneOfFields() {
+						if field.File().Name() != m.File().Name() {
+							field.addDependent(m)
+						}
+					}
+
+					for _, o := range m.OneOfs() {
+						for _, field := range o.Fields() {
+							if field.File().Name() != o.File().Name() {
+								field.addDependent(o)
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	for _, e := range g.extensions {
@@ -98,9 +119,9 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 // The emitted AST will have no values in the Targets map, but Packages will be
 // populated. If used for testing purposes, the Targets map can be manually
 // populated.
-func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
+func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet, bidirectional bool) AST {
 	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
-	return ProcessCodeGeneratorRequest(debug, &req, false)
+	return ProcessCodeGeneratorRequest(debug, &req, bidirectional)
 }
 
 func (g *graph) hydratePackage(f *descriptor.FileDescriptorProto) Package {
@@ -250,6 +271,8 @@ func (g *graph) hydrateMethod(s Service, md *descriptor.MethodDescriptorProto) M
 
 	m.in = g.mustSeen(md.GetInputType()).(Message)
 	m.out = g.mustSeen(md.GetOutputType()).(Message)
+	m.in.addDependent(m)
+	m.out.addDependent(m)
 
 	return m
 }
@@ -258,6 +281,7 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 	m := &msg{
 		desc:   md,
 		parent: p,
+		deps:   []Entity{},
 	}
 	m.fqn = fullyQualifiedName(p, m)
 	g.add(m)

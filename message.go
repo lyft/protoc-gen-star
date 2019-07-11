@@ -53,6 +53,7 @@ type Message interface {
 	addField(f Field)
 	addExtension(e Extension)
 	addOneOf(o OneOf)
+	addDependent(ent Entity)
 }
 
 type msg struct {
@@ -67,6 +68,7 @@ type msg struct {
 	fields              []Field
 	oneofs              []OneOf
 	maps                []Message
+	deps                []Entity
 
 	info SourceCodeInfo
 }
@@ -86,7 +88,17 @@ func (m *msg) Messages() []Message                     { return m.msgs }
 func (m *msg) Fields() []Field                         { return m.fields }
 func (m *msg) OneOfs() []OneOf                         { return m.oneofs }
 func (m *msg) MapEntries() []Message                   { return m.maps }
-func (m *msg) Dependents() []Entity                    { return append(m.parent.Dependents(), m.parent) }
+
+func (m *msg) Dependents() []Entity {
+	dependents := append(m.parent.Dependents(), m.parent)
+	if len(m.deps) > 0 { // m.deps is only populated if the AST is bidirectional
+		for _, d := range m.deps {
+			dependents = append(dependents, d.Dependents()...)
+			dependents = append(dependents, d)
+		}
+	}
+	return dependents
+}
 
 func (m *msg) WellKnownType() WellKnownType {
 	if m.Package().ProtoName() == WellKnownTypePackage {
@@ -206,6 +218,10 @@ func (m *msg) addExtension(ext Extension) {
 
 func (m *msg) addDefExtension(ext Extension) {
 	m.defExts = append(m.defExts, ext)
+}
+
+func (m *msg) addDependent(e Entity) {
+	m.deps = append(m.deps, e)
 }
 
 func (m *msg) setParent(p ParentEntity) { m.parent = p }

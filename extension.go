@@ -36,7 +36,7 @@ func (e *ext) Package() Package           { return e.parent.Package() }
 func (e *ext) File() File                 { return e.parent.File() }
 func (e *ext) BuildTarget() bool          { return e.parent.BuildTarget() }
 func (e *ext) DefinedIn() ParentEntity    { return e.parent }
-func (e *ext) Dependents() []Entity       { return nil }
+func (e *ext) Dependents() []Entity       { return append(e.parent.Dependents(), e.parent) }
 func (e *ext) Extendee() Message          { return e.extendee }
 func (e *ext) Message() Message           { return nil }
 func (e *ext) InOneOf() bool              { return false }

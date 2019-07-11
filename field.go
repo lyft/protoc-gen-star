@@ -33,6 +33,7 @@ type Field interface {
 	setMessage(m Message)
 	setOneOf(o OneOf)
 	addType(t FieldType)
+	addDependent(ent Entity)
 }
 
 type field struct {
@@ -41,6 +42,7 @@ type field struct {
 	msg   Message
 	oneof OneOf
 	typ   FieldType
+	deps  []Entity
 
 	info SourceCodeInfo
 }
@@ -62,10 +64,22 @@ func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 
 func (f *field) Dependents() []Entity {
+	var dependents []Entity
+
 	if f.InOneOf() {
-		return append(f.oneof.Dependents(), f.oneof)
+		dependents = append(f.oneof.Dependents(), f.oneof)
+	} else {
+		dependents = append(f.msg.Dependents(), f.msg)
 	}
-	return append(f.msg.Dependents(), f.msg)
+
+	if len(f.deps) > 0 { // f.deps is only populated if the AST is bidirectional
+		for _, d := range f.deps {
+			dependents = append(dependents, d.Dependents()...)
+			dependents = append(dependents, d)
+		}
+	}
+
+	return dependents
 }
 
 func (f *field) Required() bool {
@@ -99,5 +113,9 @@ func (f *field) childAtPath(path []int32) Entity {
 }
 
 func (f *field) addSourceCodeInfo(info SourceCodeInfo) { f.info = info }
+
+func (f *field) addDependent(ent Entity) {
+	f.deps = append(f.deps, ent)
+}
 
 var _ Field = (*field)(nil)
