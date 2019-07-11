@@ -239,6 +239,38 @@ func TestMsg_DefinedExtensions(t *testing.T) {
 	assert.Len(t, m.DefinedExtensions(), 1)
 }
 
+func TestMsg_Dependents(t *testing.T) {
+	t.Parallel()
+
+	t.Run("no external deps", func(t *testing.T) {
+		t.Parallel()
+
+		m := &msg{}
+		f := dummyFile()
+		f.addMessage(m)
+		deps := m.Dependents()
+
+		assert.Len(t, deps, 1)
+		assert.Contains(t, deps, f)
+	})
+
+	t.Run("external deps", func(t *testing.T) {
+		t.Parallel()
+
+		m := &msg{}
+		f := dummyFile()
+		f.addMessage(m)
+		m2 := dummyMsg()
+		m.addDependent(m2)
+		deps := m.Dependents()
+
+		assert.Len(t, deps, 3)
+		assert.Contains(t, deps, f)
+		assert.Contains(t, deps, m2)
+		assert.Contains(t, deps, m2.File())
+	})
+}
+
 func TestMsg_Accept(t *testing.T) {
 	t.Parallel()
 
