@@ -115,6 +115,46 @@ func TestField_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { f.Extension(nil, nil) })
 }
 
+func TestField_Dependents(t *testing.T) {
+	t.Parallel()
+
+	t.Run("field in a one of", func(t *testing.T) {
+		t.Parallel()
+
+		f := &field{}
+		o := dummyOneof()
+		o.addField(f)
+		deps := f.Dependents()
+
+		assert.Len(t, deps, 3)
+		assert.Contains(t, deps, o)
+		assert.Contains(t, deps, o.Message())
+		assert.Contains(t, deps, o.File())
+	})
+
+	t.Run("field in a message", func(t *testing.T) {
+		t.Parallel()
+
+		f := &field{}
+		m := dummyMsg()
+		m.addField(f)
+		deps := f.Dependents()
+
+		assert.Len(t, deps, 2)
+		assert.Contains(t, deps, m)
+		assert.Contains(t, deps, m.File())
+	})
+
+	t.Run("external dependents", func(t *testing.T) {
+		t.Parallel()
+
+		//f := &field{}
+		//m := dummyMsg()
+		//m.addField(f)
+		//f.addDependent() // TODO
+	})
+}
+
 func TestField_Accept(t *testing.T) {
 	t.Parallel()
 

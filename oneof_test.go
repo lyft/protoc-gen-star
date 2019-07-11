@@ -119,6 +119,19 @@ func TestOneof_Fields(t *testing.T) {
 	assert.Len(t, o.Fields(), 1)
 }
 
+func TestOneof_Dependents(t *testing.T) {
+	t.Parallel()
+
+	m := dummyMsg()
+	o := &oneof{}
+	m.addOneOf(o)
+	deps := o.Dependents()
+
+	assert.Len(t, deps, 2)
+	assert.Contains(t, deps, m)
+	assert.Contains(t, deps, m.File())
+}
+
 func TestOneof_Accept(t *testing.T) {
 	t.Parallel()
 

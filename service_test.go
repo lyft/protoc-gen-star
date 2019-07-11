@@ -106,6 +106,18 @@ func TestService_Methods(t *testing.T) {
 	assert.Len(t, s.Methods(), 1)
 }
 
+func TestService_Dependents(t *testing.T) {
+	t.Parallel()
+
+	s := &service{}
+	f := dummyFile()
+	f.addService(s)
+	deps := s.Dependents()
+
+	assert.Len(t, deps, 1)
+	assert.Equal(t, f.Name().String(), deps[0].Name().String())
+}
+
 func TestService_Accept(t *testing.T) {
 	t.Parallel()
 

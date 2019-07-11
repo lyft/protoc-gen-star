@@ -105,6 +105,35 @@ func TestEnum_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { e.Extension(nil, nil) })
 }
 
+func TestEnum_Dependents(t *testing.T) {
+	t.Parallel()
+
+	t.Run("enum in file", func(t *testing.T) {
+		t.Parallel()
+
+		e := &enum{}
+		f := dummyFile()
+		f.addEnum(e)
+		deps := e.Dependents()
+
+		assert.Len(t, deps, 1)
+		assert.Equal(t, f, deps[0])
+	})
+
+	t.Run("enum in message", func(t *testing.T) {
+		t.Parallel()
+
+		e := &enum{}
+		m := dummyMsg()
+		m.addEnum(e)
+		deps := e.Dependents()
+
+		assert.Len(t, deps, 2)
+		assert.Contains(t, deps, m)
+		assert.Contains(t, deps, m.File())
+	})
+}
+
 func TestEnum_Accept(t *testing.T) {
 	t.Parallel()
 

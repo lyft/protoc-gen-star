@@ -152,6 +152,22 @@ func TestMethod_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { m.Extension(nil, nil) })
 }
 
+func TestMethod_Dependents(t *testing.T) {
+	t.Parallel()
+
+	s := dummyService()
+	m := &method{
+		in:  dummyMsg(),
+		out: dummyMsg(),
+	}
+	s.addMethod(m)
+	deps := m.Dependents()
+
+	assert.Len(t, deps, 2)
+	assert.Contains(t, deps, s)
+	assert.Contains(t, deps, s.File())
+}
+
 func TestMethod_Accept(t *testing.T) {
 	t.Parallel()
 

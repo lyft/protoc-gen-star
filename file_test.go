@@ -174,6 +174,13 @@ func TestFile_Imports(t *testing.T) {
 	assert.Len(t, f.Imports(), 3)
 }
 
+func TestFile_Dependents(t *testing.T) {
+	t.Parallel()
+
+	f := &file{}
+	assert.Empty(t, f.Dependents())
+}
+
 func TestFile_Accept(t *testing.T) {
 	t.Parallel()
 

@@ -86,6 +86,18 @@ func TestExt_OneOf(t *testing.T) {
 	assert.Nil(t, e.OneOf())
 }
 
+func TestExt_Dependents(t *testing.T) {
+	t.Parallel()
+
+	msg := dummyMsg()
+	e := &ext{parent: msg}
+	deps := e.Dependents()
+
+	assert.Len(t, deps, 2)
+	assert.Contains(t, deps, msg)
+	assert.Contains(t, deps, msg.File())
+}
+
 func TestExt_Accept(t *testing.T) {
 	t.Parallel()
 
