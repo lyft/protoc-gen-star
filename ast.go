@@ -328,6 +328,7 @@ func (g *graph) hydrateField(m Message, fd *descriptor.FieldDescriptorProto) Fie
 	f := &field{
 		desc: fd,
 		msg:  m,
+		deps: []Entity{},
 	}
 	f.fqn = fullyQualifiedName(f.msg, f)
 	g.add(f)
