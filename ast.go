@@ -75,8 +75,8 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 			f.addFileDep(fileDep)
 		}
 
-		// don't need to go through services bc imports are handled during method hydration
-		if bidirectional { // TODO: figure out how to handle file level imports, maybe do something w/ the enumval
+		if bidirectional {
+			// only going through messages because service imports are handled via method hydration.
 			for _, m := range f.AllMessages() {
 				if len(m.Imports()) > 0 {
 					for _, field := range m.NonOneOfFields() {
