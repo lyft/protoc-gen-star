@@ -132,6 +132,22 @@ func TestEnum_Dependents(t *testing.T) {
 		assert.Contains(t, deps, m)
 		assert.Contains(t, deps, m.File())
 	})
+
+	t.Run("external dependents", func(t *testing.T) {
+		t.Parallel()
+
+		e := &enum{}
+		f := dummyFile()
+		f.addEnum(e)
+		m := dummyMsg()
+		e.addDependent(m)
+		deps := e.Dependents()
+
+		assert.Len(t, deps, 3)
+		assert.Contains(t, deps, f)
+		assert.Contains(t, deps, m)
+		assert.Contains(t, deps, m.File())
+	})
 }
 
 func TestEnum_Accept(t *testing.T) {

@@ -144,23 +144,6 @@ func TestField_Dependents(t *testing.T) {
 		assert.Contains(t, deps, m)
 		assert.Contains(t, deps, m.File())
 	})
-
-	t.Run("external dependents", func(t *testing.T) {
-		t.Parallel()
-
-		f := &field{}
-		m := dummyMsg()
-		m.addField(f)
-		m2 := dummyMsg()
-		f.addDependent(m2)
-		deps := f.Dependents()
-
-		assert.Len(t, deps, 4)
-		assert.Contains(t, deps, m)
-		assert.Contains(t, deps, m.File())
-		assert.Contains(t, deps, m2)
-		assert.Contains(t, deps, m2.File())
-	})
 }
 
 func TestField_Accept(t *testing.T) {

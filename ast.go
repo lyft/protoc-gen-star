@@ -79,17 +79,14 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 			// only going through messages because service imports are handled via method hydration.
 			for _, m := range f.AllMessages() {
 				if len(m.Imports()) > 0 {
+					mFile := m.File().Name()
 					for _, field := range m.NonOneOfFields() {
-						if field.File().Name() != m.File().Name() {
-							field.addDependent(m)
-						}
+						assignDependent(field.Type(), m, mFile)
 					}
 
 					for _, o := range m.OneOfs() {
 						for _, field := range o.Fields() {
-							if field.File().Name() != o.File().Name() {
-								field.addDependent(o)
-							}
+							assignDependent(field.Type(), o, mFile)
 						}
 					}
 				}
@@ -222,6 +219,7 @@ func (g *graph) hydrateEnum(p ParentEntity, ed *descriptor.EnumDescriptorProto) 
 	e := &enum{
 		desc:   ed,
 		parent: p,
+		deps:   []Entity{},
 	}
 	e.fqn = fullyQualifiedName(p, e)
 	g.add(e)
@@ -328,7 +326,6 @@ func (g *graph) hydrateField(m Message, fd *descriptor.FieldDescriptorProto) Fie
 	f := &field{
 		desc: fd,
 		msg:  m,
-		deps: []Entity{},
 	}
 	f.fqn = fullyQualifiedName(f.msg, f)
 	g.add(f)
@@ -452,6 +449,20 @@ func (g *graph) resolveFQN(e Entity) string {
 	}
 
 	return e.FullyQualifiedName()
+}
+
+func assignDependent(ft FieldType, parent Entity, parentFile Name) {
+	if ft.IsEnum() {
+		enum := ft.Enum()
+		if enum.File().Name() != parentFile {
+			enum.addDependent(parent)
+		}
+	} else if ft.IsEmbed() {
+		msg := ft.Embed()
+		if msg.File().Name() != parentFile {
+			msg.addDependent(parent)
+		}
+	}
 }
 
 var _ AST = (*graph)(nil)

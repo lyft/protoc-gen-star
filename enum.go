@@ -22,6 +22,7 @@ type Enum interface {
 
 	addValue(v EnumValue)
 	setParent(p ParentEntity)
+	addDependent(ent Entity)
 }
 
 type enum struct {
@@ -30,6 +31,7 @@ type enum struct {
 	vals   []EnumValue
 	info   SourceCodeInfo
 	fqn    string
+	deps   []Entity
 }
 
 func (e *enum) Name() Name                                  { return Name(e.desc.GetName()) }
@@ -43,7 +45,19 @@ func (e *enum) Descriptor() *descriptor.EnumDescriptorProto { return e.desc }
 func (e *enum) Parent() ParentEntity                        { return e.parent }
 func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
-func (e *enum) Dependents() []Entity                        { return append(e.parent.Dependents(), e.parent) }
+
+func (e *enum) Dependents() []Entity {
+	dependents := append(e.parent.Dependents(), e.parent)
+
+	if len(e.deps) > 0 { // e.deps is only populated if the AST is bidirectional
+		for _, d := range e.deps {
+			dependents = append(dependents, d.Dependents()...)
+			dependents = append(dependents, d)
+		}
+	}
+
+	return dependents
+}
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(e.desc.GetOptions(), desc, &ext)
@@ -73,6 +87,10 @@ func (e *enum) addValue(v EnumValue) {
 }
 
 func (e *enum) setParent(p ParentEntity) { e.parent = p }
+
+func (e *enum) addDependent(ent Entity) {
+	e.deps = append(e.deps, ent)
+}
 
 func (e *enum) childAtPath(path []int32) Entity {
 	switch {
