@@ -49,11 +49,9 @@ func (e *enum) Values() []EnumValue                         { return e.vals }
 func (e *enum) Dependents() []Entity {
 	dependents := append(e.parent.Dependents(), e.parent)
 
-	if len(e.deps) > 0 { // e.deps is only populated if the AST is bidirectional
-		for _, d := range e.deps {
-			dependents = append(dependents, d.Dependents()...)
-			dependents = append(dependents, d)
-		}
+	for _, d := range e.deps {
+		dependents = append(dependents, d.Dependents()...)
+		dependents = append(dependents, d)
 	}
 
 	return dependents

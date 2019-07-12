@@ -28,7 +28,7 @@ func readCodeGenReq(t *testing.T, dir ...string) *plugin_go.CodeGeneratorRequest
 
 func buildGraph(t *testing.T, dir ...string) pgs.AST {
 	d := pgs.InitMockDebugger()
-	ast := pgs.ProcessCodeGeneratorRequest(d, readCodeGenReq(t, dir...), false)
+	ast := pgs.ProcessCodeGeneratorRequest(d, readCodeGenReq(t, dir...))
 	require.False(t, d.Failed(), "failed to build graph (see previous log statements)")
 	return ast
 }

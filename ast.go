@@ -21,6 +21,11 @@ type AST interface {
 	// (FQN). The FQN uses dot notation of the form ".{package}.{entity}", or the
 	// input path for Files.
 	Lookup(name string) (Entity, bool)
+
+	// Make Bidirectional augments the entities in the AST to have references to any
+	// entities that depend on them. Without calling MakeBidirectional, a given
+	// entity's list of dependents will only include direct parents/ancestors.
+	MakeBidirectional()
 }
 
 type graph struct {
@@ -30,6 +35,7 @@ type graph struct {
 	packages   map[string]Package
 	entities   map[string]Entity
 	extensions []Extension
+	isBidi     bool
 }
 
 func (g *graph) Targets() map[string]File { return g.targets }
@@ -41,59 +47,62 @@ func (g *graph) Lookup(name string) (Entity, bool) {
 	return e, ok
 }
 
+func (g *graph) MakeBidirectional() {
+	if !g.isBidi {
+		for _, pkg := range g.Packages() {
+			for _, f := range pkg.Files() {
+				// only going through messages because service imports are handled via method hydration.
+				for _, m := range f.AllMessages() {
+					if len(m.Imports()) > 0 {
+						mFile := m.File().Name()
+						for _, field := range m.NonOneOfFields() {
+							assignDependent(field.Type(), m, mFile)
+						}
+
+						for _, o := range m.OneOfs() {
+							for _, field := range o.Fields() {
+								assignDependent(field.Type(), o, mFile)
+							}
+						}
+					}
+				}
+			}
+		}
+		g.isBidi = true
+	}
+}
+
 // ProcessDescriptors is deprecated; use ProcessCodeGeneratorRequest instead
 func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
-	return ProcessCodeGeneratorRequest(debug, req, false)
+	return ProcessCodeGeneratorRequest(debug, req)
 }
 
 // ProcessCodeGeneratorRequest converts a CodeGeneratorRequest from protoc into a fully
-// connected AST entity graph. Set bidirectional to True for the AST to be built with
-// a complete list of a given entity's dependents rather than a shallow list. An error
-// is returned if the input is malformed.
-func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest, bidirectional bool) AST {
+// connected AST entity graph. An error is returned if the input is malformed.
+func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
 	g := &graph{
 		d:          debug,
 		targets:    make(map[string]File, len(req.GetFileToGenerate())),
 		packages:   make(map[string]Package),
 		entities:   make(map[string]Entity),
 		extensions: []Extension{},
+		isBidi:     false,
 	}
 
 	for _, f := range req.GetFileToGenerate() {
 		g.targets[f] = nil
 	}
 
-	var allFiles []File
 	for _, f := range req.GetProtoFile() {
 		pkg := g.hydratePackage(f)
 		fl := g.hydrateFile(pkg, f)
-		allFiles = append(allFiles, fl)
-		pkg.addFile(fl)
-	}
 
-	for _, f := range allFiles {
-		for _, dep := range f.Descriptor().GetDependency() {
+		for _, dep := range fl.Descriptor().GetDependency() {
 			fileDep := g.mustSeen(dep).(File)
-			f.addFileDep(fileDep)
+			fl.addFileDep(fileDep)
 		}
 
-		if bidirectional {
-			// only going through messages because service imports are handled via method hydration.
-			for _, m := range f.AllMessages() {
-				if len(m.Imports()) > 0 {
-					mFile := m.File().Name()
-					for _, field := range m.NonOneOfFields() {
-						assignDependent(field.Type(), m, mFile)
-					}
-
-					for _, o := range m.OneOfs() {
-						for _, field := range o.Fields() {
-							assignDependent(field.Type(), o, mFile)
-						}
-					}
-				}
-			}
-		}
+		pkg.addFile(fl)
 	}
 
 	for _, e := range g.extensions {
@@ -109,20 +118,18 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 }
 
 // ProcessFileDescriptorSet conversts a FileDescriptorSet from protoc into a
-// fully connected AST entity graph. Set bidirectional to True for the AST to
-// be built with a complete list of a given entity's dependents rather than a
-// shallow list. An error is returned if the input is malformed or missing
-// dependencies. To generate a self-contained FileDescriptorSet, run the
-// following command:
+// fully connected AST entity graph. An error is returned if the input is
+// malformed or missing dependencies. To generate a self-contained
+// FileDescriptorSet, run the following command:
 //
 //   protoc -o path/to/fdset.bin --include_imports $PROTO_FILES
 //
 // The emitted AST will have no values in the Targets map, but Packages will be
 // populated. If used for testing purposes, the Targets map can be manually
 // populated.
-func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet, bidirectional bool) AST {
+func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
 	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
-	return ProcessCodeGeneratorRequest(debug, &req, bidirectional)
+	return ProcessCodeGeneratorRequest(debug, &req)
 }
 
 func (g *graph) hydratePackage(f *descriptor.FileDescriptorProto) Package {

@@ -91,11 +91,9 @@ func (m *msg) MapEntries() []Message                   { return m.maps }
 
 func (m *msg) Dependents() []Entity {
 	dependents := append(m.parent.Dependents(), m.parent)
-	if len(m.deps) > 0 { // m.deps is only populated if the AST is bidirectional
-		for _, d := range m.deps {
-			dependents = append(dependents, d.Dependents()...)
-			dependents = append(dependents, d)
-		}
+	for _, d := range m.deps {
+		dependents = append(dependents, d.Dependents()...)
+		dependents = append(dependents, d)
 	}
 	return dependents
 }

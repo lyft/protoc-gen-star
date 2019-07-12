@@ -37,9 +37,9 @@ func readFileDescSet(t *testing.T, filename string) *descriptor.FileDescriptorSe
 	return fdset
 }
 
-func buildGraph(t *testing.T, dir string, isBidi bool) AST {
+func buildGraph(t *testing.T, dir string) AST {
 	d := InitMockDebugger()
-	ast := ProcessCodeGeneratorRequest(d, readCodeGenReq(t, dir), isBidi)
+	ast := ProcessCodeGeneratorRequest(d, readCodeGenReq(t, dir))
 	require.False(t, d.Failed(), "failed to build graph (see previous log statements)")
 	return ast
 }
@@ -47,7 +47,7 @@ func buildGraph(t *testing.T, dir string, isBidi bool) AST {
 func TestGraph_FDSet(t *testing.T) {
 	fdset := readFileDescSet(t, "testdata/fdset.bin")
 	d := InitMockDebugger()
-	ast := ProcessFileDescriptorSet(d, fdset, false)
+	ast := ProcessFileDescriptorSet(d, fdset)
 
 	require.False(t, d.Failed(), "failed to build graph from FDSet")
 	msg, found := ast.Lookup(".kitchen.Sink")
@@ -57,7 +57,7 @@ func TestGraph_FDSet(t *testing.T) {
 
 func TestGraph_Messages(t *testing.T) {
 	t.Parallel()
-	g := buildGraph(t, "messages", false)
+	g := buildGraph(t, "messages")
 
 	tests := []struct {
 		lookup                             string
@@ -149,7 +149,7 @@ func TestGraph_Messages(t *testing.T) {
 func TestGraph_Services(t *testing.T) {
 	t.Parallel()
 
-	g := buildGraph(t, "services", false)
+	g := buildGraph(t, "services")
 
 	t.Run("empty", func(t *testing.T) {
 		t.Parallel()
@@ -206,7 +206,7 @@ func TestGraph_Services(t *testing.T) {
 func TestGraph_SourceCodeInfo(t *testing.T) {
 	t.Parallel()
 
-	g := buildGraph(t, "info", false)
+	g := buildGraph(t, "info")
 
 	tests := map[string]string{
 		"Info":                   "root message",
@@ -286,7 +286,7 @@ func TestGraph_HydrateFieldType_Group(t *testing.T) {
 func TestGraph_Packageless(t *testing.T) {
 	t.Parallel()
 
-	g := buildGraph(t, "packageless", false)
+	g := buildGraph(t, "packageless")
 
 	tests := []struct {
 		name        string
@@ -313,7 +313,7 @@ func TestGraph_Packageless(t *testing.T) {
 func TestGraph_Extensions(t *testing.T) {
 	t.Parallel()
 
-	g := buildGraph(t, "extensions", false)
+	g := buildGraph(t, "extensions")
 	assert.NotNil(t, g)
 
 	ent, ok := g.Lookup("extensions/ext/data.proto")
@@ -337,8 +337,9 @@ func TestGraph_Bidirectional(t *testing.T) {
 
 	fdset := readFileDescSet(t, "testdata/fdset.bin")
 	d := InitMockDebugger()
-	ast := ProcessFileDescriptorSet(d, fdset, true)
+	ast := ProcessFileDescriptorSet(d, fdset)
 	require.False(t, d.Failed(), "failed to build graph from FDSet")
+	ast.MakeBidirectional()
 
 	finish, ok := ast.Lookup(".kitchen.Sink.Material.Finish")
 	require.True(t, ok)
@@ -349,7 +350,7 @@ func TestGraph_Bidirectional(t *testing.T) {
 	sink, ok := ast.Lookup(".kitchen.Sink")
 	require.True(t, ok)
 
-	assert.Len(t, deps, 5)
+	require.Len(t, deps, 5)
 	assert.Contains(t, deps, finish.(Enum).Parent())
 	assert.Contains(t, deps, sink)
 	assert.Contains(t, deps, sink.File())
