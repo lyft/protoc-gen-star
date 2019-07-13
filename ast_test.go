@@ -337,9 +337,8 @@ func TestGraph_Bidirectional(t *testing.T) {
 
 	fdset := readFileDescSet(t, "testdata/fdset.bin")
 	d := InitMockDebugger()
-	ast := ProcessFileDescriptorSet(d, fdset)
+	ast := ProcessFileDescriptorSetBidirectional(d, fdset)
 	require.False(t, d.Failed(), "failed to build graph from FDSet")
-	ast.MakeBidirectional()
 
 	finish, ok := ast.Lookup(".kitchen.Sink.Material.Finish")
 	require.True(t, ok)

@@ -21,11 +21,6 @@ type AST interface {
 	// (FQN). The FQN uses dot notation of the form ".{package}.{entity}", or the
 	// input path for Files.
 	Lookup(name string) (Entity, bool)
-
-	// Make Bidirectional augments the entities in the AST to have references to any
-	// entities that depend on them. Without calling MakeBidirectional, a given
-	// entity's list of dependents will only include direct parents/ancestors.
-	MakeBidirectional()
 }
 
 type graph struct {
@@ -35,7 +30,6 @@ type graph struct {
 	packages   map[string]Package
 	entities   map[string]Entity
 	extensions []Extension
-	isBidi     bool
 }
 
 func (g *graph) Targets() map[string]File { return g.targets }
@@ -45,31 +39,6 @@ func (g *graph) Packages() map[string]Package { return g.packages }
 func (g *graph) Lookup(name string) (Entity, bool) {
 	e, ok := g.entities[name]
 	return e, ok
-}
-
-func (g *graph) MakeBidirectional() {
-	if !g.isBidi {
-		for _, pkg := range g.Packages() {
-			for _, f := range pkg.Files() {
-				if len(f.Descriptor().GetDependency()) > 0 {
-					// only going through messages because service imports are handled via method hydration.
-					for _, m := range f.AllMessages() {
-						mFile := m.File().Name()
-						for _, field := range m.NonOneOfFields() {
-							assignDependent(field.Type(), m, mFile)
-						}
-
-						for _, o := range m.OneOfs() {
-							for _, field := range o.Fields() {
-								assignDependent(field.Type(), o, mFile)
-							}
-						}
-					}
-				}
-			}
-		}
-		g.isBidi = true
-	}
 }
 
 // ProcessDescriptors is deprecated; use ProcessCodeGeneratorRequest instead
@@ -86,7 +55,6 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 		packages:   make(map[string]Package),
 		entities:   make(map[string]Entity),
 		extensions: []Extension{},
-		isBidi:     false,
 	}
 
 	for _, f := range req.GetFileToGenerate() {
@@ -110,6 +78,33 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 	return g
 }
 
+// ProcessCodeGeneratorRequestBidirectional has the same functionality as
+// ProcessCodeGeneratorRequest, but builds the AST to have references to any
+// entities that depend on them.
+func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
+	g := ProcessCodeGeneratorRequest(debug, req)
+	for _, pkg := range g.Packages() {
+		for _, f := range pkg.Files() {
+			if len(f.Descriptor().GetDependency()) > 0 {
+				// only going through messages because service imports are handled via method hydration.
+				for _, m := range f.AllMessages() {
+					mFile := m.File().Name()
+					for _, field := range m.NonOneOfFields() {
+						assignDependent(field.Type(), m, mFile)
+					}
+
+					for _, o := range m.OneOfs() {
+						for _, field := range o.Fields() {
+							assignDependent(field.Type(), o, mFile)
+						}
+					}
+				}
+			}
+		}
+	}
+	return g
+}
+
 // ProcessFileDescriptorSet conversts a FileDescriptorSet from protoc into a
 // fully connected AST entity graph. An error is returned if the input is
 // malformed or missing dependencies. To generate a self-contained
@@ -123,6 +118,14 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
 	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
 	return ProcessCodeGeneratorRequest(debug, &req)
+}
+
+// ProcessFileDescriptorSetBidirectional has the same functionality as
+// ProcessFileDescriptorSet, but builds the AST to have references to any
+// entities that depend on them.
+func ProcessFileDescriptorSetBidirectional(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
+	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
+	return ProcessCodeGeneratorRequestBidirectional(debug, &req)
 }
 
 func (g *graph) hydratePackage(f *descriptor.FileDescriptorProto) Package {
