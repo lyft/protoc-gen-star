@@ -257,8 +257,17 @@ func TestMsg_Dependents(t *testing.T) {
 	t.Run("external deps", func(t *testing.T) {
 		t.Parallel()
 
+		pkg := dummyPkg()
+		f := &file{
+			pkg: pkg,
+			desc: &descriptor.FileDescriptorProto{
+				Package: proto.String(pkg.ProtoName().String()),
+				Syntax:  proto.String(string(Proto3)),
+				Name:    proto.String("test_file.proto"),
+			},
+		}
+
 		m := &msg{}
-		f := dummyFile()
 		f.addMessage(m)
 		m2 := dummyMsg()
 		m.addDependent(m2)

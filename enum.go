@@ -47,14 +47,33 @@ func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
 
 func (e *enum) Dependents() []Entity {
-	dependents := append(e.parent.Dependents(), e.parent)
+	set := make(map[string]Entity)
 
+	set[e.resolveFQN(e.parent)] = e.parent
+	for _, d := range e.parent.Dependents() {
+		set[e.resolveFQN(d)] = d
+	}
 	for _, d := range e.deps {
-		dependents = append(dependents, d.Dependents()...)
+		set[e.resolveFQN(d)] = d
+		for _, dd := range d.Dependents() {
+			set[e.resolveFQN(dd)] = dd
+		}
+	}
+
+	dependents := make([]Entity, 0, len(set))
+	for _, d := range set {
 		dependents = append(dependents, d)
 	}
 
 	return dependents
+}
+
+func (e *enum) resolveFQN(ent Entity) string {
+	if f, ok := ent.(File); ok {
+		return f.Name().String()
+	}
+
+	return ent.FullyQualifiedName()
 }
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {

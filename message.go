@@ -90,12 +90,33 @@ func (m *msg) OneOfs() []OneOf                         { return m.oneofs }
 func (m *msg) MapEntries() []Message                   { return m.maps }
 
 func (m *msg) Dependents() []Entity {
-	dependents := append(m.parent.Dependents(), m.parent)
+	set := make(map[string]Entity)
+
+	set[m.resolveFQN(m.parent)] = m.parent
+	for _, d := range m.parent.Dependents() {
+		set[m.resolveFQN(d)] = d
+	}
 	for _, d := range m.deps {
-		dependents = append(dependents, d.Dependents()...)
+		set[m.resolveFQN(d)] = d
+		for _, dd := range d.Dependents() {
+			set[m.resolveFQN(dd)] = dd
+		}
+	}
+
+	dependents := make([]Entity, 0, len(set))
+	for _, d := range set {
 		dependents = append(dependents, d)
 	}
+
 	return dependents
+}
+
+func (m *msg) resolveFQN(ent Entity) string {
+	if f, ok := ent.(File); ok {
+		return f.Name().String()
+	}
+
+	return ent.FullyQualifiedName()
 }
 
 func (m *msg) WellKnownType() WellKnownType {
