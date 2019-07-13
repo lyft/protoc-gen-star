@@ -88,14 +88,13 @@ func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.Cod
 			if len(f.Descriptor().GetDependency()) > 0 {
 				// only going through messages because service imports are handled via method hydration.
 				for _, m := range f.AllMessages() {
-					mFile := m.File().Name()
 					for _, field := range m.NonOneOfFields() {
-						assignDependent(field.Type(), m, mFile)
+						assignDependent(field.Type(), m)
 					}
 
 					for _, o := range m.OneOfs() {
 						for _, field := range o.Fields() {
-							assignDependent(field.Type(), o, mFile)
+							assignDependent(field.Type(), o)
 						}
 					}
 				}
@@ -463,15 +462,15 @@ func (g *graph) resolveFQN(e Entity) string {
 	return e.FullyQualifiedName()
 }
 
-func assignDependent(ft FieldType, parent Entity, parentFile Name) {
+func assignDependent(ft FieldType, parent Entity) {
 	if ft.IsEnum() {
 		enum := ft.Enum()
-		if enum.File().Name() != parentFile {
+		if enum.File().Name() != parent.Name() {
 			enum.addDependent(parent)
 		}
 	} else if ft.IsEmbed() {
 		msg := ft.Embed()
-		if msg.File().Name() != parentFile {
+		if msg.File().Name() != parent.Name() {
 			msg.addDependent(parent)
 		}
 	}
