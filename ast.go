@@ -51,9 +51,9 @@ func (g *graph) MakeBidirectional() {
 	if !g.isBidi {
 		for _, pkg := range g.Packages() {
 			for _, f := range pkg.Files() {
-				// only going through messages because service imports are handled via method hydration.
-				for _, m := range f.AllMessages() {
-					if len(m.Imports()) > 0 {
+				if len(f.Descriptor().GetDependency()) > 0 {
+					// only going through messages because service imports are handled via method hydration.
+					for _, m := range f.AllMessages() {
 						mFile := m.File().Name()
 						for _, field := range m.NonOneOfFields() {
 							assignDependent(field.Type(), m, mFile)
@@ -95,14 +95,7 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 
 	for _, f := range req.GetProtoFile() {
 		pkg := g.hydratePackage(f)
-		fl := g.hydrateFile(pkg, f)
-
-		for _, dep := range fl.Descriptor().GetDependency() {
-			fileDep := g.mustSeen(dep).(File)
-			fl.addFileDep(fileDep)
-		}
-
-		pkg.addFile(fl)
+		pkg.addFile(g.hydrateFile(pkg, f))
 	}
 
 	for _, e := range g.extensions {
@@ -155,6 +148,11 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		fl.fqn = ""
 	}
 	g.add(fl)
+
+	for _, dep := range f.GetDependency() {
+		fileDep := g.mustSeen(dep).(File)
+		fl.addFileDep(fileDep)
+	}
 
 	if _, fl.buildTarget = g.targets[f.GetName()]; fl.buildTarget {
 		g.targets[f.GetName()] = fl
