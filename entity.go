@@ -30,6 +30,9 @@ type Entity interface {
 	// File returns the File containing this entity.
 	File() File
 
+	// Extensions returns all the extensions applied to this entity.
+	Extensions() []Extension
+
 	// Extension extracts an extension from the entity's options, described by
 	// desc and populates the value ext. Ext must be a pointer type. An error is
 	// returned if the extension is not found or there is a type mismatch between

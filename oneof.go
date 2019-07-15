@@ -24,10 +24,11 @@ type OneOf interface {
 }
 
 type oneof struct {
-	desc *descriptor.OneofDescriptorProto
-	msg  Message
-	flds []Field
-	fqn  string
+	desc       *descriptor.OneofDescriptorProto
+	msg        Message
+	flds       []Field
+	fqn        string
+	extensions []Extension
 
 	info SourceCodeInfo
 }
@@ -51,6 +52,7 @@ func (o *oneof) SourceCodeInfo() SourceCodeInfo               { return o.info }
 func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }
+func (o *oneof) Extensions() []Extension                      { return o.extensions }
 
 func (o *oneof) Imports() (i []File) {
 	// Mapping for avoiding duplicate entries

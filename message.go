@@ -32,9 +32,6 @@ type Message interface {
 	// OneOfs returns the OneOfs contained within this Message.
 	OneOfs() []OneOf
 
-	// Extensions returns all of the Extensions applied to this Message.
-	Extensions() []Extension
-
 	// IsMapEntry identifies this message as a MapEntry. If true, this message is
 	// not generated as code, and is used exclusively when marshaling a map field
 	// to the wire format.

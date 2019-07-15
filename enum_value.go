@@ -22,9 +22,10 @@ type EnumValue interface {
 }
 
 type enumVal struct {
-	desc *descriptor.EnumValueDescriptorProto
-	enum Enum
-	fqn  string
+	desc       *descriptor.EnumValueDescriptorProto
+	enum       Enum
+	fqn        string
+	extensions []Extension
 
 	info SourceCodeInfo
 }
@@ -40,6 +41,7 @@ func (ev *enumVal) Descriptor() *descriptor.EnumValueDescriptorProto { return ev
 func (ev *enumVal) Enum() Enum                                       { return ev.enum }
 func (ev *enumVal) Value() int32                                     { return ev.desc.GetNumber() }
 func (ev *enumVal) Imports() []File                                  { return nil }
+func (ev *enumVal) Extensions() []Extension                          { return ev.extensions }
 
 func (ev *enumVal) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(ev.desc.GetOptions(), desc, &ext)

@@ -36,11 +36,12 @@ type Field interface {
 }
 
 type field struct {
-	desc  *descriptor.FieldDescriptorProto
-	fqn   string
-	msg   Message
-	oneof OneOf
-	typ   FieldType
+	desc       *descriptor.FieldDescriptorProto
+	fqn        string
+	msg        Message
+	oneof      OneOf
+	typ        FieldType
+	extensions []Extension
 
 	info SourceCodeInfo
 }
@@ -58,6 +59,7 @@ func (f *field) Message() Message                             { return f.msg }
 func (f *field) InOneOf() bool                                { return f.oneof != nil }
 func (f *field) OneOf() OneOf                                 { return f.oneof }
 func (f *field) Type() FieldType                              { return f.typ }
+func (f *field) Extensions() []Extension                      { return f.extensions }
 func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 

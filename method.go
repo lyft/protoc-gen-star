@@ -31,9 +31,10 @@ type Method interface {
 }
 
 type method struct {
-	desc    *descriptor.MethodDescriptorProto
-	fqn     string
-	service Service
+	desc       *descriptor.MethodDescriptorProto
+	fqn        string
+	service    Service
+	extensions []Extension
 
 	in, out Message
 
@@ -54,6 +55,7 @@ func (m *method) Output() Message                               { return m.out }
 func (m *method) ClientStreaming() bool                         { return m.desc.GetClientStreaming() }
 func (m *method) ServerStreaming() bool                         { return m.desc.GetServerStreaming() }
 func (m *method) BiDirStreaming() bool                          { return m.ClientStreaming() && m.ServerStreaming() }
+func (m *method) Extensions() []Extension                       { return m.extensions }
 
 func (m *method) Imports() (i []File) {
 	mine := m.File().Name()

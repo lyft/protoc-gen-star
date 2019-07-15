@@ -45,6 +45,7 @@ type file struct {
 	fileDeps                []File
 	msgs                    []Message
 	srvs                    []Service
+	extensions              []Extension
 	buildTarget             bool
 	syntaxInfo, packageInfo SourceCodeInfo
 }
@@ -61,6 +62,7 @@ func (f *file) MapEntries() (me []Message)                  { return nil }
 func (f *file) SourceCodeInfo() SourceCodeInfo              { return f.SyntaxSourceCodeInfo() }
 func (f *file) SyntaxSourceCodeInfo() SourceCodeInfo        { return f.syntaxInfo }
 func (f *file) PackageSourceCodeInfo() SourceCodeInfo       { return f.packageInfo }
+func (f *file) Extensions() []Extension                     { return f.extensions }
 
 func (f *file) Enums() []Enum {
 	return f.enums

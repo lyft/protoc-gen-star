@@ -25,11 +25,12 @@ type Enum interface {
 }
 
 type enum struct {
-	desc   *descriptor.EnumDescriptorProto
-	parent ParentEntity
-	vals   []EnumValue
-	info   SourceCodeInfo
-	fqn    string
+	desc       *descriptor.EnumDescriptorProto
+	parent     ParentEntity
+	vals       []EnumValue
+	info       SourceCodeInfo
+	fqn        string
+	extensions []Extension
 }
 
 func (e *enum) Name() Name                                  { return Name(e.desc.GetName()) }
@@ -43,6 +44,7 @@ func (e *enum) Descriptor() *descriptor.EnumDescriptorProto { return e.desc }
 func (e *enum) Parent() ParentEntity                        { return e.parent }
 func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
+func (e *enum) Extensions() []Extension                     { return e.extensions }
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(e.desc.GetOptions(), desc, &ext)

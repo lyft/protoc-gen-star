@@ -1,6 +1,9 @@
 package pgs
 
 import (
+	"regexp"
+	"strings"
+
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 )
@@ -131,6 +134,10 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		g.targets[f.GetName()] = fl
 	}
 
+	if opts := f.GetOptions().String(); opts != "<nil>" {
+		fl.extensions = g.optionsParser(opts)
+	}
+
 	enums := f.GetEnumType()
 	fl.enums = make([]Enum, 0, len(enums))
 	for _, e := range enums {
@@ -211,6 +218,10 @@ func (g *graph) hydrateEnum(p ParentEntity, ed *descriptor.EnumDescriptorProto) 
 		e.addValue(g.hydrateEnumValue(e, vd))
 	}
 
+	if opts := ed.GetOptions().String(); opts != "<nil>" {
+		e.extensions = g.optionsParser(opts)
+	}
+
 	return e
 }
 
@@ -221,6 +232,10 @@ func (g *graph) hydrateEnumValue(e Enum, vd *descriptor.EnumValueDescriptorProto
 	}
 	ev.fqn = fullyQualifiedName(e, ev)
 	g.add(ev)
+
+	if opts := vd.GetOptions().String(); opts != "<nil>" {
+		ev.extensions = g.optionsParser(opts)
+	}
 
 	return ev
 }
@@ -237,6 +252,10 @@ func (g *graph) hydrateService(f File, sd *descriptor.ServiceDescriptorProto) Se
 		s.addMethod(g.hydrateMethod(s, md))
 	}
 
+	if opts := sd.GetOptions().String(); opts != "<nil>" {
+		s.extensions = g.optionsParser(opts)
+	}
+
 	return s
 }
 
@@ -250,6 +269,10 @@ func (g *graph) hydrateMethod(s Service, md *descriptor.MethodDescriptorProto) M
 
 	m.in = g.mustSeen(md.GetInputType()).(Message)
 	m.out = g.mustSeen(md.GetOutputType()).(Message)
+
+	if opts := md.GetOptions().String(); opts != "<nil>" {
+		m.extensions = g.optionsParser(opts)
+	}
 
 	return m
 }
@@ -308,6 +331,10 @@ func (g *graph) hydrateField(m Message, fd *descriptor.FieldDescriptorProto) Fie
 	f.fqn = fullyQualifiedName(f.msg, f)
 	g.add(f)
 
+	if opts := fd.GetOptions().String(); opts != "<nil>" {
+		f.extensions = g.optionsParser(opts)
+	}
+
 	return f
 }
 
@@ -318,6 +345,10 @@ func (g *graph) hydrateOneOf(m Message, od *descriptor.OneofDescriptorProto) One
 	}
 	o.fqn = fullyQualifiedName(m, o)
 	g.add(o)
+
+	if opts := od.GetOptions().String(); opts != "<nil>" {
+		o.extensions = g.optionsParser(opts)
+	}
 
 	return o
 }
@@ -427,6 +458,20 @@ func (g *graph) resolveFQN(e Entity) string {
 	}
 
 	return e.FullyQualifiedName()
+}
+
+func (g *graph) optionsParser(options string) []Extension {
+	r := regexp.MustCompile(`^(.*?):|\s(.*?):`)
+	matches := r.FindAllString(options, -1)
+	extensions := make([]Extension, 0, len(matches))
+
+	for _, match := range matches {
+		match = strings.TrimSpace(strings.TrimSuffix(match, ":"))
+		//extensions = append(extensions, g.mustSeen(match).(Extension))
+		// TODO: add reference to extension's dependents
+	}
+
+	return extensions
 }
 
 var _ AST = (*graph)(nil)

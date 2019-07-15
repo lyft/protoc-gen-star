@@ -16,7 +16,8 @@ type Extension interface {
 	// ParentEntity returns the ParentEntity where the Extension is defined
 	DefinedIn() ParentEntity
 
-	// Extendee returns the Message that the Extension is extending
+	// Extendee returns the Message that the Extension is extending. This will be one of Google's
+	// builtin options such as google.protobuf.FileOptions or google.protobuf.EnumOptions.
 	Extendee() Message
 
 	setExtendee(m Message)
@@ -36,6 +37,7 @@ func (e *ext) Package() Package           { return e.parent.Package() }
 func (e *ext) File() File                 { return e.parent.File() }
 func (e *ext) BuildTarget() bool          { return e.parent.BuildTarget() }
 func (e *ext) DefinedIn() ParentEntity    { return e.parent }
+func (e *ext) Extensions() []Extension    { return nil }
 func (e *ext) Extendee() Message          { return e.extendee }
 func (e *ext) Message() Message           { return nil }
 func (e *ext) InOneOf() bool              { return false }
