@@ -26,12 +26,13 @@ type Enum interface {
 }
 
 type enum struct {
-	desc   *descriptor.EnumDescriptorProto
-	parent ParentEntity
-	vals   []EnumValue
-	info   SourceCodeInfo
-	fqn    string
-	deps   []Entity
+	desc     *descriptor.EnumDescriptorProto
+	parent   ParentEntity
+	vals     []EnumValue
+	info     SourceCodeInfo
+	fqn      string
+	deps     []Entity
+	depCache []Entity
 }
 
 func (e *enum) Name() Name                                  { return Name(e.desc.GetName()) }
@@ -47,25 +48,26 @@ func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
 
 func (e *enum) Dependents() []Entity {
-	set := make(map[string]Entity)
+	if len(e.depCache) == 0 {
+		set := make(map[string]Entity)
 
-	set[e.resolveFQN(e.parent)] = e.parent
-	for _, d := range e.parent.Dependents() {
-		set[e.resolveFQN(d)] = d
-	}
-	for _, d := range e.deps {
-		set[e.resolveFQN(d)] = d
-		for _, dd := range d.Dependents() {
-			set[e.resolveFQN(dd)] = dd
+		set[e.resolveFQN(e.parent)] = e.parent
+		for _, d := range e.parent.Dependents() {
+			set[e.resolveFQN(d)] = d
+		}
+		for _, d := range e.deps {
+			set[e.resolveFQN(d)] = d
+			for _, dd := range d.Dependents() {
+				set[e.resolveFQN(dd)] = dd
+			}
+		}
+
+		e.depCache = make([]Entity, 0, len(set))
+		for _, d := range set {
+			e.depCache = append(e.depCache, d)
 		}
 	}
-
-	dependents := make([]Entity, 0, len(set))
-	for _, d := range set {
-		dependents = append(dependents, d)
-	}
-
-	return dependents
+	return e.depCache
 }
 
 func (e *enum) resolveFQN(ent Entity) string {

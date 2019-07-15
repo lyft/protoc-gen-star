@@ -20,10 +20,11 @@ type Service interface {
 }
 
 type service struct {
-	desc    *descriptor.ServiceDescriptorProto
-	methods []Method
-	file    File
-	fqn     string
+	desc            *descriptor.ServiceDescriptorProto
+	methods         []Method
+	file            File
+	fqn             string
+	dependentsCache []Entity
 
 	info SourceCodeInfo
 }
@@ -36,7 +37,13 @@ func (s *service) File() File                                     { return s.fil
 func (s *service) BuildTarget() bool                              { return s.file.BuildTarget() }
 func (s *service) SourceCodeInfo() SourceCodeInfo                 { return s.info }
 func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.desc }
-func (s *service) Dependents() []Entity                           { return append(s.file.Dependents(), s.file) }
+
+func (s *service) Dependents() []Entity {
+	if len(s.dependentsCache) == 0 {
+		s.dependentsCache = append(s.file.Dependents(), s.file)
+	}
+	return s.dependentsCache
+}
 
 func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(s.desc.GetOptions(), desc, &ext)

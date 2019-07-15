@@ -69,6 +69,7 @@ type msg struct {
 	oneofs              []OneOf
 	maps                []Message
 	deps                []Entity
+	dependentsCache     []Entity
 
 	info SourceCodeInfo
 }
@@ -90,25 +91,26 @@ func (m *msg) OneOfs() []OneOf                         { return m.oneofs }
 func (m *msg) MapEntries() []Message                   { return m.maps }
 
 func (m *msg) Dependents() []Entity {
-	set := make(map[string]Entity)
+	if len(m.dependentsCache) == 0 {
+		set := make(map[string]Entity)
 
-	set[m.resolveFQN(m.parent)] = m.parent
-	for _, d := range m.parent.Dependents() {
-		set[m.resolveFQN(d)] = d
-	}
-	for _, d := range m.deps {
-		set[m.resolveFQN(d)] = d
-		for _, dd := range d.Dependents() {
-			set[m.resolveFQN(dd)] = dd
+		set[m.resolveFQN(m.parent)] = m.parent
+		for _, d := range m.parent.Dependents() {
+			set[m.resolveFQN(d)] = d
+		}
+		for _, d := range m.deps {
+			set[m.resolveFQN(d)] = d
+			for _, dd := range d.Dependents() {
+				set[m.resolveFQN(dd)] = dd
+			}
+		}
+
+		m.dependentsCache = make([]Entity, 0, len(set))
+		for _, d := range set {
+			m.dependentsCache = append(m.dependentsCache, d)
 		}
 	}
-
-	dependents := make([]Entity, 0, len(set))
-	for _, d := range set {
-		dependents = append(dependents, d)
-	}
-
-	return dependents
+	return m.dependentsCache
 }
 
 func (m *msg) resolveFQN(ent Entity) string {

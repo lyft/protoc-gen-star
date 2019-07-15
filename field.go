@@ -36,11 +36,12 @@ type Field interface {
 }
 
 type field struct {
-	desc  *descriptor.FieldDescriptorProto
-	fqn   string
-	msg   Message
-	oneof OneOf
-	typ   FieldType
+	desc            *descriptor.FieldDescriptorProto
+	fqn             string
+	msg             Message
+	oneof           OneOf
+	typ             FieldType
+	dependentsCache []Entity
 
 	info SourceCodeInfo
 }
@@ -62,10 +63,14 @@ func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 
 func (f *field) Dependents() []Entity {
-	if f.InOneOf() {
-		return append(f.oneof.Dependents(), f.oneof)
+	if len(f.dependentsCache) == 0 {
+		if f.InOneOf() {
+			f.dependentsCache = append(f.oneof.Dependents(), f.oneof)
+		} else {
+			f.dependentsCache = append(f.msg.Dependents(), f.msg)
+		}
 	}
-	return append(f.msg.Dependents(), f.msg)
+	return f.dependentsCache
 }
 
 func (f *field) Required() bool {

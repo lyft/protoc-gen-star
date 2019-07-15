@@ -24,10 +24,11 @@ type OneOf interface {
 }
 
 type oneof struct {
-	desc *descriptor.OneofDescriptorProto
-	msg  Message
-	flds []Field
-	fqn  string
+	desc            *descriptor.OneofDescriptorProto
+	msg             Message
+	flds            []Field
+	fqn             string
+	dependentsCache []Entity
 
 	info SourceCodeInfo
 }
@@ -50,8 +51,14 @@ func (o *oneof) BuildTarget() bool                            { return o.msg.Bui
 func (o *oneof) SourceCodeInfo() SourceCodeInfo               { return o.info }
 func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
-func (o *oneof) Dependents() []Entity                         { return append(o.msg.Dependents(), o.msg) }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }
+
+func (o *oneof) Dependents() []Entity {
+	if len(o.dependentsCache) == 0 {
+		o.dependentsCache = append(o.msg.Dependents(), o.msg)
+	}
+	return o.dependentsCache
+}
 
 func (o *oneof) Imports() (i []File) {
 	// Mapping for avoiding duplicate entries
