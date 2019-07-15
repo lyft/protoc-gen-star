@@ -463,15 +463,15 @@ func (g *graph) resolveFQN(e Entity) string {
 	return e.FullyQualifiedName()
 }
 
-func (g *graph) assignDependent(ft FieldType, parent Entity) {
+func assignDependent(ft FieldType, parent Entity) {
 	if ft.IsEnum() {
 		enum := ft.Enum()
-		if g.resolveFQN(enum.Parent()) != g.resolveFQN(parent) {
+		if enum.Parent().FullyQualifiedName() != parent.FullyQualifiedName() {
 			enum.addDependent(parent)
 		}
 	} else if ft.IsEmbed() {
 		msg := ft.Embed()
-		if g.resolveFQN(msg.Parent()) != g.resolveFQN(parent) {
+		if msg.Parent().FullyQualifiedName() != parent.FullyQualifiedName() {
 			msg.addDependent(parent)
 		}
 	}
