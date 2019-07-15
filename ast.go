@@ -152,6 +152,7 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	g.add(fl)
 
 	for _, dep := range f.GetDependency() {
+		// the AST is built in topological order so a file's dependencies are always hydrated first
 		fileDep := g.mustSeen(dep).(File)
 		fl.addFileDep(fileDep)
 	}
@@ -462,15 +463,15 @@ func (g *graph) resolveFQN(e Entity) string {
 	return e.FullyQualifiedName()
 }
 
-func assignDependent(ft FieldType, parent Entity) {
+func (g *graph) assignDependent(ft FieldType, parent Entity) {
 	if ft.IsEnum() {
 		enum := ft.Enum()
-		if enum.File().Name() != parent.Name() {
+		if g.resolveFQN(enum.Parent()) != g.resolveFQN(parent) {
 			enum.addDependent(parent)
 		}
 	} else if ft.IsEmbed() {
 		msg := ft.Embed()
-		if msg.File().Name() != parent.Name() {
+		if g.resolveFQN(msg.Parent()) != g.resolveFQN(parent) {
 			msg.addDependent(parent)
 		}
 	}
