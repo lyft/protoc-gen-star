@@ -97,7 +97,15 @@ func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.Cod
 							assignDependent(field.Type(), o)
 						}
 					}
+
+					for _, e := range m.DefinedExtensions() {
+						assignDependent(e.Type(), e)
+					}
 				}
+			}
+
+			for _, e := range f.DefinedExtensions() {
+				assignDependent(e.Type(), e)
 			}
 		}
 	}
