@@ -25,10 +25,9 @@ type Extension interface {
 type ext struct {
 	field
 
-	parent          ParentEntity
-	extendee        Message
-	fqn             string
-	dependentsCache []Entity
+	parent   ParentEntity
+	extendee Message
+	fqn      string
 }
 
 func (e *ext) FullyQualifiedName() string { return e.fqn }
@@ -44,13 +43,7 @@ func (e *ext) OneOf() OneOf               { return nil }
 func (e *ext) setMessage(m Message)       {} // noop
 func (e *ext) setOneOf(o OneOf)           {} // noop
 func (e *ext) setExtendee(m Message)      { e.extendee = m }
-
-func (e *ext) Dependents() []Entity {
-	if len(e.dependentsCache) == 0 {
-		e.dependentsCache = append(e.parent.Dependents(), e.parent)
-	}
-	return e.dependentsCache
-}
+func (e *ext) Dependents() []Entity       { return []Entity{e.extendee} }
 
 func (e *ext) accept(v Visitor) (err error) {
 	if v == nil {
