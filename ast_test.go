@@ -356,3 +356,25 @@ func TestGraph_Bidirectional(t *testing.T) {
 	assert.Contains(t, deps, kitchen)
 	assert.Contains(t, deps, kitchen.File())
 }
+
+func TestGraph_BidirectionalExtensions(t *testing.T) {
+	t.Parallel()
+
+	d := InitMockDebugger()
+	ast := ProcessCodeGeneratorRequestBidirectional(d, readCodeGenReq(t, "extensions"))
+	require.False(t, d.Failed(), "failed to build graph (see previous log statements)")
+
+	enumExtension, ok := ast.Lookup(".extensions.ext.EnumExtension")
+	require.True(t, ok)
+	enumOptions, ok := ast.Lookup(".google.protobuf.EnumOptions")
+	require.True(t, ok)
+	extension, ok := ast.Lookup(".extensions.ext.ext")
+	require.True(t, ok)
+	deps := enumExtension.Dependents()
+
+	require.Len(t, deps, 4)
+	assert.Contains(t, deps, enumExtension.File())
+	assert.Contains(t, deps, enumOptions)
+	assert.Contains(t, deps, enumOptions.File())
+	assert.Contains(t, deps, extension)
+}

@@ -93,8 +93,9 @@ func TestExt_Dependents(t *testing.T) {
 	e := &ext{extendee: msg}
 	deps := e.Dependents()
 
-	assert.Len(t, deps, 1)
+	assert.Len(t, deps, 2)
 	assert.Contains(t, deps, msg)
+	assert.Contains(t, deps, msg.File())
 }
 
 func TestExt_Accept(t *testing.T) {
