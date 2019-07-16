@@ -476,7 +476,6 @@ func (g *graph) optionsParser(options string, entityType string) []Extension {
 		match = strings.TrimSpace(strings.TrimSuffix(match, ":"))
 		if ext, ok := g.extMap[entityType][match]; ok {
 			extensions = append(extensions, ext)
-			// TODO: add reference to extension's dependents
 		}
 	}
 
