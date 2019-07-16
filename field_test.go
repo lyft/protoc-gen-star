@@ -158,6 +158,14 @@ func TestField_Required(t *testing.T) {
 	assert.False(t, f.Required(), "proto2 + optional")
 }
 
+func TestField_Extensions(t *testing.T) {
+	t.Parallel()
+
+	f := &field{extensions: []Extension{&ext{}}}
+	assert.Equal(t, f.extensions, f.Extensions())
+	assert.Len(t, f.Extensions(), 1)
+}
+
 func TestField_ChildAtPath(t *testing.T) {
 	t.Parallel()
 

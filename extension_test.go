@@ -188,6 +188,11 @@ func TestProtoExtExtractor(t *testing.T) {
 	assert.NotPanics(t, func() { e.GetExtension(nil, nil) })
 }
 
+func TestExt_Extensions(t *testing.T) {
+	e := &ext{}
+	assert.Empty(t, e.Extensions())
+}
+
 // needed to wrapped since there is a Extension method
 type mExt interface {
 	Extension

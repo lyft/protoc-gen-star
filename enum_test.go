@@ -105,6 +105,14 @@ func TestEnum_Extension(t *testing.T) {
 	assert.NotPanics(t, func() { e.Extension(nil, nil) })
 }
 
+func TestEnum_Extensions(t *testing.T) {
+	t.Parallel()
+
+	e := &enum{extensions: []Extension{&ext{}}}
+	assert.Equal(t, e.extensions, e.Extensions())
+	assert.Len(t, e.Extensions(), 1)
+}
+
 func TestEnum_Accept(t *testing.T) {
 	t.Parallel()
 

@@ -48,7 +48,7 @@ type Message interface {
 
 	setParent(p ParentEntity)
 	addField(f Field)
-	addExtension(e Extension)
+	addExtension(exts ...Extension)
 	addOneOf(o OneOf)
 }
 
@@ -196,8 +196,8 @@ func (m *msg) accept(v Visitor) (err error) {
 	return
 }
 
-func (m *msg) addExtension(ext Extension) {
-	m.exts = append(m.exts, ext)
+func (m *msg) addExtension(exts ...Extension) {
+	m.exts = append(m.exts, exts...)
 }
 
 func (m *msg) addDefExtension(ext Extension) {

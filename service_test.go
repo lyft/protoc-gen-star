@@ -106,6 +106,14 @@ func TestService_Methods(t *testing.T) {
 	assert.Len(t, s.Methods(), 1)
 }
 
+func TestService_Extensions(t *testing.T) {
+	t.Parallel()
+
+	s := &service{extensions: []Extension{&ext{}}}
+	assert.Equal(t, s.extensions, s.Extensions())
+	assert.Len(t, s.Extensions(), 1)
+}
+
 func TestService_Accept(t *testing.T) {
 	t.Parallel()
 

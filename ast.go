@@ -319,6 +319,10 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 		g.addExtensionToMap(e)
 	}
 
+	if opts := md.GetOptions().String(); opts != "<nil>" {
+		m.addExtension(g.optionsParser(opts, ".google.protobuf.MessageOptions")...)
+	}
+
 	return m
 }
 
