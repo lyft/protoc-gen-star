@@ -2,6 +2,7 @@ package pgs
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
@@ -33,6 +34,7 @@ type graph struct {
 	packages   map[string]Package
 	entities   map[string]Entity
 	extensions []Extension
+	extMap     map[string]map[string]Extension
 }
 
 func (g *graph) Targets() map[string]File { return g.targets }
@@ -58,6 +60,7 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 		packages:   make(map[string]Package),
 		entities:   make(map[string]Entity),
 		extensions: []Extension{},
+		extMap:     make(map[string]map[string]Extension),
 	}
 
 	for _, f := range req.GetFileToGenerate() {
@@ -81,11 +84,6 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 
 	for _, e := range g.extensions {
 		e.addType(g.hydrateFieldType(e))
-		extendee := g.mustSeen(e.Descriptor().GetExtendee()).(Message)
-		e.setExtendee(extendee)
-		if extendee != nil {
-			extendee.addExtension(e)
-		}
 	}
 
 	return g
@@ -135,7 +133,7 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	}
 
 	if opts := f.GetOptions().String(); opts != "<nil>" {
-		fl.extensions = g.optionsParser(opts)
+		fl.extensions = g.optionsParser(opts, ".google.protobuf.FileOptions")
 	}
 
 	enums := f.GetEnumType()
@@ -144,17 +142,18 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		fl.addEnum(g.hydrateEnum(fl, e))
 	}
 
+	msgs := f.GetMessageType()
+	fl.msgs = make([]Message, 0, len(f.GetMessageType()))
+	for _, msg := range msgs {
+		fl.addMessage(g.hydrateMessage(fl, msg))
+	}
+
 	exts := f.GetExtension()
 	fl.defExts = make([]Extension, 0, len(exts))
 	for _, ext := range exts {
 		e := g.hydrateExtension(fl, ext)
 		fl.addDefExtension(e)
-	}
-
-	msgs := f.GetMessageType()
-	fl.msgs = make([]Message, 0, len(f.GetMessageType()))
-	for _, msg := range msgs {
-		fl.addMessage(g.hydrateMessage(fl, msg))
+		g.addExtensionToMap(e)
 	}
 
 	srvs := f.GetService()
@@ -219,7 +218,7 @@ func (g *graph) hydrateEnum(p ParentEntity, ed *descriptor.EnumDescriptorProto) 
 	}
 
 	if opts := ed.GetOptions().String(); opts != "<nil>" {
-		e.extensions = g.optionsParser(opts)
+		e.extensions = g.optionsParser(opts, ".google.protobuf.EnumOptions")
 	}
 
 	return e
@@ -234,7 +233,7 @@ func (g *graph) hydrateEnumValue(e Enum, vd *descriptor.EnumValueDescriptorProto
 	g.add(ev)
 
 	if opts := vd.GetOptions().String(); opts != "<nil>" {
-		ev.extensions = g.optionsParser(opts)
+		ev.extensions = g.optionsParser(opts, ".google.protobuf.EnumValueOptions")
 	}
 
 	return ev
@@ -253,7 +252,7 @@ func (g *graph) hydrateService(f File, sd *descriptor.ServiceDescriptorProto) Se
 	}
 
 	if opts := sd.GetOptions().String(); opts != "<nil>" {
-		s.extensions = g.optionsParser(opts)
+		s.extensions = g.optionsParser(opts, ".google.options.ServiceOptions")
 	}
 
 	return s
@@ -271,7 +270,7 @@ func (g *graph) hydrateMethod(s Service, md *descriptor.MethodDescriptorProto) M
 	m.out = g.mustSeen(md.GetOutputType()).(Message)
 
 	if opts := md.GetOptions().String(); opts != "<nil>" {
-		m.extensions = g.optionsParser(opts)
+		m.extensions = g.optionsParser(opts, ".google.protobuf.MethodOptions")
 	}
 
 	return m
@@ -313,11 +312,11 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 		}
 	}
 
-	exts := md.GetExtension()
-	m.defExts = make([]Extension, 0, len(exts))
+	m.defExts = make([]Extension, 0, len(md.GetExtension()))
 	for _, ext := range md.GetExtension() {
 		e := g.hydrateExtension(m, ext)
 		m.addDefExtension(e)
+		g.addExtensionToMap(e)
 	}
 
 	return m
@@ -332,7 +331,7 @@ func (g *graph) hydrateField(m Message, fd *descriptor.FieldDescriptorProto) Fie
 	g.add(f)
 
 	if opts := fd.GetOptions().String(); opts != "<nil>" {
-		f.extensions = g.optionsParser(opts)
+		f.extensions = g.optionsParser(opts, ".google.protobuf.FieldOptions")
 	}
 
 	return f
@@ -347,7 +346,7 @@ func (g *graph) hydrateOneOf(m Message, od *descriptor.OneofDescriptorProto) One
 	g.add(o)
 
 	if opts := od.GetOptions().String(); opts != "<nil>" {
-		o.extensions = g.optionsParser(opts)
+		o.extensions = g.optionsParser(opts, ".google.protobuf.OneofOptions")
 	}
 
 	return o
@@ -361,6 +360,10 @@ func (g *graph) hydrateExtension(parent ParentEntity, fd *descriptor.FieldDescri
 	ext.fqn = fullyQualifiedName(parent, ext)
 	g.add(ext)
 	g.extensions = append(g.extensions, ext)
+
+	extendee := g.mustSeen(fd.GetExtendee()).(Message)
+	ext.extendee = extendee
+	extendee.addExtension(ext)
 
 	return ext
 }
@@ -460,18 +463,35 @@ func (g *graph) resolveFQN(e Entity) string {
 	return e.FullyQualifiedName()
 }
 
-func (g *graph) optionsParser(options string) []Extension {
+func (g *graph) optionsParser(options string, entityType string) []Extension {
 	r := regexp.MustCompile(`^(.*?):|\s(.*?):`)
 	matches := r.FindAllString(options, -1)
 	extensions := make([]Extension, 0, len(matches))
 
 	for _, match := range matches {
 		match = strings.TrimSpace(strings.TrimSuffix(match, ":"))
-		//extensions = append(extensions, g.mustSeen(match).(Extension))
-		// TODO: add reference to extension's dependents
+		if ext, ok := g.extMap[entityType][match]; ok {
+			extensions = append(extensions, ext)
+			// TODO: add reference to extension's dependents
+		}
 	}
 
 	return extensions
+}
+
+func (g *graph) addExtensionToMap(ext Extension) {
+	entityType := ext.Descriptor().GetExtendee()
+	num := int32ToString(ext.Descriptor().GetNumber())
+	if v, ok := g.extMap[entityType]; ok {
+		v[num] = ext
+	} else {
+		g.extMap[entityType] = map[string]Extension{num: ext}
+	}
+}
+
+// int32ToString converts an int32 to a string.
+func int32ToString(in int32) string {
+	return strconv.FormatInt(int64(in), 10)
 }
 
 var _ AST = (*graph)(nil)

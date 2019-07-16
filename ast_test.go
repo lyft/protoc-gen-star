@@ -330,4 +330,8 @@ func TestGraph_Extensions(t *testing.T) {
 	assert.True(t, ok)
 	assert.NotNil(t, ent.(Message).Extensions())
 	assert.Len(t, ent.(Message).Extensions(), 1)
+
+	ent, ok = g.Lookup("extensions/everything.proto")
+	assert.True(t, ok)
+	assert.Len(t, ent.(File).Extensions(), 1)
 }
