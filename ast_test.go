@@ -343,4 +343,24 @@ func TestGraph_Extensions(t *testing.T) {
 	union, ok := g.Lookup(".extensions.RootMessage.union")
 	require.True(t, ok)
 	assert.Len(t, union.Extensions(), 1)
+
+	nestedEnum, ok := g.Lookup(".extensions.RootMessage.NestedEnum")
+	require.True(t, ok)
+	assert.Len(t, nestedEnum.Extensions(), 1)
+
+	zero, ok := g.Lookup(".extensions.RootMessage.NestedEnum.ZERO")
+	require.True(t, ok)
+	assert.Len(t, zero.Extensions(), 1)
+
+	nestedMsgField, ok := g.Lookup(".extensions.RootMessage.nested_msg")
+	require.True(t, ok)
+	assert.Len(t, nestedMsgField.Extensions(), 1)
+
+	doMethod, ok := g.Lookup(".extensions.API.Do")
+	require.True(t, ok)
+	assert.Len(t, doMethod.Extensions(), 1)
+
+	api := doMethod.(Method).Service()
+	assert.Len(t, api.Extensions(), 1)
+
 }

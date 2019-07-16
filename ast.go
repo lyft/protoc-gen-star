@@ -121,6 +121,7 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		pkg:  pkg,
 		desc: f,
 	}
+
 	if pkg := f.GetPackage(); pkg != "" {
 		fl.fqn = "." + pkg
 	} else {
@@ -154,6 +155,10 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		e := g.hydrateExtension(fl, ext)
 		fl.addDefExtension(e)
 		g.addExtensionToMap(e)
+		//if fl.Name().String() == "extensions/ext/api.proto" {
+		//	fmt.Println(e.FullyQualifiedName())
+		//	fmt.Println(g.extMap[e.Extendee().FullyQualifiedName()])
+		//}
 	}
 
 	srvs := f.GetService()
@@ -252,7 +257,7 @@ func (g *graph) hydrateService(f File, sd *descriptor.ServiceDescriptorProto) Se
 	}
 
 	if opts := sd.GetOptions().String(); opts != "<nil>" {
-		s.extensions = g.optionsParser(opts, ".google.options.ServiceOptions")
+		s.extensions = g.optionsParser(opts, ".google.protobuf.ServiceOptions")
 	}
 
 	return s
