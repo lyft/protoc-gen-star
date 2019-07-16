@@ -377,4 +377,9 @@ func TestGraph_BidirectionalExtensions(t *testing.T) {
 	assert.Contains(t, deps, enumOptions)
 	assert.Contains(t, deps, enumOptions.File())
 	assert.Contains(t, deps, extension)
+
+	extDeps := extension.Dependents()
+	require.Len(t, extDeps, 2)
+	assert.Contains(t, extDeps, enumOptions)
+	assert.Contains(t, extDeps, enumOptions.File())
 }
