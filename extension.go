@@ -9,7 +9,8 @@ import (
 )
 
 // An Extension is a custom option annotation that can be applied to an Entity to provide additional
-// semantic details and metadata about the Entity.
+// semantic details and metadata about the Entity. Extensions are defined as a field on one of Google's
+// builting options Messages such as google.protobuf.FileOptions or google.protobuf.EnumOptions.
 type Extension interface {
 	Field
 
