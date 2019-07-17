@@ -39,8 +39,9 @@ func (s *service) SourceCodeInfo() SourceCodeInfo                 { return s.inf
 func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.desc }
 
 func (s *service) Dependents() []Entity {
-	if len(s.dependentsCache) == 0 {
-		s.dependentsCache = append(s.file.Dependents(), s.file)
+	if s.dependentsCache == nil {
+		s.dependentsCache = []Entity{s.file}
+		s.dependentsCache = append(s.dependentsCache, s.file.Dependents()...)
 	}
 	return s.dependentsCache
 }

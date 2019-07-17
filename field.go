@@ -63,11 +63,13 @@ func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 
 func (f *field) Dependents() []Entity {
-	if len(f.dependentsCache) == 0 {
+	if f.dependentsCache == nil {
 		if f.InOneOf() {
-			f.dependentsCache = append(f.oneof.Dependents(), f.oneof)
+			f.dependentsCache = []Entity{f.oneof}
+			f.dependentsCache = append(f.dependentsCache, f.oneof.Dependents()...)
 		} else {
-			f.dependentsCache = append(f.msg.Dependents(), f.msg)
+			f.dependentsCache = []Entity{f.msg}
+			f.dependentsCache = append(f.dependentsCache, f.msg.Dependents()...)
 		}
 	}
 	return f.dependentsCache

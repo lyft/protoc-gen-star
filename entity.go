@@ -27,7 +27,11 @@ type Entity interface {
 	// Imports includes all external files required by this entity.
 	Imports() []File
 
-	// Dependents includes all entities that require this entity.
+	// Dependents includes all entities that require this entity. Note that the
+	// slice will only contain a complete set of dependents (transitive and direct)
+	// if the AST was built via ProcessCodeGeneratorRequestBidirectional or
+	// ProcessFileDescriptorSetBidirectional. Otherwise this call will only include
+	// direct dependents.
 	Dependents() []Entity
 
 	// File returns the File containing this entity.

@@ -48,7 +48,7 @@ func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
 
 func (e *enum) Dependents() []Entity {
-	if len(e.depCache) == 0 {
+	if e.depCache == nil {
 		set := make(map[string]Entity)
 
 		set[e.resolveFQN(e.parent)] = e.parent

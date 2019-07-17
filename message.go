@@ -91,7 +91,7 @@ func (m *msg) OneOfs() []OneOf                         { return m.oneofs }
 func (m *msg) MapEntries() []Message                   { return m.maps }
 
 func (m *msg) Dependents() []Entity {
-	if len(m.dependentsCache) == 0 {
+	if m.dependentsCache == nil {
 		set := make(map[string]Entity)
 
 		set[m.resolveFQN(m.parent)] = m.parent

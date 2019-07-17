@@ -43,8 +43,9 @@ func (ev *enumVal) Value() int32                                     { return ev
 func (ev *enumVal) Imports() []File                                  { return nil }
 
 func (ev *enumVal) Dependents() []Entity {
-	if len(ev.dependentsCache) == 0 {
-		ev.dependentsCache = append(ev.enum.Dependents(), ev.enum)
+	if ev.dependentsCache == nil {
+		ev.dependentsCache = []Entity{ev.enum}
+		ev.dependentsCache = append(ev.dependentsCache, ev.enum.Dependents()...)
 	}
 	return ev.dependentsCache
 }

@@ -46,8 +46,9 @@ func (e *ext) setOneOf(o OneOf)           {} // noop
 func (e *ext) setExtendee(m Message)      { e.extendee = m }
 
 func (e *ext) Dependents() []Entity {
-	if len(e.dependentsCache) == 0 {
-		e.dependentsCache = append(e.extendee.Dependents(), e.extendee)
+	if e.dependentsCache == nil {
+		e.dependentsCache = []Entity{e.extendee}
+		e.dependentsCache = append(e.dependentsCache, e.extendee.Dependents()...)
 	}
 	return e.dependentsCache
 }

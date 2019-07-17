@@ -57,8 +57,9 @@ func (m *method) ServerStreaming() bool                         { return m.desc.
 func (m *method) BiDirStreaming() bool                          { return m.ClientStreaming() && m.ServerStreaming() }
 
 func (m *method) Dependents() []Entity {
-	if len(m.dependentsCache) == 0 {
-		m.dependentsCache = append(m.service.Dependents(), m.service)
+	if m.dependentsCache == nil {
+		m.dependentsCache = []Entity{m.service}
+		m.dependentsCache = append(m.dependentsCache, m.service.Dependents()...)
 	}
 	return m.dependentsCache
 }

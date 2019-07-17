@@ -54,8 +54,9 @@ func (o *oneof) Message() Message                             { return o.msg }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }
 
 func (o *oneof) Dependents() []Entity {
-	if len(o.dependentsCache) == 0 {
-		o.dependentsCache = append(o.msg.Dependents(), o.msg)
+	if o.dependentsCache == nil {
+		o.dependentsCache = []Entity{o.msg}
+		o.dependentsCache = append(o.dependentsCache, o.msg.Dependents()...)
 	}
 	return o.dependentsCache
 }
