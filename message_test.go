@@ -339,6 +339,34 @@ func TestMsg_Imports(t *testing.T) {
 	assert.Len(t, m.Imports(), 2)
 }
 
+func TestMsg_Dependents(t *testing.T) {
+	t.Parallel()
+
+	t.Run("no external deps", func(t *testing.T) {
+		t.Parallel()
+
+		m := &msg{}
+		p := dummyMsg()
+		p.addMessage(m)
+		deps := m.Dependents()
+
+		assert.Len(t, deps, 1)
+		assert.Contains(t, deps, p)
+	})
+
+	t.Run("external deps", func(t *testing.T) {
+		t.Parallel()
+
+		m := &msg{}
+		m2 := dummyMsg()
+		m.addDependent(m2)
+		deps := m.Dependents()
+
+		assert.Len(t, deps, 1)
+		assert.Contains(t, deps, m2)
+	})
+}
+
 func TestMsg_ChildAtPath(t *testing.T) {
 	t.Parallel()
 

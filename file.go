@@ -16,6 +16,8 @@ type File interface {
 	// Descriptor returns the underlying descriptor for the proto file
 	Descriptor() *descriptor.FileDescriptorProto
 
+	// Dependents returns all files where the given file was directly or
+	// transitively imported.
 	Dependents() []File
 
 	// Services returns the services from this proto file.

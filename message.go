@@ -35,6 +35,10 @@ type Message interface {
 	// Extensions returns all of the Extensions applied to this Message.
 	Extensions() []Extension
 
+	// Dependents returns all of the messages where message is directly or
+	// transitively used.
+	Dependents() []Message
+
 	// IsMapEntry identifies this message as a MapEntry. If true, this message is
 	// not generated as code, and is used exclusively when marshaling a map field
 	// to the wire format.
@@ -53,6 +57,7 @@ type Message interface {
 	addField(f Field)
 	addExtension(e Extension)
 	addOneOf(o OneOf)
+	addDependent(message Message)
 }
 
 type msg struct {
@@ -67,6 +72,8 @@ type msg struct {
 	fields              []Field
 	oneofs              []OneOf
 	maps                []Message
+	dependents          []Message
+	dependentsCache     []Message
 
 	info SourceCodeInfo
 }
@@ -143,6 +150,32 @@ func (m *msg) Imports() (i []File) {
 		i = append(i, f)
 	}
 	return
+}
+
+func (m *msg) Dependents() []Message {
+	if m.dependentsCache == nil {
+		set := make(map[string]Message)
+
+		if parent, ok := m.Parent().(Message); ok {
+			set[parent.FullyQualifiedName()] = parent
+			for _, d := range parent.Dependents() {
+				set[d.FullyQualifiedName()] = d
+			}
+		}
+
+		for _, d := range m.dependents {
+			set[d.FullyQualifiedName()] = d
+			for _, dd := range d.Dependents() {
+				set[dd.FullyQualifiedName()] = dd
+			}
+		}
+
+		m.dependentsCache = make([]Message, 0, len(set))
+		for _, d := range set {
+			m.dependentsCache = append(m.dependentsCache, d)
+		}
+	}
+	return m.dependentsCache
 }
 
 func (m *msg) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
@@ -232,6 +265,10 @@ func (m *msg) addOneOf(o OneOf) {
 func (m *msg) addMapEntry(me Message) {
 	me.setParent(m)
 	m.maps = append(m.maps, me)
+}
+
+func (m *msg) addDependent(message Message) {
+	m.dependents = append(m.dependents, message)
 }
 
 func (m *msg) childAtPath(path []int32) Entity {

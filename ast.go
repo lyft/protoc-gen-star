@@ -78,6 +78,15 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 	return g
 }
 
+// ProcessCodeGeneratorRequestBidirectional has the same functionality as
+// ProcessCodeGeneratorRequest, but builds the AST to have references to any
+// entities that depend on them.
+func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
+	g := ProcessCodeGeneratorRequest(debug, req)
+	// TODO: fill out deps stuff for messages/enums
+	return g
+}
+
 // ProcessFileDescriptorSet conversts a FileDescriptorSet from protoc into a
 // fully connected AST entity graph. An error is returned if the input is
 // malformed or missing dependencies. To generate a self-contained
@@ -91,6 +100,14 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
 	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
 	return ProcessCodeGeneratorRequest(debug, &req)
+}
+
+// ProcessFileDescriptorSetBidirectional has the same functionality as
+// ProcessFileDescriptorSet, but builds the AST to have references to any
+// entities that depend on them.
+func ProcessFileDescriptorSetBidirectional(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
+	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
+	return ProcessCodeGeneratorRequestBidirectional(debug, &req)
 }
 
 func (g *graph) hydratePackage(f *descriptor.FileDescriptorProto) Package {
