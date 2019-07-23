@@ -61,19 +61,9 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 		g.targets[f] = nil
 	}
 
-	var allFiles []File
 	for _, f := range req.GetProtoFile() {
 		pkg := g.hydratePackage(f)
-		fl := g.hydrateFile(pkg, f)
-		allFiles = append(allFiles, fl)
-		pkg.addFile(fl)
-	}
-
-	for _, f := range allFiles {
-		for _, dep := range f.Descriptor().GetDependency() {
-			fileDep := g.mustSeen(dep).(File)
-			f.addFileDep(fileDep)
-		}
+		pkg.addFile(g.hydrateFile(pkg, f))
 	}
 
 	for _, e := range g.extensions {
@@ -127,6 +117,13 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	}
 	g.add(fl)
 
+	for _, dep := range f.GetDependency() {
+		// the AST is built in topological order so a file's dependencies are always hydrated first
+		d := g.mustSeen(dep).(File)
+		fl.addFileDependency(d)
+		d.addDependent(fl)
+	}
+
 	if _, fl.buildTarget = g.targets[f.GetName()]; fl.buildTarget {
 		g.targets[f.GetName()] = fl
 	}
@@ -168,7 +165,7 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		}
 	}
 
-	fl.fileDeps = make([]File, 0)
+	fl.fileDependencies = make([]File, 0)
 
 	g.hydrateSourceCodeInfo(fl, f)
 
