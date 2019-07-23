@@ -98,6 +98,44 @@ func TestEnum_Values(t *testing.T) {
 	assert.Len(t, e.Values(), 1)
 }
 
+func TestEnum_Dependents(t *testing.T) {
+	t.Parallel()
+
+	t.Run("enum in file", func(t *testing.T) {
+		t.Parallel()
+
+		e := &enum{}
+		f := dummyFile()
+		f.addEnum(e)
+
+		assert.Empty(t, e.Dependents())
+	})
+
+	t.Run("enum in message", func(t *testing.T) {
+		t.Parallel()
+
+		e := &enum{}
+		m := dummyMsg()
+		m.addEnum(e)
+		deps := e.Dependents()
+
+		assert.Len(t, deps, 1)
+		assert.Contains(t, deps, m)
+	})
+
+	t.Run("external dependents", func(t *testing.T) {
+		t.Parallel()
+
+		e := &enum{}
+		m := dummyMsg()
+		e.addDependent(m)
+		deps := e.Dependents()
+
+		assert.Len(t, deps, 1)
+		assert.Contains(t, deps, m)
+	})
+}
+
 func TestEnum_Extension(t *testing.T) {
 	// cannot be parallel
 
