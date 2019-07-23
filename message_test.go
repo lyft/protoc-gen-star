@@ -342,10 +342,21 @@ func TestMsg_Imports(t *testing.T) {
 func TestMsg_Dependents(t *testing.T) {
 	t.Parallel()
 
+	pkg := dummyPkg()
+	f := &file{
+		pkg: pkg,
+		desc: &descriptor.FileDescriptorProto{
+			Package: proto.String(pkg.ProtoName().String()),
+			Syntax:  proto.String(string(Proto3)),
+			Name:    proto.String("test_file.proto"),
+		},
+	}
+
 	t.Run("no external deps", func(t *testing.T) {
 		t.Parallel()
 
-		m := &msg{}
+		m := &msg{parent: f}
+		m.fqn = fullyQualifiedName(f, m)
 		p := dummyMsg()
 		p.addMessage(m)
 		deps := m.Dependents()
@@ -357,7 +368,8 @@ func TestMsg_Dependents(t *testing.T) {
 	t.Run("external deps", func(t *testing.T) {
 		t.Parallel()
 
-		m := &msg{}
+		m := &msg{parent: f}
+		m.fqn = fullyQualifiedName(f, m)
 		m2 := dummyMsg()
 		m.addDependent(m2)
 		deps := m.Dependents()

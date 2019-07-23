@@ -79,11 +79,22 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 }
 
 // ProcessCodeGeneratorRequestBidirectional has the same functionality as
-// ProcessCodeGeneratorRequest, but builds the AST to have references to any
-// entities that depend on them.
+// ProcessCodeGeneratorRequest, but builds the AST so that files, messages,
+// and enums have references to any files or messages that directly or
+// transitively depend on them.
 func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
 	g := ProcessCodeGeneratorRequest(debug, req)
-	// TODO: fill out deps stuff for messages/enums
+	for _, pkg := range g.Packages() {
+		for _, f := range pkg.Files() {
+			if len(f.Descriptor().GetDependency()) > 0 { // check for imports
+				for _, m := range f.AllMessages() {
+					for _, field := range m.Fields() {
+						assignDependent(field.Type(), m)
+					}
+				}
+			}
+		}
+	}
 	return g
 }
 
@@ -103,8 +114,9 @@ func ProcessFileDescriptorSet(debug Debugger, fdset *descriptor.FileDescriptorSe
 }
 
 // ProcessFileDescriptorSetBidirectional has the same functionality as
-// ProcessFileDescriptorSet, but builds the AST to have references to any
-// entities that depend on them.
+// ProcessFileDescriptorSet, but builds the AST so that files, messages,
+// and enums have references to any files or messages that directly or
+// transitively depend on them.
 func ProcessFileDescriptorSetBidirectional(debug Debugger, fdset *descriptor.FileDescriptorSet) AST {
 	req := plugin_go.CodeGeneratorRequest{ProtoFile: fdset.File}
 	return ProcessCodeGeneratorRequestBidirectional(debug, &req)
@@ -441,6 +453,28 @@ func (g *graph) resolveFQN(e Entity) string {
 	}
 
 	return e.FullyQualifiedName()
+}
+
+func assignDependent(ft FieldType, parent Message) {
+	if ft.IsEnum() {
+		ft.Enum().addDependent(parent)
+	} else if ft.IsEmbed() {
+		ft.Embed().addDependent(parent)
+	} else if ft.IsRepeated() || ft.IsMap() {
+		if ft.Element().IsEnum() {
+			ft.Element().Enum().addDependent(parent)
+		} else if ft.Element().IsEmbed() {
+			ft.Element().Embed().addDependent(parent)
+		}
+
+		if ft.IsMap() {
+			if ft.Key().IsEnum() {
+				ft.Key().Enum().addDependent(parent)
+			} else if ft.Key().IsEmbed() {
+				ft.Key().Embed().addDependent(parent)
+			}
+		}
+	}
 }
 
 var _ AST = (*graph)(nil)

@@ -170,6 +170,9 @@ func (m *msg) Dependents() []Message {
 			}
 		}
 
+		// prevent m from adding itself to its dependents
+		delete(set, m.FullyQualifiedName())
+
 		m.dependentsCache = make([]Message, 0, len(set))
 		for _, d := range set {
 			m.dependentsCache = append(m.dependentsCache, d)
