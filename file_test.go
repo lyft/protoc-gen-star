@@ -164,7 +164,7 @@ func TestFile_Imports(t *testing.T) {
 
 	f.addMessage(m)
 	f.addService(svc)
-	f.addFileDep(flDep)
+	f.addFileDependency(flDep)
 	assert.Len(t, f.Imports(), 2)
 
 	nf := &file{desc: &descriptor.FileDescriptorProto{
@@ -178,7 +178,12 @@ func TestFile_Dependents(t *testing.T) {
 	t.Parallel()
 
 	f := &file{}
-	assert.Empty(t, f.Dependents())
+	fl := dummyFile()
+	f.addDependent(fl)
+	deps := f.Dependents()
+
+	assert.Len(t, deps, 1)
+	assert.Contains(t, deps, fl)
 }
 
 func TestFile_Accept(t *testing.T) {

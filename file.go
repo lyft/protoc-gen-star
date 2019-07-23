@@ -29,7 +29,9 @@ type File interface {
 
 	setPackage(p Package)
 
-	addFileDep(fl File)
+	addFileDependency(fl File)
+
+	addDependent(fl File)
 
 	addService(s Service)
 
@@ -42,7 +44,9 @@ type file struct {
 	pkg                     Package
 	enums                   []Enum
 	defExts                 []Extension
-	fileDeps                []File
+	dependents              []Entity
+	dependentsCache         []Entity
+	fileDependencies        []File
 	msgs                    []Message
 	srvs                    []Service
 	buildTarget             bool
@@ -61,7 +65,24 @@ func (f *file) MapEntries() (me []Message)                  { return nil }
 func (f *file) SourceCodeInfo() SourceCodeInfo              { return f.SyntaxSourceCodeInfo() }
 func (f *file) SyntaxSourceCodeInfo() SourceCodeInfo        { return f.syntaxInfo }
 func (f *file) PackageSourceCodeInfo() SourceCodeInfo       { return f.packageInfo }
-func (f *file) Dependents() []Entity                        { return nil }
+
+func (f *file) Dependents() []Entity {
+	if f.dependentsCache == nil {
+		set := make(map[string]Entity)
+		for _, fl := range f.dependents {
+			set[fl.Name().String()] = fl
+			for _, d := range fl.Dependents() {
+				set[d.Name().String()] = d
+			}
+		}
+
+		f.dependentsCache = make([]Entity, 0, len(set))
+		for _, d := range set {
+			f.dependentsCache = append(f.dependentsCache, d)
+		}
+	}
+	return f.dependentsCache
+}
 
 func (f *file) Enums() []Enum {
 	return f.enums
@@ -94,7 +115,7 @@ func (f *file) Services() []Service {
 func (f *file) Imports() (i []File) {
 	// Mapping for avoiding duplicate entries
 	importMap := make(map[string]File, len(f.AllMessages())+len(f.srvs))
-	for _, fl := range f.fileDeps {
+	for _, fl := range f.fileDependencies {
 		importMap[fl.Name().String()] = fl
 	}
 	for _, m := range f.AllMessages() {
@@ -168,8 +189,12 @@ func (f *file) addEnum(e Enum) {
 	f.enums = append(f.enums, e)
 }
 
-func (f *file) addFileDep(fl File) {
-	f.fileDeps = append(f.fileDeps, fl)
+func (f *file) addFileDependency(fl File) {
+	f.fileDependencies = append(f.fileDependencies, fl)
+}
+
+func (f *file) addDependent(fl File) {
+	f.dependents = append(f.dependents, fl)
 }
 
 func (f *file) addMessage(m Message) {

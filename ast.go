@@ -161,8 +161,9 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 
 	for _, dep := range f.GetDependency() {
 		// the AST is built in topological order so a file's dependencies are always hydrated first
-		fileDep := g.mustSeen(dep).(File)
-		fl.addFileDep(fileDep)
+		d := g.mustSeen(dep).(File)
+		fl.addFileDependency(d)
+		d.addDependent(fl)
 	}
 
 	if _, fl.buildTarget = g.targets[f.GetName()]; fl.buildTarget {
@@ -206,7 +207,7 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 		}
 	}
 
-	fl.fileDeps = make([]File, 0)
+	fl.fileDependencies = make([]File, 0)
 
 	g.hydrateSourceCodeInfo(fl, f)
 

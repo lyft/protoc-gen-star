@@ -1,6 +1,7 @@
 package pgs
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -371,6 +372,18 @@ func TestGraph_BidirectionalExtensions(t *testing.T) {
 	extension, ok := ast.Lookup(".extensions.ext.ext")
 	require.True(t, ok)
 	deps := enumExtension.Dependents()
+	for _, d := range deps {
+		if f, ok := d.(File); ok {
+			fmt.Println(f.Name().String())
+		} else {
+			fmt.Println(d.FullyQualifiedName())
+		}
+	}
+
+	fmt.Println("00000")
+	for _, d := range enumOptions.File().Dependents() {
+		fmt.Println(d.Name().String())
+	}
 
 	require.Len(t, deps, 4)
 	assert.Contains(t, deps, enumExtension.File())
