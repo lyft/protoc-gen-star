@@ -339,6 +339,29 @@ func TestMsg_Imports(t *testing.T) {
 	assert.Len(t, m.Imports(), 2)
 }
 
+func TestMsg_Dependents(t *testing.T) {
+	t.Parallel()
+
+	pkg := dummyPkg()
+	f := &file{
+		pkg: pkg,
+		desc: &descriptor.FileDescriptorProto{
+			Package: proto.String(pkg.ProtoName().String()),
+			Syntax:  proto.String(string(Proto3)),
+			Name:    proto.String("test_file.proto"),
+		},
+	}
+
+	m := &msg{parent: f}
+	m.fqn = fullyQualifiedName(f, m)
+	m2 := dummyMsg()
+	m.addDependent(m2)
+	deps := m.Dependents()
+
+	assert.Len(t, deps, 1)
+	assert.Contains(t, deps, m2)
+}
+
 func TestMsg_ChildAtPath(t *testing.T) {
 	t.Parallel()
 

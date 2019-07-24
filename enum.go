@@ -20,16 +20,23 @@ type Enum interface {
 	// Values returns each defined enumeration value.
 	Values() []EnumValue
 
+	// Dependents returns all of the messages where Enum is directly or
+	// transitively used.
+	Dependents() []Message
+
 	addValue(v EnumValue)
+	addDependent(m Message)
 	setParent(p ParentEntity)
 }
 
 type enum struct {
-	desc   *descriptor.EnumDescriptorProto
-	parent ParentEntity
-	vals   []EnumValue
-	info   SourceCodeInfo
-	fqn    string
+	desc            *descriptor.EnumDescriptorProto
+	parent          ParentEntity
+	vals            []EnumValue
+	info            SourceCodeInfo
+	fqn             string
+	dependents      []Message
+	dependentsCache []Message
 }
 
 func (e *enum) Name() Name                                  { return Name(e.desc.GetName()) }
@@ -43,6 +50,13 @@ func (e *enum) Descriptor() *descriptor.EnumDescriptorProto { return e.desc }
 func (e *enum) Parent() ParentEntity                        { return e.parent }
 func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
+
+func (e *enum) Dependents() []Message {
+	if e.dependentsCache == nil {
+		e.dependentsCache = getDependents(e.dependents, "")
+	}
+	return e.dependentsCache
+}
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
 	return extension(e.desc.GetOptions(), desc, &ext)
@@ -64,6 +78,10 @@ func (e *enum) accept(v Visitor) (err error) {
 	}
 
 	return
+}
+
+func (e *enum) addDependent(m Message) {
+	e.dependents = append(e.dependents, m)
 }
 
 func (e *enum) addValue(v EnumValue) {

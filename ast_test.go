@@ -331,3 +331,103 @@ func TestGraph_Extensions(t *testing.T) {
 	assert.NotNil(t, ent.(Message).Extensions())
 	assert.Len(t, ent.(Message).Extensions(), 1)
 }
+
+func TestGraph_Bidirectional(t *testing.T) {
+	t.Parallel()
+
+	fdset := readFileDescSet(t, "testdata/fdset.bin")
+	d := InitMockDebugger()
+	ast := ProcessFileDescriptorSetBidirectional(d, fdset)
+	require.False(t, d.Failed(), "failed to build graph from FDSet")
+
+	t.Run("nested", func(t *testing.T) {
+		t.Parallel()
+
+		finish, ok := ast.Lookup(".kitchen.Sink.Material.Finish")
+		require.True(t, ok)
+		deps := finish.(Enum).Dependents()
+
+		kitchen, ok := ast.Lookup(".kitchen.Kitchen")
+		require.True(t, ok)
+		sink, ok := ast.Lookup(".kitchen.Sink")
+		require.True(t, ok)
+
+		require.Len(t, deps, 3)
+		assert.Contains(t, deps, finish.(Enum).Parent())
+		assert.Contains(t, deps, sink)
+		assert.Contains(t, deps, kitchen)
+	})
+
+	t.Run("files", func(t *testing.T) {
+		t.Parallel()
+
+		timestamp, ok := ast.Lookup("google/protobuf/timestamp.proto")
+		require.True(t, ok)
+		deps := timestamp.(File).Dependents()
+
+		sinkProto, ok := ast.Lookup("kitchen/sink.proto")
+		require.True(t, ok)
+		kitchenProto, ok := ast.Lookup("kitchen/kitchen.proto")
+		require.True(t, ok)
+
+		assert.Len(t, deps, 2)
+		assert.Contains(t, deps, sinkProto)
+		assert.Contains(t, deps, kitchenProto)
+	})
+}
+
+func TestGraph_Bidirectional_Messages_Enums(t *testing.T) {
+	t.Parallel()
+
+	d := InitMockDebugger()
+	graph := ProcessCodeGeneratorRequestBidirectional(d, readCodeGenReq(t, "messages"))
+	require.False(t, d.Failed(), "failed to build graph (see previous log statements)")
+
+	t.Run("repeated", func(t *testing.T) {
+		t.Parallel()
+
+		beforeRepMsg, ok := graph.Lookup(".graph.messages.BeforeRepMsg")
+		require.True(t, ok)
+		repeated, ok := graph.Lookup(".graph.messages.Repeated")
+		require.True(t, ok)
+		deps := beforeRepMsg.(Message).Dependents()
+
+		require.Len(t, deps, 1)
+		assert.Contains(t, deps, repeated)
+
+		beforeRepEnum, ok := graph.Lookup(".graph.messages.BeforeRepEnum")
+		require.True(t, ok)
+		deps = beforeRepEnum.(Enum).Dependents()
+
+		require.Len(t, deps, 1)
+		assert.Contains(t, deps, repeated)
+	})
+
+	t.Run("message cycle", func(t *testing.T) {
+		t.Parallel()
+
+		recursiveMsg, ok := graph.Lookup(".graph.messages.Recursive")
+		require.True(t, ok)
+		assert.Empty(t, recursiveMsg.(Message).Dependents())
+	})
+
+	t.Run("maps", func(t *testing.T) {
+		t.Parallel()
+
+		beforeMapMsg, ok := graph.Lookup(".graph.messages.BeforeMapMsg")
+		require.True(t, ok)
+		maps, ok := graph.Lookup(".graph.messages.Maps")
+		require.True(t, ok)
+		deps := beforeMapMsg.(Message).Dependents()
+
+		require.Len(t, deps, 1)
+		assert.Contains(t, deps, maps)
+
+		beforeMapEnum, ok := graph.Lookup(".graph.messages.BeforeMapEnum")
+		require.True(t, ok)
+		deps = beforeMapEnum.(Enum).Dependents()
+
+		require.Len(t, deps, 1)
+		assert.Contains(t, deps, maps)
+	})
+}
