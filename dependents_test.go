@@ -25,12 +25,12 @@ func TestGetDependents(t *testing.T) {
 	m.fqn = fullyQualifiedName(f, m)
 	m2 := dummyMsg()
 	m2.fqn = "foo"
-	deps := GetDependents([]Message{m, m2}, m.FullyQualifiedName())
+	deps := getDependents([]Message{m, m2}, m.FullyQualifiedName())
 
 	assert.Len(t, deps, 1)
 	assert.Contains(t, deps, m2)
 
-	deps = GetDependents([]Message{m, m2}, m2.FullyQualifiedName())
+	deps = getDependents([]Message{m, m2}, m2.FullyQualifiedName())
 	assert.Len(t, deps, 1)
 	assert.Contains(t, deps, m)
 }
