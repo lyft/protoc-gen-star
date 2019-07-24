@@ -2,7 +2,9 @@ package pgs
 
 // GetDependents takes in a list of a Message or Enum's direct dependents and generates a
 // full list of dependents including transitive dependents. Additionally, this function
-// ensure that the output slice is deduped.
+// ensure that the output slice is deduped. Name is the fully qualified name of any Message
+// that should be excluded from the list of dependents. If there is no such message, set
+// to name to an empty string.
 func GetDependents(directDeps []Message, name string) []Message {
 	set := make(map[string]Message)
 
@@ -13,8 +15,9 @@ func GetDependents(directDeps []Message, name string) []Message {
 		}
 	}
 
-	// ensure that the message calling DedupeDependents is not included
-	delete(set, name)
+	if name != "" {
+		delete(set, name)
+	}
 
 	dependents := make([]Message, 0, len(set))
 	for _, d := range set {

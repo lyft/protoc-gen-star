@@ -24,6 +24,7 @@ func TestGetDependents(t *testing.T) {
 	m := &msg{parent: f}
 	m.fqn = fullyQualifiedName(f, m)
 	m2 := dummyMsg()
+	m2.fqn = "foo"
 	deps := GetDependents([]Message{m, m2}, m.FullyQualifiedName())
 
 	assert.Len(t, deps, 1)

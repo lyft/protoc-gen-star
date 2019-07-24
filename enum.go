@@ -53,7 +53,7 @@ func (e *enum) Values() []EnumValue                         { return e.vals }
 
 func (e *enum) Dependents() []Message {
 	if e.dependentsCache == nil {
-		e.dependentsCache = GetDependents(e.dependents, e.FullyQualifiedName())
+		e.dependentsCache = GetDependents(e.dependents, "")
 	}
 	return e.dependentsCache
 }
