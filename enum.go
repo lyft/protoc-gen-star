@@ -53,26 +53,7 @@ func (e *enum) Values() []EnumValue                         { return e.vals }
 
 func (e *enum) Dependents() []Message {
 	if e.dependentsCache == nil {
-		set := make(map[string]Message)
-
-		if parent, ok := e.Parent().(Message); ok {
-			set[parent.FullyQualifiedName()] = parent
-			for _, d := range parent.Dependents() {
-				set[d.FullyQualifiedName()] = d
-			}
-		}
-
-		for _, d := range e.dependents {
-			set[d.FullyQualifiedName()] = d
-			for _, dd := range d.Dependents() {
-				set[dd.FullyQualifiedName()] = dd
-			}
-		}
-
-		e.dependentsCache = make([]Message, 0, len(set))
-		for _, d := range set {
-			e.dependentsCache = append(e.dependentsCache, d)
-		}
+		e.dependentsCache = GetDependents(e.dependents, e.FullyQualifiedName())
 	}
 	return e.dependentsCache
 }

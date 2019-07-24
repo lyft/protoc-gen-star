@@ -117,17 +117,27 @@ func TestEnum_Dependents(t *testing.T) {
 		e := &enum{}
 		m := dummyMsg()
 		m.addEnum(e)
-		deps := e.Dependents()
 
-		assert.Len(t, deps, 1)
-		assert.Contains(t, deps, m)
+		assert.Empty(t, e.Dependents())
 	})
 
 	t.Run("external dependents", func(t *testing.T) {
 		t.Parallel()
 
+		pkg := dummyPkg()
+		f := &file{
+			pkg: pkg,
+			desc: &descriptor.FileDescriptorProto{
+				Package: proto.String(pkg.ProtoName().String()),
+				Syntax:  proto.String(string(Proto3)),
+				Name:    proto.String("test_file.proto"),
+			},
+		}
+
 		e := &enum{}
+		e.fqn = fullyQualifiedName(f, e)
 		m := dummyMsg()
+		m.fqn = fullyQualifiedName(f, m)
 		e.addDependent(m)
 		deps := e.Dependents()
 

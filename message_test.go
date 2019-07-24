@@ -352,31 +352,14 @@ func TestMsg_Dependents(t *testing.T) {
 		},
 	}
 
-	t.Run("no external deps", func(t *testing.T) {
-		t.Parallel()
+	m := &msg{parent: f}
+	m.fqn = fullyQualifiedName(f, m)
+	m2 := dummyMsg()
+	m.addDependent(m2)
+	deps := m.Dependents()
 
-		m := &msg{parent: f}
-		m.fqn = fullyQualifiedName(f, m)
-		p := dummyMsg()
-		p.addMessage(m)
-		deps := m.Dependents()
-
-		assert.Len(t, deps, 1)
-		assert.Contains(t, deps, p)
-	})
-
-	t.Run("external deps", func(t *testing.T) {
-		t.Parallel()
-
-		m := &msg{parent: f}
-		m.fqn = fullyQualifiedName(f, m)
-		m2 := dummyMsg()
-		m.addDependent(m2)
-		deps := m.Dependents()
-
-		assert.Len(t, deps, 1)
-		assert.Contains(t, deps, m2)
-	})
+	assert.Len(t, deps, 1)
+	assert.Contains(t, deps, m2)
 }
 
 func TestMsg_ChildAtPath(t *testing.T) {

@@ -154,29 +154,7 @@ func (m *msg) Imports() (i []File) {
 
 func (m *msg) Dependents() []Message {
 	if m.dependentsCache == nil {
-		set := make(map[string]Message)
-
-		if parent, ok := m.Parent().(Message); ok {
-			set[parent.FullyQualifiedName()] = parent
-			for _, d := range parent.Dependents() {
-				set[d.FullyQualifiedName()] = d
-			}
-		}
-
-		for _, d := range m.dependents {
-			set[d.FullyQualifiedName()] = d
-			for _, dd := range d.Dependents() {
-				set[dd.FullyQualifiedName()] = dd
-			}
-		}
-
-		// prevent m from adding itself to its dependents
-		delete(set, m.FullyQualifiedName())
-
-		m.dependentsCache = make([]Message, 0, len(set))
-		for _, d := range set {
-			m.dependentsCache = append(m.dependentsCache, d)
-		}
+		m.dependentsCache = GetDependents(m.dependents, m.FullyQualifiedName())
 	}
 	return m.dependentsCache
 }
