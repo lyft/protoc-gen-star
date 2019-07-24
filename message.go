@@ -154,7 +154,7 @@ func (m *msg) Imports() (i []File) {
 
 func (m *msg) Dependents() []Message {
 	if m.dependentsCache == nil {
-		m.dependentsCache = GetDependents(m.dependents, m.FullyQualifiedName())
+		m.dependentsCache = getDependents(m.dependents, m.FullyQualifiedName())
 	}
 	return m.dependentsCache
 }
