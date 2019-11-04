@@ -1,6 +1,8 @@
 package pgs
 
-import "github.com/golang/protobuf/protoc-gen-go/descriptor"
+import (
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+)
 
 // Syntax describes the proto syntax used to encode the proto file
 type Syntax string
@@ -22,6 +24,11 @@ const (
 // "required" identifiers on message fields. Only Proto2 syntax supports this
 // feature.
 func (s Syntax) SupportsRequiredPrefix() bool { return s == Proto2 }
+
+// String returns a string representation of the syntax.
+func (s Syntax) String() string {
+	return string(s)
+}
 
 // ProtoLabel wraps the FieldDescriptorProto_Label enum for better readability.
 // It is a 1-to-1 conversion.
@@ -57,6 +64,11 @@ func (pl ProtoLabel) Proto() descriptor.FieldDescriptorProto_Label {
 func (pl ProtoLabel) ProtoPtr() *descriptor.FieldDescriptorProto_Label {
 	l := pl.Proto()
 	return &l
+}
+
+// String returns a string representation of the proto label.
+func (pl ProtoLabel) String() string {
+	return pl.Proto().String()
 }
 
 // ProtoType wraps the FieldDescriptorProto_Type enum for better readability
@@ -116,4 +128,9 @@ func (pt ProtoType) Proto() descriptor.FieldDescriptorProto_Type {
 func (pt ProtoType) ProtoPtr() *descriptor.FieldDescriptorProto_Type {
 	t := pt.Proto()
 	return &t
+}
+
+// String returns a string representation of the proto type.
+func (pt ProtoType) String() string {
+	return pt.Proto().String()
 }
