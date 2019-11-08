@@ -31,7 +31,7 @@ type Entity interface {
 	File() File
 
 	// Extension extracts an extension from the entity's options, described by
-	// desc and populates the value ext. Ext must be a pointer type. An error 
+	// desc and populates the value ext. Ext must be a pointer type. An error
 	// will only be returned if there is a type mismatch between desc and ext.
 	// The ok value will be true if the extension was found. If the extension
 	// is NOT found, ok will be false and err will be nil.
