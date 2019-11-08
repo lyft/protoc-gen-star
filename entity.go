@@ -31,9 +31,10 @@ type Entity interface {
 	File() File
 
 	// Extension extracts an extension from the entity's options, described by
-	// desc and populates the value ext. Ext must be a pointer type. An error is
-	// returned if the extension is not found or there is a type mismatch between
-	// desc and ext. The ok value will be true if the extension was found.
+	// desc and populates the value ext. Ext must be a pointer type. An error
+	// will only be returned if there is a type mismatch between desc and ext.
+	// The ok value will be true if the extension was found. If the extension
+	// is NOT found, ok will be false and err will be nil.
 	Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error)
 
 	// BuildTarget identifies whether or not generation should be performed on
