@@ -110,17 +110,21 @@ func (n TypeName) Key() TypeName {
 	return TypeName(parts[1])
 }
 
+// IsPointer reports whether TypeName n is a pointer type, slice or a map.
+func (n TypeName) IsPointer() bool {
+	ns := string(n)
+	return strings.HasPrefix(ns, "*") ||
+		strings.HasPrefix(ns, "[") ||
+		strings.HasPrefix(ns, "map[")
+}
+
 // Pointer converts TypeName n to it's pointer type. If n is already a pointer,
 // slice, or map, it is returned unmodified.
 func (n TypeName) Pointer() TypeName {
-	ns := string(n)
-	if strings.HasPrefix(ns, "*") ||
-		strings.HasPrefix(ns, "[") ||
-		strings.HasPrefix(ns, "map[") {
+	if n.IsPointer() {
 		return n
 	}
-
-	return TypeName("*" + ns)
+	return TypeName("*" + string(n))
 }
 
 // Value converts TypeName n to it's value type. If n is already a value type,

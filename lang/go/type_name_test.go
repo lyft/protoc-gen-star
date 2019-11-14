@@ -241,6 +241,11 @@ func TestTypeName(t *testing.T) {
 				assert.Equal(t, tc.key, tn.Key().String())
 			})
 
+			t.Run("IsPointer", func(t *testing.T) {
+				t.Parallel()
+				assert.Equal(t, tc.ptr == tc.in, tn.IsPointer())
+			})
+
 			t.Run("Pointer", func(t *testing.T) {
 				t.Parallel()
 				assert.Equal(t, tc.ptr, tn.Pointer().String())
@@ -303,6 +308,25 @@ func ExampleTypeName_Key() {
 	//
 	// int
 	// string
+}
+
+func ExampleTypeName_IsPointer() {
+	types := []string{
+		"int",
+		"*my.Type",
+		"[]string",
+		"map[string]*io.Reader",
+	}
+
+	for _, t := range types {
+		fmt.Println(TypeName(t).IsPointer())
+	}
+
+	// Output:
+	// false
+	// true
+	// true
+	// true
 }
 
 func ExampleTypeName_Pointer() {
