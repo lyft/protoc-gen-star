@@ -85,8 +85,8 @@ func (l Loader) LoadFDSet(t T, path string) (ast pgs.AST) {
 	}
 
 	defer func() {
-		if err := file.Close(); err != nil {
-			t.Logf("unable to close fdset from path %q: %v", path, err)
+		if ferr := file.Close(); ferr != nil {
+			t.Logf("unable to close fdset from path %q: %v", path, ferr)
 		}
 	}()
 
@@ -204,8 +204,8 @@ func (l Loader) withTempDir(t T, fn func(tempDir string)) {
 	}
 
 	defer func() {
-		if err := fs.RemoveAll(tmpDir); err != nil {
-			t.Logf("failed to cleanup temp directory: %v", err)
+		if ferr := fs.RemoveAll(tmpDir); ferr != nil {
+			t.Logf("failed to cleanup temp directory: %v", ferr)
 		}
 	}()
 

@@ -284,11 +284,11 @@ func TestLoader_LoadFDSetReader(t *testing.T) {
 		fdset := dummyFDSet()
 		fdset.File[0].MessageType = []*descriptor.DescriptorProto{msg}
 
-		raw, err := proto.Marshal(fdset)
-		require.NoError(t, err)
+		b, pberr := proto.Marshal(fdset)
+		require.NoError(t, pberr)
 
 		mt := &mockT{}
-		r := bytes.NewReader(raw)
+		r := bytes.NewReader(b)
 		l := Loader{}
 
 		ast := l.LoadFDSetReader(mt, r)
@@ -334,9 +334,9 @@ func TestLoader_LoadFDSet(t *testing.T) {
 		t.Parallel()
 
 		mt := &mockT{}
-		l := Loader{FS: disallowCloseFileFS{fs}}
+		ldr := Loader{FS: disallowCloseFileFS{fs}}
 
-		ast := l.LoadFDSet(mt, path)
+		ast := ldr.LoadFDSet(mt, path)
 		assert.NotNil(t, ast)
 		assert.False(t, mt.failed)
 		assert.NotEmpty(t, mt.log)
