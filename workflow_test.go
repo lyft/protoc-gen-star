@@ -25,10 +25,8 @@ func TestStandardWorkflow_Init(t *testing.T) {
 	assert.True(t, mutated)
 
 	t.Run("bidi", func(t *testing.T) {
-		t.Parallel()
-
-		mutated := false
-		g := Init(ProtocInput(bytes.NewReader(b)), BiDirectional(), MutateParams(func(p Parameters) { mutated = true }))
+		mutated = false
+		g = Init(ProtocInput(bytes.NewReader(b)), BiDirectional(), MutateParams(func(p Parameters) { mutated = true }))
 		g.workflow.Init(g)
 
 		assert.True(t, mutated)
