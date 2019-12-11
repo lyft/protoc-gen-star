@@ -15,9 +15,12 @@ type workflow interface {
 }
 
 // standardWorkflow describes a typical protoc-plugin flow, with the only
-// exception being the behavior of the persistor directly writing custom file
+// exception being the behavior of the persister directly writing custom file
 // artifacts to disk (instead of via the plugin's output to protoc).
-type standardWorkflow struct{ *Generator }
+type standardWorkflow struct {
+	*Generator
+	BiDi bool
+}
 
 func (wf *standardWorkflow) Init(g *Generator) AST {
 	wf.Generator = g
@@ -38,7 +41,11 @@ func (wf *standardWorkflow) Init(g *Generator) AST {
 		pm(wf.params)
 	}
 
-	return ProcessCodeGeneratorRequest(g, req)
+	if wf.BiDi {
+		return ProcessCodeGeneratorRequestBidirectional(g, req)
+	} else {
+		return ProcessCodeGeneratorRequest(g, req)
+	}
 }
 
 func (wf *standardWorkflow) Run(ast AST) (arts []Artifact) {

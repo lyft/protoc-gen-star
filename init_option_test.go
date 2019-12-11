@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDebugMode(t *testing.T) {
@@ -69,4 +70,22 @@ func TestProtocOutput(t *testing.T) {
 	b := &bytes.Buffer{}
 	ProtocOutput(b)(g)
 	assert.Equal(t, b, g.out)
+}
+
+func TestBiDirectional(t *testing.T) {
+	t.Parallel()
+
+	g := &Generator{}
+	assert.Nil(t, g.workflow)
+
+	BiDirectional()(g)
+	wf := g.workflow
+
+	require.IsType(t, &onceWorkflow{}, wf)
+	once := wf.(*onceWorkflow)
+
+	require.IsType(t, &standardWorkflow{}, once.workflow)
+	std := once.workflow.(*standardWorkflow)
+
+	assert.True(t, std.BiDi)
 }
