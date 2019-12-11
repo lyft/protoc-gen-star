@@ -43,9 +43,9 @@ func (wf *standardWorkflow) Init(g *Generator) AST {
 
 	if wf.BiDi {
 		return ProcessCodeGeneratorRequestBidirectional(g, req)
-	} else {
-		return ProcessCodeGeneratorRequest(g, req)
 	}
+
+	return ProcessCodeGeneratorRequest(g, req)
 }
 
 func (wf *standardWorkflow) Run(ast AST) (arts []Artifact) {
