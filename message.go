@@ -154,14 +154,14 @@ func (m *msg) Imports() (i []File) {
 }
 
 func (m *msg) getDependents(set map[string]Message) {
-	m.populateDepCache()
+	m.populateDependentsCache()
 
 	for fqn, d := range m.dependentsCache {
 		set[fqn] = d
 	}
 }
 
-func (m *msg) populateDepCache() {
+func (m *msg) populateDependentsCache() {
 	if m.dependentsCache != nil {
 		return
 	}
@@ -174,7 +174,7 @@ func (m *msg) populateDepCache() {
 }
 
 func (m *msg) Dependents() []Message {
-	m.populateDepCache()
+	m.populateDependentsCache()
 	return messageSetToSlice(m.FullyQualifiedName(), m.dependentsCache)
 }
 

@@ -51,7 +51,7 @@ func (e *enum) Parent() ParentEntity                        { return e.parent }
 func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
 
-func (e *enum) populateDepsCache() {
+func (e *enum) populateDependentsCache() {
 	if e.dependentsCache != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func (e *enum) populateDepsCache() {
 }
 
 func (e *enum) Dependents() []Message {
-	e.populateDepsCache()
+	e.populateDependentsCache()
 	return messageSetToSlice("", e.dependentsCache)
 }
 
