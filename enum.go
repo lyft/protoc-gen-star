@@ -36,7 +36,7 @@ type enum struct {
 	info            SourceCodeInfo
 	fqn             string
 	dependents      []Message
-	dependentsCache []Message
+	dependentsCache map[string]Message
 }
 
 func (e *enum) Name() Name                                  { return Name(e.desc.GetName()) }
@@ -51,11 +51,21 @@ func (e *enum) Parent() ParentEntity                        { return e.parent }
 func (e *enum) Imports() []File                             { return nil }
 func (e *enum) Values() []EnumValue                         { return e.vals }
 
-func (e *enum) Dependents() []Message {
-	if e.dependentsCache == nil {
-		e.dependentsCache = getDependents(e.dependents, "")
+func (e *enum) populateDependentsCache() {
+	if e.dependentsCache != nil {
+		return
 	}
-	return e.dependentsCache
+
+	e.dependentsCache = map[string]Message{}
+	for _, dep := range e.dependents {
+		e.dependentsCache[dep.FullyQualifiedName()] = dep
+		dep.getDependents(e.dependentsCache)
+	}
+}
+
+func (e *enum) Dependents() []Message {
+	e.populateDependentsCache()
+	return messageSetToSlice("", e.dependentsCache)
 }
 
 func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
