@@ -86,11 +86,9 @@ func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.Cod
 	g := ProcessCodeGeneratorRequest(debug, req)
 	for _, pkg := range g.Packages() {
 		for _, f := range pkg.Files() {
-			if len(f.Descriptor().GetDependency()) > 0 { // check for imports
-				for _, m := range f.AllMessages() {
-					for _, field := range m.Fields() {
-						assignDependent(field.Type(), m)
-					}
+			for _, m := range f.AllMessages() {
+				for _, field := range m.Fields() {
+					assignDependent(field.Type(), m)
 				}
 			}
 		}
@@ -98,7 +96,7 @@ func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.Cod
 	return g
 }
 
-// ProcessFileDescriptorSet conversts a FileDescriptorSet from protoc into a
+// ProcessFileDescriptorSet converts a FileDescriptorSet from protoc into a
 // fully connected AST entity graph. An error is returned if the input is
 // malformed or missing dependencies. To generate a self-contained
 // FileDescriptorSet, run the following command:
