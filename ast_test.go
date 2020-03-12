@@ -431,3 +431,54 @@ func TestGraph_Bidirectional_Messages_Enums(t *testing.T) {
 		assert.Contains(t, deps, maps)
 	})
 }
+
+func TestGraph_Bidirectional_Recursive(t *testing.T) {
+	t.Parallel()
+
+	d := InitMockDebugger()
+	graph := ProcessCodeGeneratorRequestBidirectional(d, readCodeGenReq(t, "messages"))
+	require.False(t, d.Failed(), "failed to build graph (see previous log statements)")
+
+	tests := []struct {
+		fqn      string
+		expected []string
+	}{
+		{
+			fqn:      ".graph.messages.Recursive",
+			expected: []string{},
+		},
+		{
+			fqn: ".graph.messages.Circular.Rock",
+			expected: []string{
+				".graph.messages.Circular.Paper",
+				".graph.messages.Circular.Scissors"},
+		},
+		{
+			fqn:      ".graph.messages.RepeatedRecursive",
+			expected: []string{},
+		},
+	}
+
+	for _, test := range tests {
+		tc := test
+		t.Run(tc.fqn, func(t *testing.T) {
+			t.Parallel()
+
+			m, ok := graph.Lookup(tc.fqn)
+			require.True(t, ok)
+			deps := m.(Message).Dependents()
+
+			require.Len(t, deps, len(tc.expected),
+				"wanted %v, but got %v", tc.expected, deps)
+
+			set := make(map[string]bool)
+			for _, name := range tc.expected {
+				set[name] = true
+			}
+
+			for _, dep := range deps {
+				assert.Contains(t, set, dep.FullyQualifiedName())
+			}
+		})
+	}
+}

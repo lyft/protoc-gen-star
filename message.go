@@ -58,6 +58,7 @@ type Message interface {
 	addExtension(e Extension)
 	addOneOf(o OneOf)
 	addDependent(message Message)
+	getDependents(set map[string]Message)
 }
 
 type msg struct {
@@ -73,7 +74,7 @@ type msg struct {
 	oneofs              []OneOf
 	maps                []Message
 	dependents          []Message
-	dependentsCache     []Message
+	dependentsCache     map[string]Message
 
 	info SourceCodeInfo
 }
@@ -152,11 +153,29 @@ func (m *msg) Imports() (i []File) {
 	return
 }
 
-func (m *msg) Dependents() []Message {
-	if m.dependentsCache == nil {
-		m.dependentsCache = getDependents(m.dependents, m.FullyQualifiedName())
+func (m *msg) getDependents(set map[string]Message) {
+	m.populateDependentsCache()
+
+	for fqn, d := range m.dependentsCache {
+		set[fqn] = d
 	}
-	return m.dependentsCache
+}
+
+func (m *msg) populateDependentsCache() {
+	if m.dependentsCache != nil {
+		return
+	}
+
+	m.dependentsCache = map[string]Message{}
+	for _, dep := range m.dependents {
+		m.dependentsCache[dep.FullyQualifiedName()] = dep
+		dep.getDependents(m.dependentsCache)
+	}
+}
+
+func (m *msg) Dependents() []Message {
+	m.populateDependentsCache()
+	return messageSetToSlice(m.FullyQualifiedName(), m.dependentsCache)
 }
 
 func (m *msg) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
@@ -278,5 +297,17 @@ func (m *msg) childAtPath(path []int32) Entity {
 }
 
 func (m *msg) addSourceCodeInfo(info SourceCodeInfo) { m.info = info }
+
+func messageSetToSlice(name string, set map[string]Message) []Message {
+	dependents := make([]Message, 0, len(set))
+
+	for fqn, d := range set {
+		if fqn != name {
+			dependents = append(dependents, d)
+		}
+	}
+
+	return dependents
+}
 
 var _ Message = (*msg)(nil)

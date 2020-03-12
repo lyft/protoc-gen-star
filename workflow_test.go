@@ -23,6 +23,14 @@ func TestStandardWorkflow_Init(t *testing.T) {
 	g.workflow.Init(g)
 
 	assert.True(t, mutated)
+
+	t.Run("bidi", func(t *testing.T) {
+		mutated = false
+		g = Init(ProtocInput(bytes.NewReader(b)), BiDirectional(), MutateParams(func(p Parameters) { mutated = true }))
+		g.workflow.Init(g)
+
+		assert.True(t, mutated)
+	})
 }
 
 func TestStandardWorkflow_Run(t *testing.T) {
