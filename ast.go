@@ -144,6 +144,7 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	}
 	g.add(fl)
 
+	fl.fileDependencies = make([]File, 0)
 	for _, dep := range f.GetDependency() {
 		// the AST is built in topological order so a file's dependencies are always hydrated first
 		d := g.mustSeen(dep).(File)
@@ -191,8 +192,6 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 			fld.addType(g.hydrateFieldType(fld))
 		}
 	}
-
-	fl.fileDependencies = make([]File, 0)
 
 	g.hydrateSourceCodeInfo(fl, f)
 

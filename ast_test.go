@@ -1,7 +1,6 @@
 package pgs
 
 import (
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
@@ -325,9 +324,7 @@ func TestGraph_Extensions(t *testing.T) {
 	ent, ok = g.Lookup("extensions/everything.proto")
 	assert.True(t, ok)
 	assert.NotNil(t, ent.(File).DefinedExtensions())
-	fmt.Println(len(ent.(File).Imports()))                    // currently 1
-	fmt.Println(len(ent.(File).Descriptor().GetDependency())) // currently 4
-	//assert.Len(t, ent.(File).Imports(), 4)
+	assert.Len(t, ent.(File).Imports(), 4)
 
 	ent, ok = g.Lookup(".extensions.Request")
 	assert.True(t, ok)
