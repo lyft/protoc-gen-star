@@ -13,8 +13,7 @@ lint: # lints the package for common code smells
 	done
 	which golint || go get -u golang.org/x/lint/golint
 	golint -set_exit_status $(PKGS)
-	go get -u golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
-	go vet -all -vettool=$(which shadow)
+	go vet -all
 
 .PHONY: quick
 quick: vendor testdata # runs all tests without the race detector or coverage
