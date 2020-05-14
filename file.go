@@ -103,17 +103,7 @@ func (f *file) Imports() (i []File) {
 	importMap := make(map[string]File, len(f.AllMessages())+len(f.srvs))
 	for _, fl := range f.fileDependencies {
 		importMap[fl.Name().String()] = fl
-		//for _, imp := range fl.Imports() {
-		//	importMap[imp.File().Name().String()] = imp
-		//}
-	}
-	for _, m := range f.AllMessages() {
-		for _, imp := range m.Imports() {
-			importMap[imp.File().Name().String()] = imp
-		}
-	}
-	for _, s := range f.srvs {
-		for _, imp := range s.Imports() {
+		for _, imp := range fl.Imports() {
 			importMap[imp.File().Name().String()] = imp
 		}
 	}
