@@ -121,6 +121,35 @@ func TestPersister_Persist_GeneratorAppend(t *testing.T) {
 	assert.True(t, d.Failed())
 }
 
+func TestPersister_Persist_GeneratorAppendSeveral(t *testing.T) {
+	t.Parallel()
+
+	d := InitMockDebugger()
+	p := dummyPersister(d)
+	fs := afero.NewMemMapFs()
+	p.SetFS(fs)
+
+	resp := p.Persist(
+		GeneratorFile{
+			Name:     "file",
+			Contents: "foo",
+		},
+		GeneratorAppend{
+			FileName: "file",
+			Contents: "bar",
+		},
+		GeneratorAppend{
+			FileName: "file",
+			Contents: "baz",
+		},
+	)
+
+	assert.Len(t, resp.File, 3)
+	assert.Equal(t, "foo", resp.File[0].GetContent())
+	assert.Equal(t, "bar", resp.File[1].GetContent())
+	assert.Equal(t, "baz", resp.File[2].GetContent())
+}
+
 func TestPersister_Persist_GeneratorTemplateAppend(t *testing.T) {
 	t.Parallel()
 
