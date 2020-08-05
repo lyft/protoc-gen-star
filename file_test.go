@@ -6,7 +6,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"github.com/golang/protobuf/protoc-gen-go/generator"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -306,9 +305,4 @@ func dummyFile() *file {
 	pkg.addFile(f)
 
 	return f
-}
-
-func dummyGenFile() (*file, *generator.FileDescriptor) {
-	f := dummyFile()
-	return f, &generator.FileDescriptor{FileDescriptorProto: f.desc}
 }
