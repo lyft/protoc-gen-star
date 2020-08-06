@@ -182,6 +182,48 @@ func TestFile_TransitiveImports(t *testing.T) {
 	assert.Len(t, f.TransitiveImports(), 2)
 }
 
+func TestFile_UnusedImports(t *testing.T) {
+	t.Parallel()
+
+	target := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("foobar"),
+	}}
+
+	unusedFile := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("i/am/unused.proto"),
+	}}
+
+	target.addFileDependency(unusedFile)
+
+	publicFile := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("i/am/public.proto"),
+	}}
+
+	target.addFileDependency(publicFile)
+	target.desc.PublicDependency = append(target.desc.PublicDependency, 1)
+
+	msgDep := dummyMsg()
+	usedFile := msgDep.File().(*file)
+
+	ft := &embedT{scalarT: &scalarT{}, msg: msgDep}
+	fld := &field{}
+	fld.addType(ft)
+	m := &msg{}
+	m.addField(fld)
+	target.addMessage(m)
+
+	mtd := &method{in: msgDep, out: m}
+	svc := &service{}
+	svc.addMethod(mtd)
+	target.addService(svc)
+
+	target.addFileDependency(usedFile)
+
+	unused := target.UnusedImports()
+	assert.Len(t, unused, 1)
+	assert.Equal(t, unusedFile, unused[0])
+}
+
 func TestFile_Dependents(t *testing.T) {
 	t.Parallel()
 

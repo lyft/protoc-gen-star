@@ -20,6 +20,10 @@ type File interface {
 	// File. Use Imports to obtain only direct dependencies.
 	TransitiveImports() []File
 
+	// UnusedImports returns all imported files that aren't used by the current
+	// File. Public imports are not included in this list.
+	UnusedImports() []File
+
 	// Dependents returns all files where the given file was directly or
 	// transitively imported.
 	Dependents() []File
@@ -120,6 +124,40 @@ func (f *file) TransitiveImports() []File {
 	out := make([]File, 0, len(importMap))
 	for _, imp := range importMap {
 		out = append(out, imp)
+	}
+
+	return out
+}
+
+func (f *file) UnusedImports() []File {
+	public := make(map[int]struct{}, len(f.desc.PublicDependency))
+	for _, i := range f.desc.PublicDependency {
+		public[int(i)] = struct{}{}
+	}
+
+	mp := make(map[string]File, len(f.fileDependencies))
+	for i, fl := range f.fileDependencies {
+		if _, ok := public[i]; ok {
+			continue
+		}
+		mp[fl.Name().String()] = fl
+	}
+
+	for _, msg := range f.AllMessages() {
+		for _, imp := range msg.Imports() {
+			delete(mp, imp.Name().String())
+		}
+	}
+
+	for _, svc := range f.Services() {
+		for _, imp := range svc.Imports() {
+			delete(mp, imp.Name().String())
+		}
+	}
+
+	out := make([]File, 0, len(mp))
+	for _, fl := range mp {
+		out = append(out, fl)
 	}
 
 	return out
