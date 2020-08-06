@@ -163,7 +163,23 @@ func TestFile_Imports(t *testing.T) {
 	assert.Empty(t, f.Imports())
 
 	f.addFileDependency(flDep)
-	assert.Len(t, f.Imports(), 2)
+	assert.Len(t, f.Imports(), 1)
+}
+
+func TestFile_TransitiveImports(t *testing.T) {
+	t.Parallel()
+
+	flDep := dummyFile()
+	nf := &file{desc: &descriptor.FileDescriptorProto{
+		Name: proto.String("foobar"),
+	}}
+	flDep.addFileDependency(nf)
+
+	f := &file{}
+	assert.Empty(t, f.TransitiveImports())
+
+	f.addFileDependency(flDep)
+	assert.Len(t, f.TransitiveImports(), 2)
 }
 
 func TestFile_Dependents(t *testing.T) {
