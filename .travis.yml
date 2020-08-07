@@ -4,8 +4,8 @@ go_import_path: github.com/lyft/protoc-gen-star
 
 env:
   matrix:
-    - PROTOC_VER="3.5.1"
-    - PROTOC_VER="3.6.1"
+    - PROTOC_VER="3.11.4"
+    - PROTOC_VER="3.12.4"
 
 before_install:
   - mkdir -p $GOPATH/bin
