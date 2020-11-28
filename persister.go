@@ -8,6 +8,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 	"github.com/spf13/afero"
+	"google.golang.org/protobuf/types/pluginpb"
 )
 
 type persister interface {
@@ -32,6 +33,9 @@ func (p *stdPersister) AddPostProcessor(proc ...PostProcessor) { p.procs = appen
 
 func (p *stdPersister) Persist(arts ...Artifact) *plugin_go.CodeGeneratorResponse {
 	resp := new(plugin_go.CodeGeneratorResponse)
+
+	supportedFeatures := uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+	resp.SupportedFeatures = &supportedFeatures
 
 	for _, a := range arts {
 		switch a := a.(type) {
