@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"google.golang.org/protobuf/proto"
+	plugin_go "google.golang.org/protobuf/protoc-gen-go/plugin"
 	pgs "github.com/lyft/protoc-gen-star"
 	"github.com/stretchr/testify/require"
 )

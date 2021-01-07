@@ -5,8 +5,8 @@ import (
 
 	"errors"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"github.com/stretchr/testify/assert"
 )
 

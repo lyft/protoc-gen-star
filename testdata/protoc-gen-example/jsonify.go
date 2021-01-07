@@ -10,7 +10,7 @@ import (
 
 // JSONifyPlugin adds encoding/json Marshaler and Unmarshaler methods on PB
 // messages that utilizes the more correct jsonpb package.
-// See: https://godoc.org/github.com/golang/protobuf/jsonpb
+// See: https://godoc.org/google.golang.org/protobuf/jsonpb
 type JSONifyModule struct {
 	*pgs.ModuleBase
 	ctx pgsgo.Context
@@ -69,7 +69,7 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/golang/protobuf/jsonpb"
+	"google.golang.org/protobuf/jsonpb"
 )
 
 {{ range .AllMessages }}
