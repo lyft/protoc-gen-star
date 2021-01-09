@@ -169,8 +169,8 @@ func TestMsg_Fields(t *testing.T) {
 	m := &msg{}
 	assert.Empty(t, m.Fields())
 
-	m.addField(&field{})
-	m.addField(&field{oneof: &oneof{}})
+	m.AddField(&field{})
+	m.AddField(&field{oneof: &oneof{}})
 	assert.Len(t, m.Fields(), 2)
 }
 
@@ -180,9 +180,9 @@ func TestMsg_NonOneOfFields(t *testing.T) {
 	m := &msg{}
 	assert.Empty(t, m.NonOneOfFields())
 
-	m.addField(&field{})
-	m.addField(&field{oneof: &oneof{}})
-	m.addField(&field{})
+	m.AddField(&field{})
+	m.AddField(&field{oneof: &oneof{}})
+	m.AddField(&field{})
 	assert.Len(t, m.NonOneOfFields(), 2)
 }
 
@@ -190,14 +190,14 @@ func TestMsg_OneOfFields(t *testing.T) {
 	t.Parallel()
 
 	o := &oneof{}
-	o.addField(&field{})
+	o.AddField(&field{})
 
 	m := &msg{}
-	m.addField(&field{})
-	m.addField(&field{})
+	m.AddField(&field{})
+	m.AddField(&field{})
 
 	assert.Empty(t, m.OneOfFields())
-	m.addOneOf(o)
+	m.AddOneOf(o)
 	assert.Len(t, m.OneOfFields(), 1)
 }
 
@@ -207,7 +207,7 @@ func TestMsg_OneOfs(t *testing.T) {
 	m := &msg{}
 	assert.Empty(t, m.OneOfs())
 
-	m.addOneOf(&oneof{})
+	m.AddOneOf(&oneof{})
 	assert.Len(t, m.OneOfs(), 1)
 }
 
@@ -224,7 +224,7 @@ func TestMsg_Extensions(t *testing.T) {
 	assert.Empty(t, m.Extensions())
 
 	ext := &ext{}
-	m.addExtension(ext)
+	m.AddExtension(ext)
 	assert.Len(t, m.Extensions(), 1)
 }
 
@@ -245,8 +245,8 @@ func TestMsg_Accept(t *testing.T) {
 	m := &msg{}
 	m.AddMessage(&msg{})
 	m.AddEnum(&enum{})
-	m.addField(&field{})
-	m.addOneOf(&oneof{})
+	m.AddField(&field{})
+	m.AddOneOf(&oneof{})
 	m.AddDefExtension(&ext{})
 
 	assert.NoError(t, m.Accept(nil))
@@ -287,7 +287,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Equal(t, 2, v.extension)
 
 	v.Reset()
-	m.addOneOf(&mockOneOf{err: errors.New("")})
+	m.AddOneOf(&mockOneOf{err: errors.New("")})
 	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 2, v.message)
 	assert.Equal(t, 1, v.enum)
@@ -296,7 +296,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Zero(t, v.extension)
 
 	v.Reset()
-	m.addField(&mockField{err: errors.New("")})
+	m.AddField(&mockField{err: errors.New("")})
 	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 2, v.message)
 	assert.Equal(t, 1, v.enum)
@@ -329,13 +329,13 @@ func TestMsg_Imports(t *testing.T) {
 	m := &msg{}
 	assert.Empty(t, m.Imports())
 
-	m.addField(&mockField{i: []File{&file{}, &file{}}})
+	m.AddField(&mockField{i: []File{&file{}, &file{}}})
 	assert.Len(t, m.Imports(), 1)
 
 	nf := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
-	m.addField(&mockField{i: []File{nf, nf}})
+	m.AddField(&mockField{i: []File{nf, nf}})
 	assert.Len(t, m.Imports(), 2)
 }
 
@@ -401,7 +401,7 @@ type mockMessage struct {
 
 func (m *mockMessage) Imports() []File { return m.i }
 
-func (m *mockMessage) setParent(p ParentEntity) { m.p = p }
+func (m *mockMessage) SetParent(p ParentEntity) { m.p = p }
 
 func (m *mockMessage) Accept(v Visitor) error {
 	_, err := v.VisitMessage(m)

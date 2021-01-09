@@ -232,7 +232,7 @@ func (f *file) AddDefExtension(ext Extension) {
 func (f *file) SetPackage(pkg Package) { f.pkg = pkg }
 
 func (f *file) AddEnum(e Enum) {
-	e.setParent(f)
+	e.SetParent(f)
 	f.enums = append(f.enums, e)
 }
 
@@ -245,7 +245,7 @@ func (f *file) AddDependent(fl File) {
 }
 
 func (f *file) AddMessage(m Message) {
-	m.setParent(f)
+	m.SetParent(f)
 	f.msgs = append(f.msgs, m)
 }
 

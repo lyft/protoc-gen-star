@@ -26,7 +26,7 @@ type Enum interface {
 
 	addValue(v EnumValue)
 	AddDependent(m Message)
-	setParent(p ParentEntity)
+	SetParent(p ParentEntity)
 }
 
 type enum struct {
@@ -99,7 +99,7 @@ func (e *enum) addValue(v EnumValue) {
 	e.vals = append(e.vals, v)
 }
 
-func (e *enum) setParent(p ParentEntity) { e.parent = p }
+func (e *enum) SetParent(p ParentEntity) { e.parent = p }
 
 func (e *enum) ChildAtPath(path []int32) Entity {
 	switch {

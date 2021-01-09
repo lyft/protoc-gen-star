@@ -71,7 +71,7 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 		extendee := g.mustSeen(e.Descriptor().GetExtendee()).(Message)
 		e.setExtendee(extendee)
 		if extendee != nil {
-			extendee.addExtension(e)
+			extendee.AddExtension(e)
 		}
 	}
 
@@ -300,15 +300,15 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 	}
 
 	for _, od := range md.GetOneofDecl() {
-		m.addOneOf(g.hydrateOneOf(m, od))
+		m.AddOneOf(g.hydrateOneOf(m, od))
 	}
 
 	for _, fd := range md.GetField() {
 		fld := g.hydrateField(m, fd)
-		m.addField(fld)
+		m.AddField(fld)
 
 		if idx := fld.Descriptor().OneofIndex; idx != nil {
-			m.oneofs[*idx].addField(fld)
+			m.oneofs[*idx].AddField(fld)
 		}
 	}
 

@@ -96,7 +96,7 @@ func TestScalarT_IsOptional(t *testing.T) {
 
 	fl := dummyFile()
 	fl.desc.Syntax = nil
-	f.Message().setParent(fl)
+	f.Message().SetParent(fl)
 
 	assert.True(t, s.IsOptional())
 
@@ -117,7 +117,7 @@ func TestScalarT_IsRequired(t *testing.T) {
 
 	fl := dummyFile()
 	fl.desc.Syntax = nil
-	f.Message().setParent(fl)
+	f.Message().SetParent(fl)
 
 	assert.False(t, s.IsRequired())
 

@@ -29,7 +29,7 @@ func TestOneof_Syntax(t *testing.T) {
 
 	m := dummyMsg()
 	o := &oneof{}
-	m.addOneOf(o)
+	m.AddOneOf(o)
 
 	assert.Equal(t, m.Syntax(), o.Syntax())
 }
@@ -39,7 +39,7 @@ func TestOneof_Package(t *testing.T) {
 
 	m := dummyMsg()
 	o := &oneof{}
-	m.addOneOf(o)
+	m.AddOneOf(o)
 
 	assert.NotNil(t, o.Package())
 	assert.Equal(t, m.Package(), o.Package())
@@ -50,7 +50,7 @@ func TestOneof_File(t *testing.T) {
 
 	m := dummyMsg()
 	o := &oneof{}
-	m.addOneOf(o)
+	m.AddOneOf(o)
 
 	assert.NotNil(t, o.File())
 	assert.Equal(t, m.File(), o.File())
@@ -61,10 +61,10 @@ func TestOneof_BuildTarget(t *testing.T) {
 
 	m := dummyMsg()
 	o := &oneof{}
-	m.addOneOf(o)
+	m.AddOneOf(o)
 
 	assert.False(t, o.BuildTarget())
-	m.setParent(&file{buildTarget: true})
+	m.SetParent(&file{buildTarget: true})
 	assert.True(t, o.BuildTarget())
 }
 
@@ -81,7 +81,7 @@ func TestOneof_Message(t *testing.T) {
 
 	m := dummyMsg()
 	o := &oneof{}
-	m.addOneOf(o)
+	m.AddOneOf(o)
 
 	assert.Equal(t, m, o.Message())
 }
@@ -92,13 +92,13 @@ func TestOneof_Imports(t *testing.T) {
 	o := &oneof{}
 	assert.Empty(t, o.Imports())
 
-	o.addField(&mockField{i: []File{&file{}, &file{}}, Field: &field{}})
+	o.AddField(&mockField{i: []File{&file{}, &file{}}, Field: &field{}})
 	assert.Len(t, o.Imports(), 1)
 
 	f := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
-	o.addField(&mockField{i: []File{f}, Field: &field{}})
+	o.AddField(&mockField{i: []File{f}, Field: &field{}})
 	assert.Len(t, o.Imports(), 2)
 }
 
@@ -115,7 +115,7 @@ func TestOneof_Fields(t *testing.T) {
 	o := &oneof{}
 	assert.Empty(t, o.Fields())
 
-	o.addField(&field{})
+	o.AddField(&field{})
 	assert.Len(t, o.Fields(), 1)
 }
 
@@ -160,6 +160,6 @@ func (o *mockOneOf) Accept(v Visitor) error {
 func dummyOneof() *oneof {
 	m := dummyMsg()
 	o := &oneof{desc: &descriptor.OneofDescriptorProto{Name: proto.String("oneof")}}
-	m.addOneOf(o)
+	m.AddOneOf(o)
 	return o
 }

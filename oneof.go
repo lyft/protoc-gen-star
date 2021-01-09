@@ -20,7 +20,7 @@ type OneOf interface {
 	Fields() []Field
 
 	setMessage(m Message)
-	addField(f Field)
+	AddField(f Field)
 }
 
 type oneof struct {
@@ -76,7 +76,7 @@ func (o *oneof) Fields() []Field {
 	return f
 }
 
-func (o *oneof) addField(f Field) {
+func (o *oneof) AddField(f Field) {
 	f.setOneOf(o)
 	o.flds = append(o.flds, f)
 }

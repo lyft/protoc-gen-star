@@ -53,10 +53,10 @@ type Message interface {
 	// IsWellKnown returns false, UnknownWKT is returned.
 	WellKnownType() WellKnownType
 
-	setParent(p ParentEntity)
-	addField(f Field)
-	addExtension(e Extension)
-	addOneOf(o OneOf)
+	SetParent(p ParentEntity)
+	AddField(f Field)
+	AddExtension(e Extension)
+	AddOneOf(o OneOf)
 	AddDependent(message Message)
 	GetDependents(set map[string]Message)
 }
@@ -232,7 +232,7 @@ func (m *msg) Accept(v Visitor) (err error) {
 	return
 }
 
-func (m *msg) addExtension(ext Extension) {
+func (m *msg) AddExtension(ext Extension) {
 	m.exts = append(m.exts, ext)
 }
 
@@ -240,30 +240,30 @@ func (m *msg) AddDefExtension(ext Extension) {
 	m.defExts = append(m.defExts, ext)
 }
 
-func (m *msg) setParent(p ParentEntity) { m.parent = p }
+func (m *msg) SetParent(p ParentEntity) { m.parent = p }
 
 func (m *msg) AddEnum(e Enum) {
-	e.setParent(m)
+	e.SetParent(m)
 	m.enums = append(m.enums, e)
 }
 
 func (m *msg) AddMessage(sm Message) {
-	sm.setParent(m)
+	sm.SetParent(m)
 	m.msgs = append(m.msgs, sm)
 }
 
-func (m *msg) addField(f Field) {
+func (m *msg) AddField(f Field) {
 	f.setMessage(m)
 	m.fields = append(m.fields, f)
 }
 
-func (m *msg) addOneOf(o OneOf) {
+func (m *msg) AddOneOf(o OneOf) {
 	o.setMessage(m)
 	m.oneofs = append(m.oneofs, o)
 }
 
 func (m *msg) AddMapEntry(me Message) {
-	me.setParent(m)
+	me.SetParent(m)
 	m.maps = append(m.maps, me)
 }
 

@@ -200,7 +200,7 @@ type mockEnum struct {
 	err error
 }
 
-func (e *mockEnum) setParent(p ParentEntity) { e.p = p }
+func (e *mockEnum) SetParent(p ParentEntity) { e.p = p }
 
 func (e *mockEnum) Accept(v Visitor) error {
 	_, err := v.VisitEnum(e)

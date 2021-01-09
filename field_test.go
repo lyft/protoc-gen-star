@@ -29,7 +29,7 @@ func TestField_Syntax(t *testing.T) {
 
 	f := &field{}
 	m := dummyMsg()
-	m.addField(f)
+	m.AddField(f)
 
 	assert.Equal(t, m.Syntax(), f.Syntax())
 }
@@ -39,7 +39,7 @@ func TestField_Package(t *testing.T) {
 
 	f := &field{}
 	m := dummyMsg()
-	m.addField(f)
+	m.AddField(f)
 
 	assert.NotNil(t, f.Package())
 	assert.Equal(t, m.Package(), f.Package())
@@ -50,7 +50,7 @@ func TestField_File(t *testing.T) {
 
 	f := &field{}
 	m := dummyMsg()
-	m.addField(f)
+	m.AddField(f)
 
 	assert.NotNil(t, f.File())
 	assert.Equal(t, m.File(), f.File())
@@ -61,10 +61,10 @@ func TestField_BuildTarget(t *testing.T) {
 
 	f := &field{}
 	m := dummyMsg()
-	m.addField(f)
+	m.AddField(f)
 
 	assert.False(t, f.BuildTarget())
-	m.setParent(&file{buildTarget: true})
+	m.SetParent(&file{buildTarget: true})
 	assert.True(t, f.BuildTarget())
 }
 
@@ -80,7 +80,7 @@ func TestField_Message(t *testing.T) {
 
 	f := &field{}
 	m := dummyMsg()
-	m.addField(f)
+	m.AddField(f)
 
 	assert.Equal(t, m, f.Message())
 }
@@ -93,7 +93,7 @@ func TestField_OneOf(t *testing.T) {
 	assert.False(t, f.InOneOf())
 
 	o := dummyOneof()
-	o.addField(f)
+	o.AddField(f)
 
 	assert.Equal(t, o, f.OneOf())
 	assert.True(t, f.InOneOf())
@@ -189,7 +189,7 @@ func dummyField() *field {
 	m := dummyMsg()
 	str := descriptor.FieldDescriptorProto_TYPE_STRING
 	f := &field{desc: &descriptor.FieldDescriptorProto{Name: proto.String("field"), Type: &str}}
-	m.addField(f)
+	m.AddField(f)
 	t := &scalarT{}
 	f.addType(t)
 	return f
