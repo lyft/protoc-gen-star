@@ -28,7 +28,7 @@ func TestEnum_Syntax(t *testing.T) {
 
 	e := &enum{}
 	f := dummyFile()
-	f.addEnum(e)
+	f.AddEnum(e)
 
 	assert.Equal(t, f.Syntax(), e.Syntax())
 }
@@ -38,7 +38,7 @@ func TestEnum_Package(t *testing.T) {
 
 	e := &enum{}
 	f := dummyFile()
-	f.addEnum(e)
+	f.AddEnum(e)
 
 	assert.NotNil(t, e.Package())
 	assert.Equal(t, f.Package(), e.Package())
@@ -49,7 +49,7 @@ func TestEnum_File(t *testing.T) {
 
 	e := &enum{}
 	m := dummyMsg()
-	m.addEnum(e)
+	m.AddEnum(e)
 
 	assert.NotNil(t, e.File())
 	assert.Equal(t, m.File(), e.File())
@@ -60,7 +60,7 @@ func TestEnum_BuildTarget(t *testing.T) {
 
 	e := &enum{}
 	f := dummyFile()
-	f.addEnum(e)
+	f.AddEnum(e)
 
 	assert.False(t, e.BuildTarget())
 	f.buildTarget = true
@@ -79,7 +79,7 @@ func TestEnum_Parent(t *testing.T) {
 
 	e := &enum{}
 	f := dummyFile()
-	f.addEnum(e)
+	f.AddEnum(e)
 
 	assert.Equal(t, f, e.Parent())
 }
@@ -106,7 +106,7 @@ func TestEnum_Dependents(t *testing.T) {
 
 		e := &enum{}
 		f := dummyFile()
-		f.addEnum(e)
+		f.AddEnum(e)
 
 		assert.Empty(t, e.Dependents())
 	})
@@ -116,7 +116,7 @@ func TestEnum_Dependents(t *testing.T) {
 
 		e := &enum{}
 		m := dummyMsg()
-		m.addEnum(e)
+		m.AddEnum(e)
 
 		assert.Empty(t, e.Dependents())
 	})
@@ -138,7 +138,7 @@ func TestEnum_Dependents(t *testing.T) {
 		e.fqn = fullyQualifiedName(f, e)
 		m := dummyMsg()
 		m.fqn = fullyQualifiedName(f, m)
-		e.addDependent(m)
+		e.AddDependent(m)
 		deps := e.Dependents()
 
 		assert.Len(t, deps, 1)
@@ -159,28 +159,28 @@ func TestEnum_Accept(t *testing.T) {
 	e := &enum{}
 	e.addValue(&enumVal{})
 
-	assert.NoError(t, e.accept(nil))
+	assert.NoError(t, e.Accept(nil))
 
 	v := &mockVisitor{}
-	assert.NoError(t, e.accept(v))
+	assert.NoError(t, e.Accept(v))
 	assert.Equal(t, 1, v.enum)
 	assert.Zero(t, v.enumvalue)
 
 	v.Reset()
 	v.err = errors.New("")
 	v.v = v
-	assert.Error(t, e.accept(v))
+	assert.Error(t, e.Accept(v))
 	assert.Equal(t, 1, v.enum)
 	assert.Zero(t, v.enumvalue)
 
 	v.Reset()
-	assert.NoError(t, e.accept(v))
+	assert.NoError(t, e.Accept(v))
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.enumvalue)
 
 	v.Reset()
 	e.addValue(&mockEnumValue{err: errors.New("")})
-	assert.Error(t, e.accept(v))
+	assert.Error(t, e.Accept(v))
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 2, v.enumvalue)
 }
@@ -189,9 +189,9 @@ func TestEnum_ChildAtPath(t *testing.T) {
 	t.Parallel()
 
 	e := &enum{}
-	assert.Equal(t, e, e.childAtPath(nil))
-	assert.Nil(t, e.childAtPath([]int32{1}))
-	assert.Nil(t, e.childAtPath([]int32{999, 123}))
+	assert.Equal(t, e, e.ChildAtPath(nil))
+	assert.Nil(t, e.ChildAtPath([]int32{1}))
+	assert.Nil(t, e.ChildAtPath([]int32{999, 123}))
 }
 
 type mockEnum struct {
@@ -202,7 +202,7 @@ type mockEnum struct {
 
 func (e *mockEnum) setParent(p ParentEntity) { e.p = p }
 
-func (e *mockEnum) accept(v Visitor) error {
+func (e *mockEnum) Accept(v Visitor) error {
 	_, err := v.VisitEnum(e)
 	if e.err != nil {
 		return e.err
@@ -213,6 +213,6 @@ func (e *mockEnum) accept(v Visitor) error {
 func dummyEnum() *enum {
 	f := dummyFile()
 	e := &enum{desc: &descriptor.EnumDescriptorProto{Name: proto.String("enum")}}
-	f.addEnum(e)
+	f.AddEnum(e)
 	return e
 }

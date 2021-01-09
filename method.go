@@ -73,7 +73,7 @@ func (m *method) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool,
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
 
-func (m *method) accept(v Visitor) (err error) {
+func (m *method) Accept(v Visitor) (err error) {
 	if v == nil {
 		return
 	}
@@ -84,13 +84,13 @@ func (m *method) accept(v Visitor) (err error) {
 
 func (m *method) setService(s Service) { m.service = s }
 
-func (m *method) childAtPath(path []int32) Entity {
+func (m *method) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {
 		return m
 	}
 	return nil
 }
 
-func (m *method) addSourceCodeInfo(info SourceCodeInfo) { m.info = info }
+func (m *method) AddSourceCodeInfo(info SourceCodeInfo) { m.info = info }
 
 var m Method = (*method)(nil)

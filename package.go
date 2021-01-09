@@ -13,9 +13,9 @@ type Package interface {
 	// All the files loaded for this Package
 	Files() []File
 
-	addFile(f File)
+	AddFile(f File)
 
-	setComments(c string)
+	SetComments(c string)
 }
 
 type pkg struct {
@@ -30,7 +30,7 @@ func (p *pkg) Comments() string { return p.comments }
 
 func (p *pkg) Files() []File { return p.files }
 
-func (p *pkg) accept(v Visitor) (err error) {
+func (p *pkg) Accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
 	}
@@ -40,7 +40,7 @@ func (p *pkg) accept(v Visitor) (err error) {
 	}
 
 	for _, f := range p.Files() {
-		if err = f.accept(v); err != nil {
+		if err = f.Accept(v); err != nil {
 			return
 		}
 	}
@@ -48,11 +48,11 @@ func (p *pkg) accept(v Visitor) (err error) {
 	return
 }
 
-func (p *pkg) addFile(f File) {
-	f.setPackage(p)
+func (p *pkg) AddFile(f File) {
+	f.SetPackage(p)
 	p.files = append(p.files, f)
 }
 
-func (p *pkg) setComments(comments string) {
+func (p *pkg) SetComments(comments string) {
 	p.comments = comments
 }

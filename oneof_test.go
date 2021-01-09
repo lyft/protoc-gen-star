@@ -123,10 +123,10 @@ func TestOneof_Accept(t *testing.T) {
 	t.Parallel()
 
 	o := &oneof{}
-	assert.NoError(t, o.accept(nil))
+	assert.NoError(t, o.Accept(nil))
 
 	v := &mockVisitor{err: errors.New("")}
-	assert.Error(t, o.accept(v))
+	assert.Error(t, o.Accept(v))
 	assert.Equal(t, 1, v.oneof)
 }
 
@@ -134,8 +134,8 @@ func TestOneof_ChildAtPath(t *testing.T) {
 	t.Parallel()
 
 	o := &oneof{}
-	assert.Equal(t, o, o.childAtPath(nil))
-	assert.Nil(t, o.childAtPath([]int32{1}))
+	assert.Equal(t, o, o.ChildAtPath(nil))
+	assert.Nil(t, o.ChildAtPath([]int32{1}))
 }
 
 type mockOneOf struct {
@@ -149,7 +149,7 @@ func (o *mockOneOf) Imports() []File { return o.i }
 
 func (o *mockOneOf) setMessage(m Message) { o.m = m }
 
-func (o *mockOneOf) accept(v Visitor) error {
+func (o *mockOneOf) Accept(v Visitor) error {
 	_, err := v.VisitOneOf(o)
 	if o.err != nil {
 		return o.err

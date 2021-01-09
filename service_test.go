@@ -29,7 +29,7 @@ func TestService_Syntax(t *testing.T) {
 
 	s := &service{}
 	f := dummyFile()
-	f.addService(s)
+	f.AddService(s)
 
 	assert.Equal(t, f.Syntax(), s.Syntax())
 }
@@ -39,7 +39,7 @@ func TestService_Package(t *testing.T) {
 
 	s := &service{}
 	f := dummyFile()
-	f.addService(s)
+	f.AddService(s)
 
 	assert.NotNil(t, s.Package())
 	assert.Equal(t, f.Package(), s.Package())
@@ -50,7 +50,7 @@ func TestService_File(t *testing.T) {
 
 	s := &service{}
 	f := dummyFile()
-	f.addService(s)
+	f.AddService(s)
 
 	assert.NotNil(t, s.File())
 	assert.Equal(t, f, s.File())
@@ -61,7 +61,7 @@ func TestService_BuildTarget(t *testing.T) {
 
 	s := &service{}
 	f := dummyFile()
-	f.addService(s)
+	f.AddService(s)
 
 	assert.False(t, s.BuildTarget())
 	f.buildTarget = true
@@ -112,28 +112,28 @@ func TestService_Accept(t *testing.T) {
 	s := &service{}
 	s.addMethod(&method{})
 
-	assert.NoError(t, s.accept(nil))
+	assert.NoError(t, s.Accept(nil))
 
 	v := &mockVisitor{}
-	assert.NoError(t, s.accept(v))
+	assert.NoError(t, s.Accept(v))
 	assert.Equal(t, 1, v.service)
 	assert.Zero(t, v.method)
 
 	v.Reset()
 	v.err = errors.New("fizz")
 	v.v = v
-	assert.Error(t, s.accept(v))
+	assert.Error(t, s.Accept(v))
 	assert.Equal(t, 1, v.service)
 	assert.Zero(t, v.method)
 
 	v.Reset()
-	assert.NoError(t, s.accept(v))
+	assert.NoError(t, s.Accept(v))
 	assert.Equal(t, 1, v.service)
 	assert.Equal(t, 1, v.method)
 
 	v.Reset()
 	s.addMethod(&mockMethod{err: errors.New("buzz")})
-	assert.Error(t, s.accept(v))
+	assert.Error(t, s.Accept(v))
 	assert.Equal(t, 1, v.service)
 	assert.Equal(t, 2, v.method)
 }
@@ -142,9 +142,9 @@ func TestService_ChildAtPath(t *testing.T) {
 	t.Parallel()
 
 	s := &service{}
-	assert.Equal(t, s, s.childAtPath(nil))
-	assert.Nil(t, s.childAtPath([]int32{0}))
-	assert.Nil(t, s.childAtPath([]int32{0, 0}))
+	assert.Equal(t, s, s.ChildAtPath(nil))
+	assert.Nil(t, s.ChildAtPath([]int32{0}))
+	assert.Nil(t, s.ChildAtPath([]int32{0, 0}))
 }
 
 type mockService struct {
@@ -158,7 +158,7 @@ func (s *mockService) Imports() []File { return s.i }
 
 func (s *mockService) setFile(f File) { s.f = f }
 
-func (s *mockService) accept(v Visitor) error {
+func (s *mockService) Accept(v Visitor) error {
 	_, err := v.VisitService(s)
 	if s.err != nil {
 		return s.err
@@ -175,6 +175,6 @@ func dummyService() *service {
 		},
 	}
 
-	f.addService(s)
+	f.AddService(s)
 	return s
 }

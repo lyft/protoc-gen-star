@@ -157,10 +157,10 @@ func TestMethod_Accept(t *testing.T) {
 
 	m := &method{}
 
-	assert.Nil(t, m.accept(nil))
+	assert.Nil(t, m.Accept(nil))
 
 	v := &mockVisitor{err: errors.New("foo")}
-	assert.Error(t, m.accept(v))
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 1, v.method)
 }
 
@@ -169,8 +169,8 @@ func TestMethod_ChildAtPath(t *testing.T) {
 
 	m := &method{}
 
-	assert.Equal(t, m, m.childAtPath(nil))
-	assert.Nil(t, m.childAtPath([]int32{1}))
+	assert.Equal(t, m, m.ChildAtPath(nil))
+	assert.Nil(t, m.ChildAtPath([]int32{1}))
 }
 
 type mockMethod struct {
@@ -184,7 +184,7 @@ func (m *mockMethod) Imports() []File { return m.i }
 
 func (m *mockMethod) setService(s Service) { m.s = s }
 
-func (m *mockMethod) accept(v Visitor) error {
+func (m *mockMethod) Accept(v Visitor) error {
 	_, err := v.VisitMethod(m)
 	if m.err != nil {
 		return m.err

@@ -32,7 +32,7 @@ type oneof struct {
 	info SourceCodeInfo
 }
 
-func (o *oneof) accept(v Visitor) (err error) {
+func (o *oneof) Accept(v Visitor) (err error) {
 	if v == nil {
 		return
 	}
@@ -81,13 +81,13 @@ func (o *oneof) addField(f Field) {
 	o.flds = append(o.flds, f)
 }
 
-func (o *oneof) childAtPath(path []int32) Entity {
+func (o *oneof) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {
 		return o
 	}
 	return nil
 }
 
-func (o *oneof) addSourceCodeInfo(info SourceCodeInfo) { o.info = info }
+func (o *oneof) AddSourceCodeInfo(info SourceCodeInfo) { o.info = info }
 
 var _ OneOf = (*oneof)(nil)

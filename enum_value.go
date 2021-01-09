@@ -45,7 +45,7 @@ func (ev *enumVal) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, 
 	return extension(ev.desc.GetOptions(), desc, &ext)
 }
 
-func (ev *enumVal) accept(v Visitor) (err error) {
+func (ev *enumVal) Accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
 	}
@@ -57,13 +57,13 @@ func (ev *enumVal) accept(v Visitor) (err error) {
 
 func (ev *enumVal) setEnum(e Enum) { ev.enum = e }
 
-func (ev *enumVal) childAtPath(path []int32) Entity {
+func (ev *enumVal) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {
 		return ev
 	}
 	return nil
 }
 
-func (ev *enumVal) addSourceCodeInfo(info SourceCodeInfo) { ev.info = info }
+func (ev *enumVal) AddSourceCodeInfo(info SourceCodeInfo) { ev.info = info }
 
 var _ EnumValue = (*enumVal)(nil)

@@ -79,7 +79,7 @@ func TestFile_Enums(t *testing.T) {
 	assert.Empty(t, f.Enums())
 
 	e := &enum{}
-	f.addEnum(e)
+	f.AddEnum(e)
 	assert.Len(t, f.Enums(), 1)
 	assert.Equal(t, e, f.Enums()[0])
 }
@@ -91,10 +91,10 @@ func TestFile_AllEnums(t *testing.T) {
 
 	assert.Empty(t, f.AllEnums())
 
-	f.addEnum(&enum{})
+	f.AddEnum(&enum{})
 	m := &msg{}
-	m.addEnum(&enum{})
-	f.addMessage(m)
+	m.AddEnum(&enum{})
+	f.AddMessage(m)
 
 	assert.Len(t, f.Enums(), 1)
 	assert.Len(t, f.AllEnums(), 2)
@@ -108,7 +108,7 @@ func TestFile_Messages(t *testing.T) {
 	assert.Empty(t, f.Messages())
 
 	m := &msg{}
-	f.addMessage(m)
+	f.AddMessage(m)
 	assert.Len(t, f.Messages(), 1)
 	assert.Equal(t, m, f.Messages()[0])
 }
@@ -117,7 +117,7 @@ func TestFile_MapEntries(t *testing.T) {
 	t.Parallel()
 	f := &file{}
 
-	assert.Panics(t, func() { f.addMapEntry(&msg{}) })
+	assert.Panics(t, func() { f.AddMapEntry(&msg{}) })
 	assert.Empty(t, f.MapEntries())
 }
 
@@ -129,8 +129,8 @@ func TestFile_AllMessages(t *testing.T) {
 	assert.Empty(t, f.AllMessages())
 
 	m := &msg{}
-	m.addMessage(&msg{})
-	f.addMessage(m)
+	m.AddMessage(&msg{})
+	f.AddMessage(m)
 
 	assert.Len(t, f.Messages(), 1)
 	assert.Len(t, f.AllMessages(), 2)
@@ -144,7 +144,7 @@ func TestFile_Services(t *testing.T) {
 	assert.Empty(t, f.Services())
 
 	s := &service{}
-	f.addService(s)
+	f.AddService(s)
 
 	assert.Len(t, f.Services(), 1)
 	assert.Equal(t, s, f.Services()[0])
@@ -157,12 +157,12 @@ func TestFile_Imports(t *testing.T) {
 	nf := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
-	flDep.addFileDependency(nf)
+	flDep.AddFileDependency(nf)
 
 	f := &file{}
 	assert.Empty(t, f.Imports())
 
-	f.addFileDependency(flDep)
+	f.AddFileDependency(flDep)
 	assert.Len(t, f.Imports(), 1)
 }
 
@@ -173,12 +173,12 @@ func TestFile_TransitiveImports(t *testing.T) {
 	nf := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
-	flDep.addFileDependency(nf)
+	flDep.AddFileDependency(nf)
 
 	f := &file{}
 	assert.Empty(t, f.TransitiveImports())
 
-	f.addFileDependency(flDep)
+	f.AddFileDependency(flDep)
 	assert.Len(t, f.TransitiveImports(), 2)
 }
 
@@ -193,13 +193,13 @@ func TestFile_UnusedImports(t *testing.T) {
 		Name: proto.String("i/am/unused.proto"),
 	}}
 
-	target.addFileDependency(unusedFile)
+	target.AddFileDependency(unusedFile)
 
 	publicFile := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("i/am/public.proto"),
 	}}
 
-	target.addFileDependency(publicFile)
+	target.AddFileDependency(publicFile)
 	target.desc.PublicDependency = append(target.desc.PublicDependency, 1)
 
 	msgDep := dummyMsg()
@@ -210,14 +210,14 @@ func TestFile_UnusedImports(t *testing.T) {
 	fld.addType(ft)
 	m := &msg{}
 	m.addField(fld)
-	target.addMessage(m)
+	target.AddMessage(m)
 
 	mtd := &method{in: msgDep, out: m}
 	svc := &service{}
 	svc.addMethod(mtd)
-	target.addService(svc)
+	target.AddService(svc)
 
-	target.addFileDependency(usedFile)
+	target.AddFileDependency(usedFile)
 
 	unused := target.UnusedImports()
 	assert.Len(t, unused, 1)
@@ -229,7 +229,7 @@ func TestFile_Dependents(t *testing.T) {
 
 	f := &file{}
 	fl := dummyFile()
-	f.addDependent(fl)
+	f.AddDependent(fl)
 	deps := f.Dependents()
 
 	assert.Len(t, deps, 1)
@@ -241,16 +241,16 @@ func TestFile_Accept(t *testing.T) {
 
 	f := &file{}
 
-	assert.Nil(t, f.accept(nil))
+	assert.Nil(t, f.Accept(nil))
 
 	v := &mockVisitor{}
-	assert.NoError(t, f.accept(v))
+	assert.NoError(t, f.Accept(v))
 	assert.Equal(t, 1, v.file)
 
 	v.Reset()
 	v.v = v
 	v.err = errors.New("foo")
-	assert.Equal(t, v.err, f.accept(v))
+	assert.Equal(t, v.err, f.Accept(v))
 	assert.Equal(t, 1, v.file)
 	assert.Zero(t, v.enum)
 	assert.Zero(t, v.message)
@@ -258,11 +258,11 @@ func TestFile_Accept(t *testing.T) {
 	assert.Zero(t, v.extension)
 
 	v.Reset()
-	f.addEnum(&enum{})
-	f.addMessage(&msg{})
-	f.addService(&service{})
-	f.addDefExtension(&ext{})
-	assert.NoError(t, f.accept(v))
+	f.AddEnum(&enum{})
+	f.AddMessage(&msg{})
+	f.AddService(&service{})
+	f.AddDefExtension(&ext{})
+	assert.NoError(t, f.Accept(v))
 	assert.Equal(t, 1, v.file)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.message)
@@ -270,8 +270,8 @@ func TestFile_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.extension)
 
 	v.Reset()
-	f.addDefExtension(&mockExtension{err: errors.New("fizz")})
-	assert.EqualError(t, f.accept(v), "fizz")
+	f.AddDefExtension(&mockExtension{err: errors.New("fizz")})
+	assert.EqualError(t, f.Accept(v), "fizz")
 	assert.Equal(t, 1, v.file)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.message)
@@ -279,8 +279,8 @@ func TestFile_Accept(t *testing.T) {
 	assert.Equal(t, 2, v.extension)
 
 	v.Reset()
-	f.addService(&mockService{err: errors.New("fizz")})
-	assert.EqualError(t, f.accept(v), "fizz")
+	f.AddService(&mockService{err: errors.New("fizz")})
+	assert.EqualError(t, f.Accept(v), "fizz")
 	assert.Equal(t, 1, v.file)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.message)
@@ -288,8 +288,8 @@ func TestFile_Accept(t *testing.T) {
 	assert.Zero(t, v.extension)
 
 	v.Reset()
-	f.addMessage(&mockMessage{err: errors.New("bar")})
-	assert.EqualError(t, f.accept(v), "bar")
+	f.AddMessage(&mockMessage{err: errors.New("bar")})
+	assert.EqualError(t, f.Accept(v), "bar")
 	assert.Equal(t, 1, v.file)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 2, v.message)
@@ -297,8 +297,8 @@ func TestFile_Accept(t *testing.T) {
 	assert.Zero(t, v.extension)
 
 	v.Reset()
-	f.addEnum(&mockEnum{err: errors.New("baz")})
-	assert.EqualError(t, f.accept(v), "baz")
+	f.AddEnum(&mockEnum{err: errors.New("baz")})
+	assert.EqualError(t, f.Accept(v), "baz")
 	assert.Equal(t, 1, v.file)
 	assert.Equal(t, 2, v.enum)
 	assert.Zero(t, v.message)
@@ -323,7 +323,7 @@ func TestFile_DefinedExtensions(t *testing.T) {
 	assert.Empty(t, f.DefinedExtensions())
 
 	ext := &ext{}
-	f.addDefExtension(ext)
+	f.AddDefExtension(ext)
 	assert.Len(t, f.DefinedExtensions(), 1)
 }
 
@@ -338,11 +338,11 @@ type mockFile struct {
 	err error
 }
 
-func (f *mockFile) setPackage(p Package) {
+func (f *mockFile) SetPackage(p Package) {
 	f.pkg = p
 }
 
-func (f *mockFile) accept(v Visitor) error {
+func (f *mockFile) Accept(v Visitor) error {
 	_, err := v.VisitFile(f)
 	if f.err != nil {
 		return f.err
@@ -360,7 +360,7 @@ func dummyFile() *file {
 			Name:    proto.String("file.proto"),
 		},
 	}
-	pkg.addFile(f)
+	pkg.AddFile(f)
 
 	return f
 }

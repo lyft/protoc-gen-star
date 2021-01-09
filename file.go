@@ -39,15 +39,15 @@ type File interface {
 	// stanza of the file.
 	PackageSourceCodeInfo() SourceCodeInfo
 
-	setPackage(p Package)
+	SetPackage(p Package)
 
-	addFileDependency(fl File)
+	AddFileDependency(fl File)
 
-	addDependent(fl File)
+	AddDependent(fl File)
 
-	addService(s Service)
+	AddService(s Service)
 
-	addPackageSourceCodeInfo(info SourceCodeInfo)
+	AddPackageSourceCodeInfo(info SourceCodeInfo)
 }
 
 type file struct {
@@ -189,7 +189,7 @@ func (f *file) DefinedExtensions() []Extension {
 	return f.defExts
 }
 
-func (f *file) accept(v Visitor) (err error) {
+func (f *file) Accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
 	}
@@ -199,25 +199,25 @@ func (f *file) accept(v Visitor) (err error) {
 	}
 
 	for _, e := range f.enums {
-		if err = e.accept(v); err != nil {
+		if err = e.Accept(v); err != nil {
 			return
 		}
 	}
 
 	for _, m := range f.msgs {
-		if err = m.accept(v); err != nil {
+		if err = m.Accept(v); err != nil {
 			return
 		}
 	}
 
 	for _, s := range f.srvs {
-		if err = s.accept(v); err != nil {
+		if err = s.Accept(v); err != nil {
 			return
 		}
 	}
 
 	for _, ext := range f.defExts {
-		if err = ext.accept(v); err != nil {
+		if err = ext.Accept(v); err != nil {
 			return
 		}
 	}
@@ -225,38 +225,38 @@ func (f *file) accept(v Visitor) (err error) {
 	return
 }
 
-func (f *file) addDefExtension(ext Extension) {
+func (f *file) AddDefExtension(ext Extension) {
 	f.defExts = append(f.defExts, ext)
 }
 
-func (f *file) setPackage(pkg Package) { f.pkg = pkg }
+func (f *file) SetPackage(pkg Package) { f.pkg = pkg }
 
-func (f *file) addEnum(e Enum) {
+func (f *file) AddEnum(e Enum) {
 	e.setParent(f)
 	f.enums = append(f.enums, e)
 }
 
-func (f *file) addFileDependency(fl File) {
+func (f *file) AddFileDependency(fl File) {
 	f.fileDependencies = append(f.fileDependencies, fl)
 }
 
-func (f *file) addDependent(fl File) {
+func (f *file) AddDependent(fl File) {
 	f.dependents = append(f.dependents, fl)
 }
 
-func (f *file) addMessage(m Message) {
+func (f *file) AddMessage(m Message) {
 	m.setParent(f)
 	f.msgs = append(f.msgs, m)
 }
 
-func (f *file) addService(s Service) {
+func (f *file) AddService(s Service) {
 	s.setFile(f)
 	f.srvs = append(f.srvs, s)
 }
 
-func (f *file) addMapEntry(m Message) { panic("cannot add map entry directly to file") }
+func (f *file) AddMapEntry(m Message) { panic("cannot add map entry directly to file") }
 
-func (f *file) childAtPath(path []int32) Entity {
+func (f *file) ChildAtPath(path []int32) Entity {
 	switch {
 	case len(path) == 0:
 		return f
@@ -276,14 +276,14 @@ func (f *file) childAtPath(path []int32) Entity {
 		return nil
 	}
 
-	return child.childAtPath(path[2:])
+	return child.ChildAtPath(path[2:])
 }
 
-func (f *file) addSourceCodeInfo(info SourceCodeInfo) {
+func (f *file) AddSourceCodeInfo(info SourceCodeInfo) {
 	f.syntaxInfo = info
 }
 
-func (f *file) addPackageSourceCodeInfo(info SourceCodeInfo) {
+func (f *file) AddPackageSourceCodeInfo(info SourceCodeInfo) {
 	f.packageInfo = info
 }
 

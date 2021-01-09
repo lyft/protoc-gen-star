@@ -3,7 +3,7 @@ package pgs
 // Node represents any member of the proto descriptor AST. Typically, the
 // highest level Node is the Package.
 type Node interface {
-	accept(Visitor) error
+	Accept(Visitor) error
 }
 
 // A Visitor exposes methods to walk an AST Node and its children in a depth-
@@ -24,7 +24,7 @@ type Visitor interface {
 }
 
 // Walk applies a depth-first visitor pattern with v against Node n.
-func Walk(v Visitor, n Node) error { return n.accept(v) }
+func Walk(v Visitor, n Node) error { return n.Accept(v) }
 
 type nilVisitor struct{}
 

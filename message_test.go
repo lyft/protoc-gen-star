@@ -31,7 +31,7 @@ func TestMsg_Syntax(t *testing.T) {
 
 	m := &msg{}
 	f := dummyFile()
-	f.addMessage(m)
+	f.AddMessage(m)
 
 	assert.Equal(t, f.Syntax(), m.Syntax())
 }
@@ -41,7 +41,7 @@ func TestMsg_Package(t *testing.T) {
 
 	m := &msg{}
 	f := dummyFile()
-	f.addMessage(m)
+	f.AddMessage(m)
 
 	assert.NotNil(t, m.Package())
 	assert.Equal(t, f.Package(), m.Package())
@@ -52,7 +52,7 @@ func TestMsg_File(t *testing.T) {
 
 	m := &msg{}
 	pm := dummyMsg()
-	pm.addMessage(m)
+	pm.AddMessage(m)
 
 	assert.NotNil(t, m.File())
 	assert.Equal(t, pm.File(), m.File())
@@ -63,7 +63,7 @@ func TestMsg_BuildTarget(t *testing.T) {
 
 	m := &msg{}
 	f := dummyFile()
-	f.addMessage(m)
+	f.AddMessage(m)
 
 	assert.False(t, m.BuildTarget())
 	f.buildTarget = true
@@ -82,7 +82,7 @@ func TestMsg_Parent(t *testing.T) {
 
 	m := &msg{}
 	pm := dummyMsg()
-	pm.addMessage(m)
+	pm.AddMessage(m)
 
 	assert.Equal(t, pm, m.Parent())
 }
@@ -106,10 +106,10 @@ func TestMsg_Enums(t *testing.T) {
 	assert.Empty(t, m.Enums())
 
 	sm := &msg{}
-	sm.addEnum(&enum{})
-	m.addMessage(sm)
+	sm.AddEnum(&enum{})
+	m.AddMessage(sm)
 
-	m.addEnum(&enum{})
+	m.AddEnum(&enum{})
 	assert.Len(t, m.Enums(), 1)
 }
 
@@ -120,10 +120,10 @@ func TestMsg_AllEnums(t *testing.T) {
 	assert.Empty(t, m.AllEnums())
 
 	sm := &msg{}
-	sm.addEnum(&enum{})
-	m.addMessage(sm)
+	sm.AddEnum(&enum{})
+	m.AddMessage(sm)
 
-	m.addEnum(&enum{})
+	m.AddEnum(&enum{})
 	assert.Len(t, m.AllEnums(), 2)
 }
 
@@ -134,8 +134,8 @@ func TestMsg_Messages(t *testing.T) {
 	assert.Empty(t, m.Messages())
 
 	sm := &msg{}
-	sm.addMessage(&msg{})
-	m.addMessage(sm)
+	sm.AddMessage(&msg{})
+	m.AddMessage(sm)
 
 	assert.Len(t, m.Messages(), 1)
 }
@@ -147,8 +147,8 @@ func TestMsg_AllMessages(t *testing.T) {
 	assert.Empty(t, m.AllMessages())
 
 	sm := &msg{}
-	sm.addMessage(&msg{})
-	m.addMessage(sm)
+	sm.AddMessage(&msg{})
+	m.AddMessage(sm)
 
 	assert.Len(t, m.AllMessages(), 2)
 }
@@ -159,7 +159,7 @@ func TestMsg_MapEntries(t *testing.T) {
 	m := &msg{}
 	assert.Empty(t, m.MapEntries())
 
-	m.addMapEntry(&msg{})
+	m.AddMapEntry(&msg{})
 	assert.Len(t, m.MapEntries(), 1)
 }
 
@@ -235,7 +235,7 @@ func TestMsg_DefinedExtensions(t *testing.T) {
 	assert.Empty(t, m.DefinedExtensions())
 
 	ext := &ext{}
-	m.addDefExtension(ext)
+	m.AddDefExtension(ext)
 	assert.Len(t, m.DefinedExtensions(), 1)
 }
 
@@ -243,16 +243,16 @@ func TestMsg_Accept(t *testing.T) {
 	t.Parallel()
 
 	m := &msg{}
-	m.addMessage(&msg{})
-	m.addEnum(&enum{})
+	m.AddMessage(&msg{})
+	m.AddEnum(&enum{})
 	m.addField(&field{})
 	m.addOneOf(&oneof{})
-	m.addDefExtension(&ext{})
+	m.AddDefExtension(&ext{})
 
-	assert.NoError(t, m.accept(nil))
+	assert.NoError(t, m.Accept(nil))
 
 	v := &mockVisitor{}
-	assert.NoError(t, m.accept(v))
+	assert.NoError(t, m.Accept(v))
 	assert.Equal(t, 1, v.message)
 	assert.Zero(t, v.enum)
 	assert.Zero(t, v.field)
@@ -262,7 +262,7 @@ func TestMsg_Accept(t *testing.T) {
 	v.Reset()
 	v.v = v
 	v.err = errors.New("")
-	assert.Error(t, m.accept(v))
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 1, v.message)
 	assert.Zero(t, v.enum)
 	assert.Zero(t, v.field)
@@ -270,7 +270,7 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Zero(t, v.extension)
 
 	v.Reset()
-	assert.NoError(t, m.accept(v))
+	assert.NoError(t, m.Accept(v))
 	assert.Equal(t, 2, v.message)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.field)
@@ -278,8 +278,8 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.extension)
 
 	v.Reset()
-	m.addDefExtension(&mockExtension{err: errors.New("")})
-	assert.Error(t, m.accept(v))
+	m.AddDefExtension(&mockExtension{err: errors.New("")})
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 2, v.message)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.field)
@@ -288,7 +288,7 @@ func TestMsg_Accept(t *testing.T) {
 
 	v.Reset()
 	m.addOneOf(&mockOneOf{err: errors.New("")})
-	assert.Error(t, m.accept(v))
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 2, v.message)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 1, v.field)
@@ -297,7 +297,7 @@ func TestMsg_Accept(t *testing.T) {
 
 	v.Reset()
 	m.addField(&mockField{err: errors.New("")})
-	assert.Error(t, m.accept(v))
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 2, v.message)
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 2, v.field)
@@ -305,8 +305,8 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Zero(t, v.extension)
 
 	v.Reset()
-	m.addMessage(&mockMessage{err: errors.New("")})
-	assert.Error(t, m.accept(v))
+	m.AddMessage(&mockMessage{err: errors.New("")})
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 3, v.message)
 	assert.Equal(t, 1, v.enum)
 	assert.Zero(t, v.field)
@@ -314,8 +314,8 @@ func TestMsg_Accept(t *testing.T) {
 	assert.Zero(t, v.extension)
 
 	v.Reset()
-	m.addEnum(&mockEnum{err: errors.New("")})
-	assert.Error(t, m.accept(v))
+	m.AddEnum(&mockEnum{err: errors.New("")})
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 2, v.enum)
 	assert.Equal(t, 1, v.message)
 	assert.Zero(t, v.field)
@@ -355,7 +355,7 @@ func TestMsg_Dependents(t *testing.T) {
 	m := &msg{parent: f}
 	m.fqn = fullyQualifiedName(f, m)
 	m2 := dummyMsg()
-	m.addDependent(m2)
+	m.AddDependent(m2)
 	deps := m.Dependents()
 
 	assert.Len(t, deps, 1)
@@ -366,9 +366,9 @@ func TestMsg_ChildAtPath(t *testing.T) {
 	t.Parallel()
 
 	m := &msg{}
-	assert.Equal(t, m, m.childAtPath(nil))
-	assert.Nil(t, m.childAtPath([]int32{1}))
-	assert.Nil(t, m.childAtPath([]int32{999, 456}))
+	assert.Equal(t, m, m.ChildAtPath(nil))
+	assert.Nil(t, m.ChildAtPath([]int32{1}))
+	assert.Nil(t, m.ChildAtPath([]int32{999, 456}))
 }
 
 func TestMsg_WellKnownType(t *testing.T) {
@@ -376,8 +376,8 @@ func TestMsg_WellKnownType(t *testing.T) {
 	p := &pkg{fd: fd}
 	f := &file{desc: fd}
 	m := &msg{desc: md}
-	f.addMessage(m)
-	p.addFile(f)
+	f.AddMessage(m)
+	p.AddFile(f)
 
 	assert.True(t, m.IsWellKnown())
 	assert.Equal(t, AnyWKT, m.WellKnownType())
@@ -403,7 +403,7 @@ func (m *mockMessage) Imports() []File { return m.i }
 
 func (m *mockMessage) setParent(p ParentEntity) { m.p = p }
 
-func (m *mockMessage) accept(v Visitor) error {
+func (m *mockMessage) Accept(v Visitor) error {
 	_, err := v.VisitMessage(m)
 	if m.err != nil {
 		return m.err
@@ -418,6 +418,6 @@ func dummyMsg() *msg {
 		desc: &descriptor.DescriptorProto{Name: proto.String("message")},
 	}
 
-	f.addMessage(m)
+	f.AddMessage(m)
 	return m
 }

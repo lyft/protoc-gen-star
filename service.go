@@ -68,7 +68,7 @@ func (s *service) addMethod(m Method) {
 	s.methods = append(s.methods, m)
 }
 
-func (s *service) accept(v Visitor) (err error) {
+func (s *service) Accept(v Visitor) (err error) {
 	if v == nil {
 		return
 	}
@@ -78,7 +78,7 @@ func (s *service) accept(v Visitor) (err error) {
 	}
 
 	for _, m := range s.methods {
-		if err = m.accept(v); err != nil {
+		if err = m.Accept(v); err != nil {
 			return
 		}
 	}
@@ -86,19 +86,19 @@ func (s *service) accept(v Visitor) (err error) {
 	return
 }
 
-func (s *service) childAtPath(path []int32) Entity {
+func (s *service) ChildAtPath(path []int32) Entity {
 	switch {
 	case len(path) == 0:
 		return s
 	case len(path)%2 != 0:
 		return nil
 	case path[0] == serviceTypeMethodPath:
-		return s.methods[path[1]].childAtPath(path[2:])
+		return s.methods[path[1]].ChildAtPath(path[2:])
 	default:
 		return nil
 	}
 }
 
-func (s *service) addSourceCodeInfo(info SourceCodeInfo) { s.info = info }
+func (s *service) AddSourceCodeInfo(info SourceCodeInfo) { s.info = info }
 
 var _ Service = (*service)(nil)

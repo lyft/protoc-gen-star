@@ -25,7 +25,7 @@ type Enum interface {
 	Dependents() []Message
 
 	addValue(v EnumValue)
-	addDependent(m Message)
+	AddDependent(m Message)
 	setParent(p ParentEntity)
 }
 
@@ -72,7 +72,7 @@ func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, erro
 	return extension(e.desc.GetOptions(), desc, &ext)
 }
 
-func (e *enum) accept(v Visitor) (err error) {
+func (e *enum) Accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
 	}
@@ -82,7 +82,7 @@ func (e *enum) accept(v Visitor) (err error) {
 	}
 
 	for _, ev := range e.vals {
-		if err = ev.accept(v); err != nil {
+		if err = ev.Accept(v); err != nil {
 			return
 		}
 	}
@@ -90,7 +90,7 @@ func (e *enum) accept(v Visitor) (err error) {
 	return
 }
 
-func (e *enum) addDependent(m Message) {
+func (e *enum) AddDependent(m Message) {
 	e.dependents = append(e.dependents, m)
 }
 
@@ -101,19 +101,19 @@ func (e *enum) addValue(v EnumValue) {
 
 func (e *enum) setParent(p ParentEntity) { e.parent = p }
 
-func (e *enum) childAtPath(path []int32) Entity {
+func (e *enum) ChildAtPath(path []int32) Entity {
 	switch {
 	case len(path) == 0:
 		return e
 	case len(path)%2 != 0:
 		return nil
 	case path[0] == enumTypeValuePath:
-		return e.vals[path[1]].childAtPath(path[2:])
+		return e.vals[path[1]].ChildAtPath(path[2:])
 	default:
 		return nil
 	}
 }
 
-func (e *enum) addSourceCodeInfo(info SourceCodeInfo) { e.info = info }
+func (e *enum) AddSourceCodeInfo(info SourceCodeInfo) { e.info = info }
 
 var _ Enum = (*enum)(nil)

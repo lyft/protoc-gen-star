@@ -91,10 +91,10 @@ func TestExt_Accept(t *testing.T) {
 
 	e := &ext{}
 
-	assert.NoError(t, e.accept(nil))
+	assert.NoError(t, e.Accept(nil))
 
 	v := &mockVisitor{err: errors.New("")}
-	assert.Error(t, e.accept(v))
+	assert.Error(t, e.Accept(v))
 	assert.Equal(t, 1, v.extension)
 }
 
@@ -198,7 +198,7 @@ type mockExtension struct {
 	err error
 }
 
-func (e *mockExtension) accept(v Visitor) error {
+func (e *mockExtension) Accept(v Visitor) error {
 	_, err := v.VisitExtension(e)
 	if e.err != nil {
 		return e.err

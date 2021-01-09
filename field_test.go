@@ -120,10 +120,10 @@ func TestField_Accept(t *testing.T) {
 
 	f := &field{}
 
-	assert.NoError(t, f.accept(nil))
+	assert.NoError(t, f.Accept(nil))
 
 	v := &mockVisitor{err: errors.New("")}
-	assert.Error(t, f.accept(v))
+	assert.Error(t, f.Accept(v))
 	assert.Equal(t, 1, v.field)
 }
 
@@ -162,8 +162,8 @@ func TestField_ChildAtPath(t *testing.T) {
 	t.Parallel()
 
 	f := &field{}
-	assert.Equal(t, f, f.childAtPath(nil))
-	assert.Nil(t, f.childAtPath([]int32{1}))
+	assert.Equal(t, f, f.ChildAtPath(nil))
+	assert.Nil(t, f.ChildAtPath([]int32{1}))
 }
 
 type mockField struct {
@@ -177,7 +177,7 @@ func (f *mockField) Imports() []File { return f.i }
 
 func (f *mockField) setMessage(m Message) { f.m = m }
 
-func (f *mockField) accept(v Visitor) error {
+func (f *mockField) Accept(v Visitor) error {
 	_, err := v.VisitField(f)
 	if f.err != nil {
 		return f.err

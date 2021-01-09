@@ -75,7 +75,7 @@ func (f *field) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, 
 	return extension(f.desc.GetOptions(), desc, &ext)
 }
 
-func (f *field) accept(v Visitor) (err error) {
+func (f *field) Accept(v Visitor) (err error) {
 	if v == nil {
 		return
 	}
@@ -84,13 +84,13 @@ func (f *field) accept(v Visitor) (err error) {
 	return
 }
 
-func (f *field) childAtPath(path []int32) Entity {
+func (f *field) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {
 		return f
 	}
 	return nil
 }
 
-func (f *field) addSourceCodeInfo(info SourceCodeInfo) { f.info = info }
+func (f *field) AddSourceCodeInfo(info SourceCodeInfo) { f.info = info }
 
 var _ Field = (*field)(nil)

@@ -44,7 +44,7 @@ func (e *ext) setMessage(m Message)       {} // noop
 func (e *ext) setOneOf(o OneOf)           {} // noop
 func (e *ext) setExtendee(m Message)      { e.extendee = m }
 
-func (e *ext) accept(v Visitor) (err error) {
+func (e *ext) Accept(v Visitor) (err error) {
 	if v == nil {
 		return
 	}

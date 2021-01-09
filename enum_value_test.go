@@ -94,10 +94,10 @@ func TestEnumVal_Accept(t *testing.T) {
 	t.Parallel()
 
 	ev := &enumVal{}
-	assert.NoError(t, ev.accept(nil))
+	assert.NoError(t, ev.Accept(nil))
 
 	v := &mockVisitor{err: errors.New("")}
-	assert.Error(t, ev.accept(v))
+	assert.Error(t, ev.Accept(v))
 	assert.Equal(t, 1, v.enumvalue)
 }
 
@@ -105,8 +105,8 @@ func TestEnumVal_ChildAtPath(t *testing.T) {
 	t.Parallel()
 
 	ev := &enumVal{}
-	assert.Equal(t, ev, ev.childAtPath(nil))
-	assert.Nil(t, ev.childAtPath([]int32{1}))
+	assert.Equal(t, ev, ev.ChildAtPath(nil))
+	assert.Nil(t, ev.ChildAtPath([]int32{1}))
 }
 
 type mockEnumValue struct {
@@ -117,7 +117,7 @@ type mockEnumValue struct {
 
 func (ev *mockEnumValue) setEnum(e Enum) { ev.e = e }
 
-func (ev *mockEnumValue) accept(v Visitor) error {
+func (ev *mockEnumValue) Accept(v Visitor) error {
 	_, err := v.VisitEnumValue(ev)
 	if ev.err != nil {
 		return ev.err
