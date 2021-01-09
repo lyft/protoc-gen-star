@@ -19,7 +19,7 @@ type OneOf interface {
 	// Fields returns all fields contained within this OneOf.
 	Fields() []Field
 
-	setMessage(m Message)
+	SetMessage(m Message)
 	AddField(f Field)
 }
 
@@ -50,7 +50,7 @@ func (o *oneof) BuildTarget() bool                            { return o.msg.Bui
 func (o *oneof) SourceCodeInfo() SourceCodeInfo               { return o.info }
 func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
-func (o *oneof) setMessage(m Message)                         { o.msg = m }
+func (o *oneof) SetMessage(m Message)                         { o.msg = m }
 
 func (o *oneof) Imports() (i []File) {
 	// Mapping for avoiding duplicate entries

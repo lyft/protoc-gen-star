@@ -147,7 +147,7 @@ type mockOneOf struct {
 
 func (o *mockOneOf) Imports() []File { return o.i }
 
-func (o *mockOneOf) setMessage(m Message) { o.m = m }
+func (o *mockOneOf) SetMessage(m Message) { o.m = m }
 
 func (o *mockOneOf) Accept(v Visitor) error {
 	_, err := v.VisitOneOf(o)

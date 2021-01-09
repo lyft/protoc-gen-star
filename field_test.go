@@ -146,7 +146,7 @@ func TestField_Required(t *testing.T) {
 	lbl := descriptor.FieldDescriptorProto_LABEL_REQUIRED
 
 	f := &field{desc: &descriptor.FieldDescriptorProto{Label: &lbl}}
-	f.setMessage(msg)
+	f.SetMessage(msg)
 
 	assert.False(t, f.Required(), "proto3 messages can never be marked required")
 
@@ -175,7 +175,7 @@ type mockField struct {
 
 func (f *mockField) Imports() []File { return f.i }
 
-func (f *mockField) setMessage(m Message) { f.m = m }
+func (f *mockField) SetMessage(m Message) { f.m = m }
 
 func (f *mockField) Accept(v Visitor) error {
 	_, err := v.VisitField(f)

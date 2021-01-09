@@ -40,7 +40,7 @@ func (e *ext) Extendee() Message          { return e.extendee }
 func (e *ext) Message() Message           { return nil }
 func (e *ext) InOneOf() bool              { return false }
 func (e *ext) OneOf() OneOf               { return nil }
-func (e *ext) setMessage(m Message)       {} // noop
+func (e *ext) SetMessage(m Message)       {} // noop
 func (e *ext) setOneOf(o OneOf)           {} // noop
 func (e *ext) setExtendee(m Message)      { e.extendee = m }
 

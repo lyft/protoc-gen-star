@@ -253,12 +253,12 @@ func (m *msg) AddMessage(sm Message) {
 }
 
 func (m *msg) AddField(f Field) {
-	f.setMessage(m)
+	f.SetMessage(m)
 	m.fields = append(m.fields, f)
 }
 
 func (m *msg) AddOneOf(o OneOf) {
-	o.setMessage(m)
+	o.SetMessage(m)
 	m.oneofs = append(m.oneofs, o)
 }
 

@@ -30,7 +30,7 @@ type Field interface {
 	// will only be true if the syntax is proto2.
 	Required() bool
 
-	setMessage(m Message)
+	SetMessage(m Message)
 	setOneOf(o OneOf)
 	addType(t FieldType)
 }
@@ -58,7 +58,7 @@ func (f *field) Message() Message                             { return f.msg }
 func (f *field) InOneOf() bool                                { return f.oneof != nil }
 func (f *field) OneOf() OneOf                                 { return f.oneof }
 func (f *field) Type() FieldType                              { return f.typ }
-func (f *field) setMessage(m Message)                         { f.msg = m }
+func (f *field) SetMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 
 func (f *field) Required() bool {
