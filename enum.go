@@ -59,7 +59,7 @@ func (e *enum) populateDependentsCache() {
 	e.dependentsCache = map[string]Message{}
 	for _, dep := range e.dependents {
 		e.dependentsCache[dep.FullyQualifiedName()] = dep
-		dep.getDependents(e.dependentsCache)
+		dep.GetDependents(e.dependentsCache)
 	}
 }
 

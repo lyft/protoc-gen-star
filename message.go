@@ -58,7 +58,7 @@ type Message interface {
 	addExtension(e Extension)
 	addOneOf(o OneOf)
 	AddDependent(message Message)
-	getDependents(set map[string]Message)
+	GetDependents(set map[string]Message)
 }
 
 type msg struct {
@@ -153,7 +153,7 @@ func (m *msg) Imports() (i []File) {
 	return
 }
 
-func (m *msg) getDependents(set map[string]Message) {
+func (m *msg) GetDependents(set map[string]Message) {
 	m.populateDependentsCache()
 
 	for fqn, d := range m.dependentsCache {
@@ -169,7 +169,7 @@ func (m *msg) populateDependentsCache() {
 	m.dependentsCache = map[string]Message{}
 	for _, dep := range m.dependents {
 		m.dependentsCache[dep.FullyQualifiedName()] = dep
-		dep.getDependents(m.dependentsCache)
+		dep.GetDependents(m.dependentsCache)
 	}
 }
 
