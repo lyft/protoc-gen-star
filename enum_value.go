@@ -18,7 +18,7 @@ type EnumValue interface {
 	// Value returns the numeric enum value associated with this type
 	Value() int32
 
-	setEnum(e Enum)
+	SetEnum(e Enum)
 }
 
 type enumVal struct {
@@ -55,7 +55,7 @@ func (ev *enumVal) Accept(v Visitor) (err error) {
 	return
 }
 
-func (ev *enumVal) setEnum(e Enum) { ev.enum = e }
+func (ev *enumVal) SetEnum(e Enum) { ev.enum = e }
 
 func (ev *enumVal) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {

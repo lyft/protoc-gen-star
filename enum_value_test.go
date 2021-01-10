@@ -115,7 +115,7 @@ type mockEnumValue struct {
 	err error
 }
 
-func (ev *mockEnumValue) setEnum(e Enum) { ev.e = e }
+func (ev *mockEnumValue) SetEnum(e Enum) { ev.e = e }
 
 func (ev *mockEnumValue) Accept(v Visitor) error {
 	_, err := v.VisitEnumValue(ev)
