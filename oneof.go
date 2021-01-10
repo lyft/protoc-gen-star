@@ -77,7 +77,7 @@ func (o *oneof) Fields() []Field {
 }
 
 func (o *oneof) AddField(f Field) {
-	f.setOneOf(o)
+	f.SetOneOf(o)
 	o.flds = append(o.flds, f)
 }
 

@@ -31,7 +31,7 @@ type Field interface {
 	Required() bool
 
 	SetMessage(m Message)
-	setOneOf(o OneOf)
+	SetOneOf(o OneOf)
 	addType(t FieldType)
 }
 
@@ -59,7 +59,7 @@ func (f *field) InOneOf() bool                                { return f.oneof !
 func (f *field) OneOf() OneOf                                 { return f.oneof }
 func (f *field) Type() FieldType                              { return f.typ }
 func (f *field) SetMessage(m Message)                         { f.msg = m }
-func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
+func (f *field) SetOneOf(o OneOf)                             { f.oneof = o }
 
 func (f *field) Required() bool {
 	return f.Syntax().SupportsRequiredPrefix() &&

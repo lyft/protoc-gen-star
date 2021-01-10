@@ -69,7 +69,7 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 	for _, e := range g.extensions {
 		e.addType(g.hydrateFieldType(e))
 		extendee := g.mustSeen(e.Descriptor().GetExtendee()).(Message)
-		e.setExtendee(extendee)
+		e.SetExtendee(extendee)
 		if extendee != nil {
 			extendee.AddExtension(e)
 		}

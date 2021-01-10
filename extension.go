@@ -19,7 +19,7 @@ type Extension interface {
 	// Extendee returns the Message that the Extension is extending
 	Extendee() Message
 
-	setExtendee(m Message)
+	SetExtendee(m Message)
 }
 
 type ext struct {
@@ -41,8 +41,8 @@ func (e *ext) Message() Message           { return nil }
 func (e *ext) InOneOf() bool              { return false }
 func (e *ext) OneOf() OneOf               { return nil }
 func (e *ext) SetMessage(m Message)       {} // noop
-func (e *ext) setOneOf(o OneOf)           {} // noop
-func (e *ext) setExtendee(m Message)      { e.extendee = m }
+func (e *ext) SetOneOf(o OneOf)           {} // noop
+func (e *ext) SetExtendee(m Message)      { e.extendee = m }
 
 func (e *ext) Accept(v Visitor) (err error) {
 	if v == nil {
