@@ -230,7 +230,7 @@ func (g *graph) hydrateEnum(p ParentEntity, ed *descriptor.EnumDescriptorProto) 
 	vals := ed.GetValue()
 	e.vals = make([]EnumValue, 0, len(vals))
 	for _, vd := range vals {
-		e.addValue(g.hydrateEnumValue(e, vd))
+		e.AddValue(g.hydrateEnumValue(e, vd))
 	}
 
 	return e

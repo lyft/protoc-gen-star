@@ -26,7 +26,7 @@ func TestEnumVal_Syntax(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.Equal(t, e.Syntax(), ev.Syntax())
 }
 
@@ -34,7 +34,7 @@ func TestEnumVal_Package(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.NotNil(t, ev.Package())
 	assert.Equal(t, e.Package(), ev.Package())
 }
@@ -43,7 +43,7 @@ func TestEnumVal_File(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.NotNil(t, ev.File())
 	assert.Equal(t, e.File(), ev.File())
 }
@@ -52,7 +52,7 @@ func TestEnumVal_BuildTarget(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.False(t, ev.BuildTarget())
 	e.parent = &file{buildTarget: true}
 	assert.True(t, ev.BuildTarget())
@@ -68,7 +68,7 @@ func TestEnumVal_Enum(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.Equal(t, e, ev.Enum())
 }
 

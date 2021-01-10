@@ -94,7 +94,7 @@ func TestEnum_Values(t *testing.T) {
 
 	e := &enum{}
 	assert.Empty(t, e.Values())
-	e.addValue(&enumVal{})
+	e.AddValue(&enumVal{})
 	assert.Len(t, e.Values(), 1)
 }
 
@@ -157,7 +157,7 @@ func TestEnum_Accept(t *testing.T) {
 	t.Parallel()
 
 	e := &enum{}
-	e.addValue(&enumVal{})
+	e.AddValue(&enumVal{})
 
 	assert.NoError(t, e.Accept(nil))
 
@@ -179,7 +179,7 @@ func TestEnum_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.enumvalue)
 
 	v.Reset()
-	e.addValue(&mockEnumValue{err: errors.New("")})
+	e.AddValue(&mockEnumValue{err: errors.New("")})
 	assert.Error(t, e.Accept(v))
 	assert.Equal(t, 1, v.enum)
 	assert.Equal(t, 2, v.enumvalue)

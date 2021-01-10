@@ -24,7 +24,7 @@ type Enum interface {
 	// transitively used.
 	Dependents() []Message
 
-	addValue(v EnumValue)
+	AddValue(v EnumValue)
 	AddDependent(m Message)
 	SetParent(p ParentEntity)
 }
@@ -94,7 +94,7 @@ func (e *enum) AddDependent(m Message) {
 	e.dependents = append(e.dependents, m)
 }
 
-func (e *enum) addValue(v EnumValue) {
+func (e *enum) AddValue(v EnumValue) {
 	v.setEnum(e)
 	e.vals = append(e.vals, v)
 }
