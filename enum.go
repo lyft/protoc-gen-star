@@ -95,7 +95,7 @@ func (e *enum) AddDependent(m Message) {
 }
 
 func (e *enum) AddValue(v EnumValue) {
-	v.setEnum(e)
+	v.SetEnum(e)
 	e.vals = append(e.vals, v)
 }
 
