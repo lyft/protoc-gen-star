@@ -207,7 +207,7 @@ func TestFile_UnusedImports(t *testing.T) {
 
 	ft := &embedT{scalarT: &scalarT{}, msg: msgDep}
 	fld := &field{}
-	fld.addType(ft)
+	fld.AddType(ft)
 	m := &msg{}
 	m.AddField(fld)
 	target.AddMessage(m)

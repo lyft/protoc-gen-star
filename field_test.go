@@ -103,7 +103,7 @@ func TestField_Type(t *testing.T) {
 	t.Parallel()
 
 	f := &field{}
-	f.addType(&scalarT{})
+	f.AddType(&scalarT{})
 
 	assert.Equal(t, f.typ, f.Type())
 }
@@ -131,10 +131,10 @@ func TestField_Imports(t *testing.T) {
 	t.Parallel()
 
 	f := &field{}
-	f.addType(&scalarT{})
+	f.AddType(&scalarT{})
 	assert.Empty(t, f.Imports())
 
-	f.addType(&mockT{i: []File{&file{}, &file{}}})
+	f.AddType(&mockT{i: []File{&file{}, &file{}}})
 	assert.Len(t, f.Imports(), 2)
 }
 
@@ -191,6 +191,6 @@ func dummyField() *field {
 	f := &field{desc: &descriptor.FieldDescriptorProto{Name: proto.String("field"), Type: &str}}
 	m.AddField(f)
 	t := &scalarT{}
-	f.addType(t)
+	f.AddType(t)
 	return f
 }

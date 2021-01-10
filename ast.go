@@ -67,7 +67,7 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 	}
 
 	for _, e := range g.extensions {
-		e.addType(g.hydrateFieldType(e))
+		e.AddType(g.hydrateFieldType(e))
 		extendee := g.mustSeen(e.Descriptor().GetExtendee()).(Message)
 		e.SetExtendee(extendee)
 		if extendee != nil {
@@ -183,12 +183,12 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	for _, m := range fl.AllMessages() {
 		for _, me := range m.MapEntries() {
 			for _, fld := range me.Fields() {
-				fld.addType(g.hydrateFieldType(fld))
+				fld.AddType(g.hydrateFieldType(fld))
 			}
 		}
 
 		for _, fld := range m.Fields() {
-			fld.addType(g.hydrateFieldType(fld))
+			fld.AddType(g.hydrateFieldType(fld))
 		}
 	}
 

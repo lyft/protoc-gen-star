@@ -32,7 +32,7 @@ type Field interface {
 
 	SetMessage(m Message)
 	SetOneOf(o OneOf)
-	addType(t FieldType)
+	AddType(t FieldType)
 }
 
 type field struct {
@@ -66,7 +66,7 @@ func (f *field) Required() bool {
 		f.desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REQUIRED
 }
 
-func (f *field) addType(t FieldType) {
+func (f *field) AddType(t FieldType) {
 	t.setField(f)
 	f.typ = t
 }
