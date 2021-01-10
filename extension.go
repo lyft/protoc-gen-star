@@ -13,7 +13,7 @@ import (
 type Extension interface {
 	Field
 
-	// ParentEntity returns the ParentEntity where the Extension is defined
+	// DefinedIn returns the ParentEntity where the Extension is defined
 	DefinedIn() ParentEntity
 
 	// Extendee returns the Message that the Extension is extending
