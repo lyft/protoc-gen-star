@@ -67,7 +67,7 @@ func (f *field) Required() bool {
 }
 
 func (f *field) AddType(t FieldType) {
-	t.setField(f)
+	t.SetField(f)
 	f.typ = t
 }
 
