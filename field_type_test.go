@@ -134,7 +134,7 @@ func TestScalarT_ToElem(t *testing.T) {
 	f := dummyField()
 	f.AddType(s)
 
-	el := s.toElem()
+	el := s.ToElem()
 	assert.Equal(t, s, el.ParentType())
 	assert.Equal(t, s.ProtoType(), el.ProtoType())
 }
@@ -178,7 +178,7 @@ func TestEnumT_ToElem(t *testing.T) {
 	f := dummyField()
 	f.AddType(e)
 
-	el := e.toElem()
+	el := e.ToElem()
 	assert.True(t, el.IsEnum())
 	assert.Equal(t, e.enum, el.Enum())
 	assert.Equal(t, e.ProtoType(), el.ProtoType())
@@ -222,7 +222,7 @@ func TestEmbedT_ToElem(t *testing.T) {
 	f := dummyField()
 	f.AddType(e)
 
-	el := e.toElem()
+	el := e.ToElem()
 	assert.True(t, el.IsEmbed())
 	assert.Equal(t, e.msg, el.Embed())
 	assert.Equal(t, e.ProtoType(), el.ProtoType())
@@ -250,7 +250,7 @@ func TestRepT_Imports(t *testing.T) {
 	dummyField().AddType(e)
 
 	fld := dummyField()
-	r := &repT{scalarT: &scalarT{}, el: e.toElem()}
+	r := &repT{scalarT: &scalarT{}, el: e.ToElem()}
 	fld.AddType(r)
 
 	assert.Empty(t, r.Imports())
@@ -262,7 +262,7 @@ func TestRepT_Imports(t *testing.T) {
 
 func TestRepT_ToElem(t *testing.T) {
 	t.Parallel()
-	assert.Panics(t, func() { (&repT{}).toElem() })
+	assert.Panics(t, func() { (&repT{}).ToElem() })
 }
 
 func TestMapT_IsRepeated(t *testing.T) {
@@ -290,4 +290,4 @@ type mockT struct {
 
 func (t *mockT) Imports() []File { return t.i }
 
-func (t *mockT) setField(f Field) { t.f = f }
+func (t *mockT) SetField(f Field) { t.f = f }

@@ -421,10 +421,10 @@ func (g *graph) hydrateRepeatedFieldType(s *scalarT) FieldType {
 func (g *graph) hydrateMapFieldType(r *repT, m Message) FieldType {
 	mt := &mapT{repT: r}
 
-	mt.key = m.Fields()[0].Type().toElem()
+	mt.key = m.Fields()[0].Type().ToElem()
 	mt.key.setType(mt)
 
-	mt.el = m.Fields()[1].Type().toElem()
+	mt.el = m.Fields()[1].Type().ToElem()
 	mt.el.setType(mt)
 
 	return mt
