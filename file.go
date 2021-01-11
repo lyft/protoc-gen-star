@@ -250,7 +250,7 @@ func (f *file) AddMessage(m Message) {
 }
 
 func (f *file) AddService(s Service) {
-	s.setFile(f)
+	s.SetFile(f)
 	f.srvs = append(f.srvs, s)
 }
 

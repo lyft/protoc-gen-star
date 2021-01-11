@@ -214,7 +214,7 @@ func TestFile_UnusedImports(t *testing.T) {
 
 	mtd := &method{in: msgDep, out: m}
 	svc := &service{}
-	svc.addMethod(mtd)
+	svc.AddMethod(mtd)
 	target.AddService(svc)
 
 	target.AddFileDependency(usedFile)

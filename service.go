@@ -15,8 +15,8 @@ type Service interface {
 	// Methods returns each rpc method exposed by this service
 	Methods() []Method
 
-	setFile(f File)
-	addMethod(m Method)
+	SetFile(f File)
+	AddMethod(m Method)
 }
 
 type service struct {
@@ -61,9 +61,9 @@ func (s *service) Methods() []Method {
 	return m
 }
 
-func (s *service) setFile(f File) { s.file = f }
+func (s *service) SetFile(f File) { s.file = f }
 
-func (s *service) addMethod(m Method) {
+func (s *service) AddMethod(m Method) {
 	m.setService(s)
 	s.methods = append(s.methods, m)
 }

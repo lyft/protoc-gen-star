@@ -27,7 +27,7 @@ func TestMethod_Syntax(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 	assert.Equal(t, s.Syntax(), m.Syntax())
 }
 
@@ -35,7 +35,7 @@ func TestMethod_Package(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.NotNil(t, m.Package())
 	assert.Equal(t, s.Package(), m.Package())
@@ -45,7 +45,7 @@ func TestMethod_File(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.NotNil(t, m.File())
 	assert.Equal(t, s.File(), m.File())
@@ -55,10 +55,10 @@ func TestMethod_BuildTarget(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.False(t, m.BuildTarget())
-	s.setFile(&file{buildTarget: true})
+	s.SetFile(&file{buildTarget: true})
 	assert.True(t, m.BuildTarget())
 }
 
@@ -72,7 +72,7 @@ func TestMethod_Service(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.Equal(t, s, m.Service())
 }
@@ -129,7 +129,7 @@ func TestMethod_Imports(t *testing.T) {
 		in:  dummyMsg(),
 		out: dummyMsg(),
 	}
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	f := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),

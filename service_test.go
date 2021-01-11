@@ -87,13 +87,13 @@ func TestService_Imports(t *testing.T) {
 
 	s := &service{}
 	assert.Empty(t, s.Imports())
-	s.addMethod(&mockMethod{i: []File{&file{}}})
+	s.AddMethod(&mockMethod{i: []File{&file{}}})
 	assert.Len(t, s.Imports(), 1)
 
 	nf := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
 	}}
-	s.addMethod(&mockMethod{i: []File{nf, nf}})
+	s.AddMethod(&mockMethod{i: []File{nf, nf}})
 	assert.Len(t, s.Imports(), 2)
 }
 
@@ -102,7 +102,7 @@ func TestService_Methods(t *testing.T) {
 
 	s := &service{}
 	assert.Empty(t, s.Methods())
-	s.addMethod(&method{})
+	s.AddMethod(&method{})
 	assert.Len(t, s.Methods(), 1)
 }
 
@@ -110,7 +110,7 @@ func TestService_Accept(t *testing.T) {
 	t.Parallel()
 
 	s := &service{}
-	s.addMethod(&method{})
+	s.AddMethod(&method{})
 
 	assert.NoError(t, s.Accept(nil))
 
@@ -132,7 +132,7 @@ func TestService_Accept(t *testing.T) {
 	assert.Equal(t, 1, v.method)
 
 	v.Reset()
-	s.addMethod(&mockMethod{err: errors.New("buzz")})
+	s.AddMethod(&mockMethod{err: errors.New("buzz")})
 	assert.Error(t, s.Accept(v))
 	assert.Equal(t, 1, v.service)
 	assert.Equal(t, 2, v.method)
@@ -156,7 +156,7 @@ type mockService struct {
 
 func (s *mockService) Imports() []File { return s.i }
 
-func (s *mockService) setFile(f File) { s.f = f }
+func (s *mockService) SetFile(f File) { s.f = f }
 
 func (s *mockService) Accept(v Visitor) error {
 	_, err := v.VisitService(s)

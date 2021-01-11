@@ -256,7 +256,7 @@ func (g *graph) hydrateService(f File, sd *descriptor.ServiceDescriptorProto) Se
 	g.add(s)
 
 	for _, md := range sd.GetMethod() {
-		s.addMethod(g.hydrateMethod(s, md))
+		s.AddMethod(g.hydrateMethod(s, md))
 	}
 
 	return s
