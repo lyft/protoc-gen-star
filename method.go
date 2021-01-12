@@ -27,7 +27,7 @@ type Method interface {
 	// ServerStreaming indicates if this method allows servers to stream outputs.
 	ServerStreaming() bool
 
-	setService(Service)
+	SetService(Service)
 }
 
 type method struct {
@@ -82,7 +82,7 @@ func (m *method) Accept(v Visitor) (err error) {
 	return
 }
 
-func (m *method) setService(s Service) { m.service = s }
+func (m *method) SetService(s Service) { m.service = s }
 
 func (m *method) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {

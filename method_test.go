@@ -182,7 +182,7 @@ type mockMethod struct {
 
 func (m *mockMethod) Imports() []File { return m.i }
 
-func (m *mockMethod) setService(s Service) { m.s = s }
+func (m *mockMethod) SetService(s Service) { m.s = s }
 
 func (m *mockMethod) Accept(v Visitor) error {
 	_, err := v.VisitMethod(m)

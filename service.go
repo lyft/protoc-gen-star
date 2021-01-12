@@ -64,7 +64,7 @@ func (s *service) Methods() []Method {
 func (s *service) SetFile(f File) { s.file = f }
 
 func (s *service) AddMethod(m Method) {
-	m.setService(s)
+	m.SetService(s)
 	s.methods = append(s.methods, m)
 }
 
