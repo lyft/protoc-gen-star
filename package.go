@@ -14,7 +14,7 @@ type Package interface {
 	Files() []File
 
 	AddFile(f File)
-
+	Comments() string
 	SetComments(c string)
 }
 
