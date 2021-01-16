@@ -150,6 +150,8 @@ type repT struct {
 func (r *repT) IsRepeated() bool       { return true }
 func (r *repT) Element() FieldTypeElem { return r.el }
 
+func (r *repT) IsEmbed() bool { return r.el.IsEmbed() }
+
 func (r *repT) Imports() []File { return r.el.Imports() }
 
 func (r *repT) toElem() FieldTypeElem { panic("cannot convert repeated FieldType to FieldTypeElem") }
