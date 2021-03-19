@@ -98,7 +98,7 @@ func (m *reportModule) Name() string { return "reporter" }
 // map. The implementation should return a slice of Artifacts that represent
 // the files to be generated. In this case, "/tmp/report.txt" will be created
 // outside of the normal protoc flow.
-func (m *reportModule) Execute(targets map[string]pgs.File, pkgs map[string]Package) []pgs.Artifact {
+func (m *reportModule) Execute(targets map[string]pgs.File, pkgs map[string]pgs.Package) []pgs.Artifact {
   buf := &bytes.Buffer{}
 
   for _, f := range targets {
