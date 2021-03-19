@@ -23,6 +23,10 @@ func (c context) PackageName(node pgs.Node) pgs.Name {
 	// use import_path parameter ONLY if there is no go_package option in the file.
 	if ip := c.p.Str("import_path"); ip != "" &&
 		e.File().Descriptor().GetOptions().GetGoPackage() == "" {
+		// Remove anything before the last slash
+		if i := strings.LastIndex(ip, "/"); i >= 0 {
+			ip = ip[i+1:]
+		}
 		pkg = ip
 	}
 

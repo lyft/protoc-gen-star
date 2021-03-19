@@ -22,6 +22,7 @@ func TestPackageName(t *testing.T) {
 		{"import", "bar"},                    // uses the basename if go_package contains a /
 		{"override", "baz"},                  // if go_package contains ;, use everything to the right
 		{"import_path", "_package"},          // import_path param used if no go_package option
+		{"full_import_path", "buzz"},         // import_path param used if no go_package option. Should use last part of path.
 		{"mapped", "unaffected"},             // M mapped params are ignored for build targets
 		{"import_path_mapped", "go_package"}, // mixed import_path and M parameters should lose to go_package
 		{"transitive_package", "foobar"},     // go_option gets picked up from other files if present
