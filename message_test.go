@@ -4,11 +4,11 @@ import (
 	"errors"
 	"testing"
 
-	desc "github.com/golang/protobuf/descriptor"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"github.com/golang/protobuf/ptypes/any"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protodesc"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
+	any "google.golang.org/protobuf/types/known/anypb"
 )
 
 func TestMsg_Name(t *testing.T) {
@@ -372,7 +372,9 @@ func TestMsg_ChildAtPath(t *testing.T) {
 }
 
 func TestMsg_WellKnownType(t *testing.T) {
-	fd, md := desc.ForMessage(&any.Any{})
+	d := (&any.Any{}).ProtoReflect().Descriptor()
+	fd := protodesc.ToFileDescriptorProto(d.ParentFile())
+	md := protodesc.ToDescriptorProto(d)
 	p := &pkg{fd: fd}
 	f := &file{desc: fd}
 	m := &msg{desc: md}

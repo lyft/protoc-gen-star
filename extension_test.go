@@ -5,8 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 func TestExt_FullyQualifiedName(t *testing.T) {
@@ -104,9 +105,9 @@ type mockExtractor struct {
 	err error
 }
 
-func (e *mockExtractor) HasExtension(proto.Message, *proto.ExtensionDesc) bool { return e.has }
+func (e *mockExtractor) HasExtension(proto.Message, *protoimpl.ExtensionInfo) bool { return e.has }
 
-func (e *mockExtractor) GetExtension(proto.Message, *proto.ExtensionDesc) (interface{}, error) {
+func (e *mockExtractor) GetExtension(proto.Message, *protoimpl.ExtensionInfo) (interface{}, error) {
 	return e.get, e.err
 }
 
@@ -133,7 +134,7 @@ func TestExtension(t *testing.T) {
 	assert.False(t, found)
 	assert.Error(t, err)
 
-	desc := &proto.ExtensionDesc{}
+	desc := &protoimpl.ExtensionInfo{}
 
 	found, err = extension(opts, desc, nil)
 	assert.False(t, found)

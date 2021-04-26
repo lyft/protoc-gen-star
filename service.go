@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/runtime/protoimpl"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // Service describes a proto service definition (typically, gRPC)
@@ -37,7 +37,7 @@ func (s *service) BuildTarget() bool                              { return s.fil
 func (s *service) SourceCodeInfo() SourceCodeInfo                 { return s.info }
 func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.desc }
 
-func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
+func (s *service) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (bool, error) {
 	return extension(s.desc.GetOptions(), desc, &ext)
 }
 

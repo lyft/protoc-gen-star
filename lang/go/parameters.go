@@ -87,7 +87,7 @@ func EnableAllPlugins(p pgs.Parameters) { p.SetStr(pluginsKey, "") }
 // generating protos in a subdirectory, or regenerating vendored protobufs
 // in-place. By default, this method returns an empty string.
 //
-// See: https://github.com/golang/protobuf#parameters
+// See: https://google.golang.org/protobuf#parameters
 func ImportPrefix(p pgs.Parameters) string { return p.Str(importPrefixKey) }
 
 // SetImportPrefix sets the protoc-gen-go ImportPrefix parameter. This is
@@ -98,7 +98,7 @@ func SetImportPrefix(p pgs.Parameters, prefix string) { p.SetStr(importPrefixKey
 // package if the input proto files do not declare a go_package option. If it
 // contains slashes, everything up to the rightmost slash is ignored.
 //
-// See: https://github.com/golang/protobuf#parameters
+// See: https://google.golang.org/protobuf#parameters
 func ImportPath(p pgs.Parameters) string { return p.Str(importPathKey) }
 
 // SetImportPath sets the protoc-gen-go ImportPath parameter. This is useful

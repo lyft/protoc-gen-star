@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/runtime/protoimpl"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // Enum describes an enumeration type. Its parent can be either a Message or a
@@ -68,7 +68,7 @@ func (e *enum) Dependents() []Message {
 	return messageSetToSlice("", e.dependentsCache)
 }
 
-func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
+func (e *enum) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (bool, error) {
 	return extension(e.desc.GetOptions(), desc, &ext)
 }
 

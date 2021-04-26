@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
-	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
+	plugin_go "google.golang.org/protobuf/types/pluginpb"
 )
 
 func TestStandardWorkflow_Init(t *testing.T) {

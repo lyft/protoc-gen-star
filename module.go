@@ -182,7 +182,7 @@ func (m *ModuleBase) AddGeneratorTemplateAppend(name string, tpl Template, data 
 // this protoc-plugin but the generating plugin must be called first in the
 // protoc execution.
 //
-// See: https://godoc.org/github.com/golang/protobuf/protoc-gen-go/plugin#CodeGeneratorResponse_File
+// See: https://godoc.org/google.golang.org/protobuf/protoc-gen-go/plugin#CodeGeneratorResponse_File
 func (m *ModuleBase) AddGeneratorInjection(name, point, content string) {
 	m.AddArtifact(GeneratorInjection{
 		FileName:       name,

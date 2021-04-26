@@ -12,13 +12,13 @@ import (
 // protoc-gen-go generated code (ie, message/service struct names and field
 // names).
 //
-// See: https://godoc.org/github.com/golang/protobuf/protoc-gen-go/generator#CamelCase
+// See: https://godoc.org/google.golang.org/protobuf/protoc-gen-go/generator#CamelCase
 func PGGUpperCamelCase(n pgs.Name) pgs.Name {
 	return pgs.Name(camelCase(n.String()))
 }
 
-// Below copied from https://github.com/golang/protobuf/blob/d04d7b157bb510b1e0c10132224b616ac0e26b17/protoc-gen-go/generator/generator.go#L2640-L2685,
-// to fix deprecation warning: https://github.com/golang/protobuf/blob/b5de78c91d0d09482d65f0a96927631cd343d7bb/protoc-gen-go/generator/generator.go#L42-L47
+// Below copied from https://google.golang.org/protobuf/blob/d04d7b157bb510b1e0c10132224b616ac0e26b17/protoc-gen-go/generator/generator.go#L2640-L2685,
+// to fix deprecation warning: https://google.golang.org/protobuf/blob/b5de78c91d0d09482d65f0a96927631cd343d7bb/protoc-gen-go/generator/generator.go#L42-L47
 
 // CamelCase returns the CamelCased name.
 // If there is an interior underscore followed by a lower case letter,
