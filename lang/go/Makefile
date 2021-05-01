@@ -1,7 +1,7 @@
 .PHONY: testdata-go-names
 testdata-names: ../../bin/protoc-gen-debug # parse the proto file sets in testdata/names and renders binary CodeGeneratorRequest + official go codegen
 	cd testdata/names && \
-	set -e; for subdir in `find . -type d -mindepth 1 -maxdepth 1`; do \
+	set -e; for subdir in `find . -mindepth 1 -maxdepth 1 -type d`; do \
 		cd $$subdir; \
 		params=`cat params`; \
 		protoc -I . \
@@ -14,7 +14,7 @@ testdata-names: ../../bin/protoc-gen-debug # parse the proto file sets in testda
 
 testdata-packages: ../../bin/protoc-gen-debug
 	cd testdata/packages && \
-	set -e; for subdir in `find . -type d -mindepth 1 -maxdepth 1 | grep -v targets`; do \
+	set -e; for subdir in `find . -mindepth 1 -maxdepth 1 -type d | grep -v targets`; do \
 		cd $$subdir; \
 		params=`cat params`; \
 		protoc -I . -I .. \
@@ -27,7 +27,7 @@ testdata-packages: ../../bin/protoc-gen-debug
 
 testdata-outputs: ../../bin/protoc-gen-debug
 	cd testdata/outputs && \
-	set -e; for subdir in `find . -type d -mindepth 1 -maxdepth 1`; do \
+	set -e; for subdir in `find . -mindepth 1 -maxdepth 1 -type d`; do \
 		cd $$subdir; \
 		params=`cat params`; \
 		protoc -I . -I .. \
