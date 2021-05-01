@@ -35,8 +35,8 @@ func TestName(t *testing.T) {
 	ctx := loadContext(t, "names", "entities")
 
 	f := ast.Targets()["entities.proto"]
-	assert.Equal(t, pgs.Name("BAD_pack__age_name_"), ctx.Name(f))
-	assert.Equal(t, pgs.Name("BAD_pack__age_name_"), ctx.Name(f.Package()))
+	assert.Equal(t, pgs.Name("entities"), ctx.Name(f))
+	assert.Equal(t, pgs.Name("entities"), ctx.Name(f.Package()))
 
 	assert.Panics(t, func() {
 		ctx.Name(nil)
@@ -54,15 +54,12 @@ func TestName(t *testing.T) {
 		{"lower_snake_case", "LowerSnakeCase"},
 		{"lowercase", "Lowercase"},
 		{"UPPERCASE", "UPPERCASE"},
-		{"_underscore", "XUnderscore"},
-		{"__DoubleUnderscore", "X_DoubleUnderscore"},
 		{"String", "String"},
 		{"MsgWith3dInside", "MsgWith3DInside"},
 		{"MsgEndsWith3d", "MsgEndsWith3D"},
 
 		// Nested Messages
 		{"Nested.Message", "Nested_Message"},
-		{"Nested._underscore", "Nested_XUnderscore"},
 		{"Nested.String", "Nested_String"},
 		{"Nested.Message.Message", "Nested_Message_Message"},
 		{"Nested.lowerMsg", "NestedLowerMsg"},
