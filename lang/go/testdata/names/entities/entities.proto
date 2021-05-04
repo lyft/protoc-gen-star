@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package names.entities;
-option go_package = "BAD.pack--age.name$";
+option go_package = "example.com/names/entities";
 
 message UpperCamelCaseMessage {}
 
@@ -17,10 +17,6 @@ message lowercase {}
 
 message UPPERCASE {}
 
-message _underscore {}
-
-message __DoubleUnderscore {}
-
 message String {} // protected name
 
 message Nested {
@@ -29,8 +25,6 @@ message Nested {
 
         enum Enum { NESTED = 0; }
     }
-
-    message _underscore {}
 
     message String {} // protected name
 

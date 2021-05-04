@@ -16,16 +16,12 @@ func TestPackageName(t *testing.T) {
 		expected pgs.Name
 	}{
 		{"keyword", "_package"},              // go keywords are prefixed with _
-		{"none", "NO_pack__age_name_"},       // if there is no package or go_package option, use the input filepath
 		{"package", "my_package"},            // use the go_package option
-		{"unnamed", "names_unnamed"},         // use the proto package if no go_package
 		{"import", "bar"},                    // uses the basename if go_package contains a /
 		{"override", "baz"},                  // if go_package contains ;, use everything to the right
-		{"import_path", "_package"},          // import_path param used if no go_package option
 		{"mapped", "unaffected"},             // M mapped params are ignored for build targets
 		{"import_path_mapped", "go_package"}, // mixed import_path and M parameters should lose to go_package
 		{"transitive_package", "foobar"},     // go_option gets picked up from other files if present
-		{"digit", "_2019fizz"},               // digit at the start are prefixed with _
 		{"path_dash", "path_dash"},           // if basename of go_package contains invalid characters, replace with _
 	}
 

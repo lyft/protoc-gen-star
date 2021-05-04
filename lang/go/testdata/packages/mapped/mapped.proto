@@ -1,6 +1,6 @@
 syntax="proto3";
 package packages.mapped;
-option go_package="example.com/packages/mapped";
+option go_package="./;mapped";
 
 import "targets/fully_qualified/fully_qualified.proto";
 import "targets/unqualified/unqualified.proto";
