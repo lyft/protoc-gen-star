@@ -49,7 +49,7 @@ func (wf *standardWorkflow) Init(g *Generator) AST {
 }
 
 func (wf *standardWorkflow) Run(ast AST) (arts []Artifact) {
-	ctx := Context(wf.Debugger, wf.params, wf.params.OutputPath())
+	ctx := Context(wf.Debugger, wf.params, wf.params.OutputPath(), ast.CodeGeneratorRequest())
 
 	wf.Debug("initializing modules")
 	for _, m := range wf.mods {

@@ -1,6 +1,9 @@
 package pgs
 
-import "path/filepath"
+import (
+    plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
+    "path/filepath"
+)
 
 // BuildContext tracks code generation relative to an output path. By default,
 // BuildContext's path is relative to the output location specified when
@@ -40,17 +43,21 @@ type BuildContext interface {
 	// Parameters returns the command line parameters passed in from protoc,
 	// mutated with any provided ParamMutators via InitOptions.
 	Parameters() Parameters
+
+    // The original CodeGeneratorRequest from protoc
+    CodeGeneratorRequest() *plugin_go.CodeGeneratorRequest
 }
 
 // Context creates a new BuildContext with the provided debugger and initial
 // output path. For protoc-gen-go plugins, output is typically ".", while
 // Module's may use a custom path.
-func Context(d Debugger, params Parameters, output string) BuildContext {
+func Context(d Debugger, params Parameters, output string, req *plugin_go.CodeGeneratorRequest) BuildContext {
 	return rootContext{
 		dirContext: dirContext{
 			prefixContext: prefixContext{parent: nil, d: d},
 			p:             filepath.Clean(output),
 		},
+		req:    req,
 		params: params,
 	}
 }
@@ -79,6 +86,8 @@ func (c prefixContext) PushDir(dir string) BuildContext { return initDirContext(
 func (c prefixContext) Push(prefix string) BuildContext { return initPrefixContext(c, c.d, prefix) }
 func (c prefixContext) Pop() BuildContext               { return c.parent }
 func (c prefixContext) PopDir() BuildContext            { return c.parent.PopDir() }
+
+func (c prefixContext) CodeGeneratorRequest() *plugin_go.CodeGeneratorRequest { return c.parent.CodeGeneratorRequest() }
 
 type dirContext struct {
 	prefixContext
@@ -117,6 +126,7 @@ type prefixContext struct {
 type rootContext struct {
 	dirContext
 	params Parameters
+    req *plugin_go.CodeGeneratorRequest
 }
 
 func (c rootContext) OutputPath() string              { return c.p }
@@ -128,6 +138,8 @@ func (c rootContext) Pop() BuildContext {
 	c.Fail("attempted to pop the root build context")
 	return nil
 }
+
+func (c rootContext) CodeGeneratorRequest() *plugin_go.CodeGeneratorRequest { return c.req }
 
 func (c rootContext) JoinPath(name ...string) string {
 	return filepath.Join(append([]string{c.OutputPath()}, name...)...)
