@@ -63,15 +63,15 @@ func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorReq
 
 	for _, f := range req.GetProtoFile() {
 		pkg := g.hydratePackage(f)
-		pkg.addFile(g.hydrateFile(pkg, f))
+		pkg.AddFile(g.hydrateFile(pkg, f))
 	}
 
 	for _, e := range g.extensions {
-		e.addType(g.hydrateFieldType(e))
+		e.AddType(g.hydrateFieldType(e))
 		extendee := g.mustSeen(e.Descriptor().GetExtendee()).(Message)
-		e.setExtendee(extendee)
+		e.SetExtendee(extendee)
 		if extendee != nil {
-			extendee.addExtension(e)
+			extendee.AddExtension(e)
 		}
 	}
 
@@ -147,8 +147,8 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	for _, dep := range f.GetDependency() {
 		// the AST is built in topological order so a file's dependencies are always hydrated first
 		d := g.mustSeen(dep).(File)
-		fl.addFileDependency(d)
-		d.addDependent(fl)
+		fl.AddFileDependency(d)
+		d.AddDependent(fl)
 	}
 
 	if _, fl.buildTarget = g.targets[f.GetName()]; fl.buildTarget {
@@ -158,37 +158,37 @@ func (g *graph) hydrateFile(pkg Package, f *descriptor.FileDescriptorProto) File
 	enums := f.GetEnumType()
 	fl.enums = make([]Enum, 0, len(enums))
 	for _, e := range enums {
-		fl.addEnum(g.hydrateEnum(fl, e))
+		fl.AddEnum(g.hydrateEnum(fl, e))
 	}
 
 	exts := f.GetExtension()
 	fl.defExts = make([]Extension, 0, len(exts))
 	for _, ext := range exts {
 		e := g.hydrateExtension(fl, ext)
-		fl.addDefExtension(e)
+		fl.AddDefExtension(e)
 	}
 
 	msgs := f.GetMessageType()
 	fl.msgs = make([]Message, 0, len(f.GetMessageType()))
 	for _, msg := range msgs {
-		fl.addMessage(g.hydrateMessage(fl, msg))
+		fl.AddMessage(g.hydrateMessage(fl, msg))
 	}
 
 	srvs := f.GetService()
 	fl.srvs = make([]Service, 0, len(srvs))
 	for _, sd := range srvs {
-		fl.addService(g.hydrateService(fl, sd))
+		fl.AddService(g.hydrateService(fl, sd))
 	}
 
 	for _, m := range fl.AllMessages() {
 		for _, me := range m.MapEntries() {
 			for _, fld := range me.Fields() {
-				fld.addType(g.hydrateFieldType(fld))
+				fld.AddType(g.hydrateFieldType(fld))
 			}
 		}
 
 		for _, fld := range m.Fields() {
-			fld.addType(g.hydrateFieldType(fld))
+			fld.AddType(g.hydrateFieldType(fld))
 		}
 	}
 
@@ -205,16 +205,16 @@ func (g *graph) hydrateSourceCodeInfo(f File, fd *descriptor.FileDescriptorProto
 		if len(path) == 1 {
 			switch path[0] {
 			case syntaxPath:
-				f.addSourceCodeInfo(info)
+				f.AddSourceCodeInfo(info)
 			case packagePath:
-				f.addPackageSourceCodeInfo(info)
+				f.AddPackageSourceCodeInfo(info)
 			default:
 				continue
 			}
 		}
 
-		if e := f.childAtPath(path); e != nil {
-			e.addSourceCodeInfo(info)
+		if e := f.ChildAtPath(path); e != nil {
+			e.AddSourceCodeInfo(info)
 		}
 	}
 }
@@ -230,7 +230,7 @@ func (g *graph) hydrateEnum(p ParentEntity, ed *descriptor.EnumDescriptorProto) 
 	vals := ed.GetValue()
 	e.vals = make([]EnumValue, 0, len(vals))
 	for _, vd := range vals {
-		e.addValue(g.hydrateEnumValue(e, vd))
+		e.AddValue(g.hydrateEnumValue(e, vd))
 	}
 
 	return e
@@ -256,7 +256,7 @@ func (g *graph) hydrateService(f File, sd *descriptor.ServiceDescriptorProto) Se
 	g.add(s)
 
 	for _, md := range sd.GetMethod() {
-		s.addMethod(g.hydrateMethod(s, md))
+		s.AddMethod(g.hydrateMethod(s, md))
 	}
 
 	return s
@@ -285,30 +285,30 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 	g.add(m)
 
 	for _, ed := range md.GetEnumType() {
-		m.addEnum(g.hydrateEnum(m, ed))
+		m.AddEnum(g.hydrateEnum(m, ed))
 	}
 
 	m.preservedMsgs = make([]Message, len(md.GetNestedType()))
 	for i, nmd := range md.GetNestedType() {
 		nm := g.hydrateMessage(m, nmd)
 		if nm.IsMapEntry() {
-			m.addMapEntry(nm)
+			m.AddMapEntry(nm)
 		} else {
-			m.addMessage(nm)
+			m.AddMessage(nm)
 		}
 		m.preservedMsgs[i] = nm
 	}
 
 	for _, od := range md.GetOneofDecl() {
-		m.addOneOf(g.hydrateOneOf(m, od))
+		m.AddOneOf(g.hydrateOneOf(m, od))
 	}
 
 	for _, fd := range md.GetField() {
 		fld := g.hydrateField(m, fd)
-		m.addField(fld)
+		m.AddField(fld)
 
 		if idx := fld.Descriptor().OneofIndex; idx != nil {
-			m.oneofs[*idx].addField(fld)
+			m.oneofs[*idx].AddField(fld)
 		}
 	}
 
@@ -316,7 +316,7 @@ func (g *graph) hydrateMessage(p ParentEntity, md *descriptor.DescriptorProto) M
 	m.defExts = make([]Extension, 0, len(exts))
 	for _, ext := range md.GetExtension() {
 		e := g.hydrateExtension(m, ext)
-		m.addDefExtension(e)
+		m.AddDefExtension(e)
 	}
 
 	return m
@@ -421,11 +421,11 @@ func (g *graph) hydrateRepeatedFieldType(s *scalarT) FieldType {
 func (g *graph) hydrateMapFieldType(r *repT, m Message) FieldType {
 	mt := &mapT{repT: r}
 
-	mt.key = m.Fields()[0].Type().toElem()
-	mt.key.setType(mt)
+	mt.key = m.Fields()[0].Type().ToElem()
+	mt.key.SetType(mt)
 
-	mt.el = m.Fields()[1].Type().toElem()
-	mt.el.setType(mt)
+	mt.el = m.Fields()[1].Type().ToElem()
+	mt.el.SetType(mt)
 
 	return mt
 }
@@ -453,21 +453,21 @@ func (g *graph) resolveFQN(e Entity) string {
 
 func assignDependent(ft FieldType, parent Message) {
 	if ft.IsEnum() {
-		ft.Enum().addDependent(parent)
+		ft.Enum().AddDependent(parent)
 	} else if ft.IsEmbed() {
-		ft.Embed().addDependent(parent)
+		ft.Embed().AddDependent(parent)
 	} else if ft.IsRepeated() || ft.IsMap() {
 		if ft.Element().IsEnum() {
-			ft.Element().Enum().addDependent(parent)
+			ft.Element().Enum().AddDependent(parent)
 		} else if ft.Element().IsEmbed() {
-			ft.Element().Embed().addDependent(parent)
+			ft.Element().Embed().AddDependent(parent)
 		}
 
 		if ft.IsMap() {
 			if ft.Key().IsEnum() {
-				ft.Key().Enum().addDependent(parent)
+				ft.Key().Enum().AddDependent(parent)
 			} else if ft.Key().IsEmbed() {
-				ft.Key().Embed().addDependent(parent)
+				ft.Key().Embed().AddDependent(parent)
 			}
 		}
 	}

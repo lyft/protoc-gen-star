@@ -53,12 +53,12 @@ type Message interface {
 	// IsWellKnown returns false, UnknownWKT is returned.
 	WellKnownType() WellKnownType
 
-	setParent(p ParentEntity)
-	addField(f Field)
-	addExtension(e Extension)
-	addOneOf(o OneOf)
-	addDependent(message Message)
-	getDependents(set map[string]Message)
+	SetParent(p ParentEntity)
+	AddField(f Field)
+	AddExtension(e Extension)
+	AddOneOf(o OneOf)
+	AddDependent(message Message)
+	GetDependents(set map[string]Message)
 }
 
 type msg struct {
@@ -153,7 +153,7 @@ func (m *msg) Imports() (i []File) {
 	return
 }
 
-func (m *msg) getDependents(set map[string]Message) {
+func (m *msg) GetDependents(set map[string]Message) {
 	m.populateDependentsCache()
 
 	for fqn, d := range m.dependentsCache {
@@ -169,7 +169,7 @@ func (m *msg) populateDependentsCache() {
 	m.dependentsCache = map[string]Message{}
 	for _, dep := range m.dependents {
 		m.dependentsCache[dep.FullyQualifiedName()] = dep
-		dep.getDependents(m.dependentsCache)
+		dep.GetDependents(m.dependentsCache)
 	}
 }
 
@@ -190,7 +190,7 @@ func (m *msg) DefinedExtensions() []Extension {
 	return m.defExts
 }
 
-func (m *msg) accept(v Visitor) (err error) {
+func (m *msg) Accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
 	}
@@ -200,31 +200,31 @@ func (m *msg) accept(v Visitor) (err error) {
 	}
 
 	for _, e := range m.enums {
-		if err = e.accept(v); err != nil {
+		if err = e.Accept(v); err != nil {
 			return
 		}
 	}
 
 	for _, sm := range m.msgs {
-		if err = sm.accept(v); err != nil {
+		if err = sm.Accept(v); err != nil {
 			return
 		}
 	}
 
 	for _, f := range m.fields {
-		if err = f.accept(v); err != nil {
+		if err = f.Accept(v); err != nil {
 			return
 		}
 	}
 
 	for _, o := range m.oneofs {
-		if err = o.accept(v); err != nil {
+		if err = o.Accept(v); err != nil {
 			return
 		}
 	}
 
 	for _, ext := range m.defExts {
-		if err = ext.accept(v); err != nil {
+		if err = ext.Accept(v); err != nil {
 			return
 		}
 	}
@@ -232,46 +232,46 @@ func (m *msg) accept(v Visitor) (err error) {
 	return
 }
 
-func (m *msg) addExtension(ext Extension) {
+func (m *msg) AddExtension(ext Extension) {
 	m.exts = append(m.exts, ext)
 }
 
-func (m *msg) addDefExtension(ext Extension) {
+func (m *msg) AddDefExtension(ext Extension) {
 	m.defExts = append(m.defExts, ext)
 }
 
-func (m *msg) setParent(p ParentEntity) { m.parent = p }
+func (m *msg) SetParent(p ParentEntity) { m.parent = p }
 
-func (m *msg) addEnum(e Enum) {
-	e.setParent(m)
+func (m *msg) AddEnum(e Enum) {
+	e.SetParent(m)
 	m.enums = append(m.enums, e)
 }
 
-func (m *msg) addMessage(sm Message) {
-	sm.setParent(m)
+func (m *msg) AddMessage(sm Message) {
+	sm.SetParent(m)
 	m.msgs = append(m.msgs, sm)
 }
 
-func (m *msg) addField(f Field) {
-	f.setMessage(m)
+func (m *msg) AddField(f Field) {
+	f.SetMessage(m)
 	m.fields = append(m.fields, f)
 }
 
-func (m *msg) addOneOf(o OneOf) {
-	o.setMessage(m)
+func (m *msg) AddOneOf(o OneOf) {
+	o.SetMessage(m)
 	m.oneofs = append(m.oneofs, o)
 }
 
-func (m *msg) addMapEntry(me Message) {
-	me.setParent(m)
+func (m *msg) AddMapEntry(me Message) {
+	me.SetParent(m)
 	m.maps = append(m.maps, me)
 }
 
-func (m *msg) addDependent(message Message) {
+func (m *msg) AddDependent(message Message) {
 	m.dependents = append(m.dependents, message)
 }
 
-func (m *msg) childAtPath(path []int32) Entity {
+func (m *msg) ChildAtPath(path []int32) Entity {
 	switch {
 	case len(path) == 0:
 		return m
@@ -293,10 +293,10 @@ func (m *msg) childAtPath(path []int32) Entity {
 		return nil
 	}
 
-	return child.childAtPath(path[2:])
+	return child.ChildAtPath(path[2:])
 }
 
-func (m *msg) addSourceCodeInfo(info SourceCodeInfo) { m.info = info }
+func (m *msg) AddSourceCodeInfo(info SourceCodeInfo) { m.info = info }
 
 func messageSetToSlice(name string, set map[string]Message) []Message {
 	dependents := make([]Message, 0, len(set))

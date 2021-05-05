@@ -13,7 +13,7 @@ type mockNode struct {
 	a func(Visitor) error
 }
 
-func (n mockNode) accept(v Visitor) error { return n.a(v) }
+func (n mockNode) Accept(v Visitor) error { return n.a(v) }
 
 func TestWalk(t *testing.T) {
 	t.Parallel()

@@ -30,9 +30,9 @@ type Field interface {
 	// will only be true if the syntax is proto2.
 	Required() bool
 
-	setMessage(m Message)
-	setOneOf(o OneOf)
-	addType(t FieldType)
+	SetMessage(m Message)
+	SetOneOf(o OneOf)
+	AddType(t FieldType)
 }
 
 type field struct {
@@ -58,16 +58,16 @@ func (f *field) Message() Message                             { return f.msg }
 func (f *field) InOneOf() bool                                { return f.oneof != nil }
 func (f *field) OneOf() OneOf                                 { return f.oneof }
 func (f *field) Type() FieldType                              { return f.typ }
-func (f *field) setMessage(m Message)                         { f.msg = m }
-func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
+func (f *field) SetMessage(m Message)                         { f.msg = m }
+func (f *field) SetOneOf(o OneOf)                             { f.oneof = o }
 
 func (f *field) Required() bool {
 	return f.Syntax().SupportsRequiredPrefix() &&
 		f.desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REQUIRED
 }
 
-func (f *field) addType(t FieldType) {
-	t.setField(f)
+func (f *field) AddType(t FieldType) {
+	t.SetField(f)
 	f.typ = t
 }
 
@@ -75,7 +75,7 @@ func (f *field) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, 
 	return extension(f.desc.GetOptions(), desc, &ext)
 }
 
-func (f *field) accept(v Visitor) (err error) {
+func (f *field) Accept(v Visitor) (err error) {
 	if v == nil {
 		return
 	}
@@ -84,13 +84,13 @@ func (f *field) accept(v Visitor) (err error) {
 	return
 }
 
-func (f *field) childAtPath(path []int32) Entity {
+func (f *field) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {
 		return f
 	}
 	return nil
 }
 
-func (f *field) addSourceCodeInfo(info SourceCodeInfo) { f.info = info }
+func (f *field) AddSourceCodeInfo(info SourceCodeInfo) { f.info = info }
 
 var _ Field = (*field)(nil)

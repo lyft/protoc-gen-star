@@ -19,8 +19,8 @@ type OneOf interface {
 	// Fields returns all fields contained within this OneOf.
 	Fields() []Field
 
-	setMessage(m Message)
-	addField(f Field)
+	SetMessage(m Message)
+	AddField(f Field)
 }
 
 type oneof struct {
@@ -32,7 +32,7 @@ type oneof struct {
 	info SourceCodeInfo
 }
 
-func (o *oneof) accept(v Visitor) (err error) {
+func (o *oneof) Accept(v Visitor) (err error) {
 	if v == nil {
 		return
 	}
@@ -50,7 +50,7 @@ func (o *oneof) BuildTarget() bool                            { return o.msg.Bui
 func (o *oneof) SourceCodeInfo() SourceCodeInfo               { return o.info }
 func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
-func (o *oneof) setMessage(m Message)                         { o.msg = m }
+func (o *oneof) SetMessage(m Message)                         { o.msg = m }
 
 func (o *oneof) Imports() (i []File) {
 	// Mapping for avoiding duplicate entries
@@ -76,18 +76,18 @@ func (o *oneof) Fields() []Field {
 	return f
 }
 
-func (o *oneof) addField(f Field) {
-	f.setOneOf(o)
+func (o *oneof) AddField(f Field) {
+	f.SetOneOf(o)
 	o.flds = append(o.flds, f)
 }
 
-func (o *oneof) childAtPath(path []int32) Entity {
+func (o *oneof) ChildAtPath(path []int32) Entity {
 	if len(path) == 0 {
 		return o
 	}
 	return nil
 }
 
-func (o *oneof) addSourceCodeInfo(info SourceCodeInfo) { o.info = info }
+func (o *oneof) AddSourceCodeInfo(info SourceCodeInfo) { o.info = info }
 
 var _ OneOf = (*oneof)(nil)

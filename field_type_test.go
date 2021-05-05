@@ -13,7 +13,7 @@ func TestScalarT_Field(t *testing.T) {
 
 	f := dummyField()
 	s := &scalarT{}
-	f.addType(s)
+	f.AddType(s)
 
 	assert.Equal(t, f, s.Field())
 }
@@ -46,7 +46,7 @@ func TestScalarT_ProtoType(t *testing.T) {
 	t.Parallel()
 	f := dummyField()
 	s := &scalarT{}
-	f.addType(s)
+	f.AddType(s)
 
 	assert.Equal(t, f.desc.GetType(), s.ProtoType().Proto())
 }
@@ -55,7 +55,7 @@ func TestScalarT_ProtoLabel(t *testing.T) {
 	t.Parallel()
 	f := dummyField()
 	s := &scalarT{}
-	f.addType(s)
+	f.AddType(s)
 
 	assert.Equal(t, f.desc.GetLabel(), s.ProtoLabel().Proto())
 }
@@ -90,13 +90,13 @@ func TestScalarT_IsOptional(t *testing.T) {
 
 	s := &scalarT{}
 	f := dummyField()
-	f.addType(s)
+	f.AddType(s)
 
 	assert.True(t, s.IsOptional())
 
 	fl := dummyFile()
 	fl.desc.Syntax = nil
-	f.Message().setParent(fl)
+	f.Message().SetParent(fl)
 
 	assert.True(t, s.IsOptional())
 
@@ -111,13 +111,13 @@ func TestScalarT_IsRequired(t *testing.T) {
 
 	s := &scalarT{}
 	f := dummyField()
-	f.addType(s)
+	f.AddType(s)
 
 	assert.False(t, s.IsRequired())
 
 	fl := dummyFile()
 	fl.desc.Syntax = nil
-	f.Message().setParent(fl)
+	f.Message().SetParent(fl)
 
 	assert.False(t, s.IsRequired())
 
@@ -132,9 +132,9 @@ func TestScalarT_ToElem(t *testing.T) {
 
 	s := &scalarT{}
 	f := dummyField()
-	f.addType(s)
+	f.AddType(s)
 
-	el := s.toElem()
+	el := s.ToElem()
 	assert.Equal(t, s, el.ParentType())
 	assert.Equal(t, s.ProtoType(), el.ProtoType())
 }
@@ -159,7 +159,7 @@ func TestEnumT_Imports(t *testing.T) {
 	en.parent = f
 	e := &enumT{scalarT: &scalarT{}, enum: en}
 	fld := dummyField()
-	fld.addType(e)
+	fld.AddType(e)
 
 	assert.Empty(t, e.Imports())
 
@@ -176,9 +176,9 @@ func TestEnumT_ToElem(t *testing.T) {
 		enum:    dummyEnum(),
 	}
 	f := dummyField()
-	f.addType(e)
+	f.AddType(e)
 
-	el := e.toElem()
+	el := e.ToElem()
 	assert.True(t, el.IsEnum())
 	assert.Equal(t, e.enum, el.Enum())
 	assert.Equal(t, e.ProtoType(), el.ProtoType())
@@ -203,7 +203,7 @@ func TestEmbedT_Imports(t *testing.T) {
 	f := dummyFile()
 	msg.parent = f
 	e := &embedT{scalarT: &scalarT{}, msg: msg}
-	dummyField().addType(e)
+	dummyField().AddType(e)
 
 	assert.Empty(t, e.Imports())
 
@@ -220,9 +220,9 @@ func TestEmbedT_ToElem(t *testing.T) {
 		msg:     dummyMsg(),
 	}
 	f := dummyField()
-	f.addType(e)
+	f.AddType(e)
 
-	el := e.toElem()
+	el := e.ToElem()
 	assert.True(t, el.IsEmbed())
 	assert.Equal(t, e.msg, el.Embed())
 	assert.Equal(t, e.ProtoType(), el.ProtoType())
@@ -247,11 +247,11 @@ func TestRepT_Imports(t *testing.T) {
 	f := dummyFile()
 	msg.parent = f
 	e := &embedT{scalarT: &scalarT{}, msg: msg}
-	dummyField().addType(e)
+	dummyField().AddType(e)
 
 	fld := dummyField()
-	r := &repT{scalarT: &scalarT{}, el: e.toElem()}
-	fld.addType(r)
+	r := &repT{scalarT: &scalarT{}, el: e.ToElem()}
+	fld.AddType(r)
 
 	assert.Empty(t, r.Imports())
 
@@ -262,7 +262,7 @@ func TestRepT_Imports(t *testing.T) {
 
 func TestRepT_ToElem(t *testing.T) {
 	t.Parallel()
-	assert.Panics(t, func() { (&repT{}).toElem() })
+	assert.Panics(t, func() { (&repT{}).ToElem() })
 }
 
 func TestMapT_IsRepeated(t *testing.T) {
@@ -290,4 +290,4 @@ type mockT struct {
 
 func (t *mockT) Imports() []File { return t.i }
 
-func (t *mockT) setField(f Field) { t.f = f }
+func (t *mockT) SetField(f Field) { t.f = f }

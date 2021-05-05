@@ -51,17 +51,17 @@ func fieldNode() Node {
 	// }
 
 	sm := &msg{}
-	sm.addField(&field{desc: &descriptor.FieldDescriptorProto{Name: proto.String("Foo")}})
+	sm.AddField(&field{desc: &descriptor.FieldDescriptorProto{Name: proto.String("Foo")}})
 
 	m := &msg{}
-	m.addMessage(sm)
-	m.addField(&field{desc: &descriptor.FieldDescriptorProto{Name: proto.String("Bar")}})
+	m.AddMessage(sm)
+	m.AddField(&field{desc: &descriptor.FieldDescriptorProto{Name: proto.String("Bar")}})
 
 	f := &file{}
-	f.addMessage(m)
+	f.AddMessage(m)
 
 	p := &pkg{}
-	p.addFile(f)
+	p.AddFile(f)
 
 	return p
 }

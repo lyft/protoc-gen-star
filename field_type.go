@@ -63,8 +63,8 @@ type FieldType interface {
 	// Nil will be returned if IsMap returns false.
 	Key() FieldTypeElem
 
-	setField(f Field)
-	toElem() FieldTypeElem
+	SetField(f Field)
+	ToElem() FieldTypeElem
 }
 
 type scalarT struct{ fld Field }
@@ -77,7 +77,7 @@ func (s *scalarT) IsEmbed() bool          { return false }
 func (s *scalarT) ProtoType() ProtoType   { return ProtoType(s.fld.Descriptor().GetType()) }
 func (s *scalarT) ProtoLabel() ProtoLabel { return ProtoLabel(s.fld.Descriptor().GetLabel()) }
 func (s *scalarT) Imports() []File        { return nil }
-func (s *scalarT) setField(f Field)       { s.fld = f }
+func (s *scalarT) SetField(f Field)       { s.fld = f }
 func (s *scalarT) Enum() Enum             { return nil }
 func (s *scalarT) Embed() Message         { return nil }
 func (s *scalarT) Element() FieldTypeElem { return nil }
@@ -91,7 +91,7 @@ func (s *scalarT) IsRequired() bool {
 	return s.fld.Syntax().SupportsRequiredPrefix() && s.ProtoLabel() == Required
 }
 
-func (s *scalarT) toElem() FieldTypeElem {
+func (s *scalarT) ToElem() FieldTypeElem {
 	return &scalarE{
 		typ:   s,
 		ptype: s.ProtoType(),
@@ -113,9 +113,9 @@ func (e *enumT) Imports() []File {
 	return nil
 }
 
-func (e *enumT) toElem() FieldTypeElem {
+func (e *enumT) ToElem() FieldTypeElem {
 	return &enumE{
-		scalarE: e.scalarT.toElem().(*scalarE),
+		scalarE: e.scalarT.ToElem().(*scalarE),
 		enum:    e.enum,
 	}
 }
@@ -135,9 +135,9 @@ func (e *embedT) Imports() []File {
 	return nil
 }
 
-func (e *embedT) toElem() FieldTypeElem {
+func (e *embedT) ToElem() FieldTypeElem {
 	return &embedE{
-		scalarE: e.scalarT.toElem().(*scalarE),
+		scalarE: e.scalarT.ToElem().(*scalarE),
 		msg:     e.msg,
 	}
 }
@@ -152,7 +152,7 @@ func (r *repT) Element() FieldTypeElem { return r.el }
 
 func (r *repT) Imports() []File { return r.el.Imports() }
 
-func (r *repT) toElem() FieldTypeElem { panic("cannot convert repeated FieldType to FieldTypeElem") }
+func (r *repT) ToElem() FieldTypeElem { panic("cannot convert repeated FieldType to FieldTypeElem") }
 
 type mapT struct {
 	*repT

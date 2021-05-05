@@ -26,7 +26,7 @@ type FieldTypeElem interface {
 	// IsEmbed returns false, this value will be nil.
 	Embed() Message
 
-	setType(t FieldType)
+	SetType(t FieldType)
 }
 
 type scalarE struct {
@@ -38,7 +38,7 @@ func (s *scalarE) ParentType() FieldType { return s.typ }
 func (s *scalarE) ProtoType() ProtoType  { return s.ptype }
 func (s *scalarE) IsEmbed() bool         { return false }
 func (s *scalarE) IsEnum() bool          { return false }
-func (s *scalarE) setType(t FieldType)   { s.typ = t }
+func (s *scalarE) SetType(t FieldType)   { s.typ = t }
 func (s *scalarE) Imports() []File       { return nil }
 func (s *scalarE) Enum() Enum            { return nil }
 func (s *scalarE) Embed() Message        { return nil }

@@ -54,11 +54,11 @@ func enumNode() Node {
 	// }
 
 	sm := &msg{}
-	sm.addEnum(&enum{desc: &descriptor.EnumDescriptorProto{Name: proto.String("Foo")}})
+	sm.AddEnum(&enum{desc: &descriptor.EnumDescriptorProto{Name: proto.String("Foo")}})
 
 	m := &msg{}
-	m.addMessage(sm)
-	m.addEnum(&enum{desc: &descriptor.EnumDescriptorProto{Name: proto.String("Bar")}})
+	m.AddMessage(sm)
+	m.AddEnum(&enum{desc: &descriptor.EnumDescriptorProto{Name: proto.String("Bar")}})
 
 	return m
 }

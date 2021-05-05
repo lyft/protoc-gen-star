@@ -47,8 +47,8 @@ type Entity interface {
 	// Primarily, this struct contains the comments associated with the Entity.
 	SourceCodeInfo() SourceCodeInfo
 
-	childAtPath(path []int32) Entity
-	addSourceCodeInfo(info SourceCodeInfo)
+	ChildAtPath(path []int32) Entity
+	AddSourceCodeInfo(info SourceCodeInfo)
 }
 
 // A ParentEntity is any Entity type that can contain messages and/or enums.
@@ -78,8 +78,8 @@ type ParentEntity interface {
 	// DefinedExtensions returns all Extensions defined on this entity.
 	DefinedExtensions() []Extension
 
-	addMessage(m Message)
-	addMapEntry(m Message)
-	addEnum(e Enum)
-	addDefExtension(e Extension)
+	AddMessage(m Message)
+	AddMapEntry(m Message)
+	AddEnum(e Enum)
+	AddDefExtension(e Extension)
 }

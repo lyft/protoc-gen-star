@@ -12,7 +12,7 @@ func TestScalarE_ParentType(t *testing.T) {
 	t.Parallel()
 
 	s := &scalarE{}
-	s.setType(&scalarT{})
+	s.SetType(&scalarT{})
 	assert.Equal(t, s.typ, s.ParentType())
 }
 

@@ -27,7 +27,7 @@ func TestMethod_Syntax(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 	assert.Equal(t, s.Syntax(), m.Syntax())
 }
 
@@ -35,7 +35,7 @@ func TestMethod_Package(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.NotNil(t, m.Package())
 	assert.Equal(t, s.Package(), m.Package())
@@ -45,7 +45,7 @@ func TestMethod_File(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.NotNil(t, m.File())
 	assert.Equal(t, s.File(), m.File())
@@ -55,10 +55,10 @@ func TestMethod_BuildTarget(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.False(t, m.BuildTarget())
-	s.setFile(&file{buildTarget: true})
+	s.SetFile(&file{buildTarget: true})
 	assert.True(t, m.BuildTarget())
 }
 
@@ -72,7 +72,7 @@ func TestMethod_Service(t *testing.T) {
 	t.Parallel()
 	m := &method{}
 	s := dummyService()
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	assert.Equal(t, s, m.Service())
 }
@@ -129,7 +129,7 @@ func TestMethod_Imports(t *testing.T) {
 		in:  dummyMsg(),
 		out: dummyMsg(),
 	}
-	s.addMethod(m)
+	s.AddMethod(m)
 
 	f := &file{desc: &descriptor.FileDescriptorProto{
 		Name: proto.String("foobar"),
@@ -157,10 +157,10 @@ func TestMethod_Accept(t *testing.T) {
 
 	m := &method{}
 
-	assert.Nil(t, m.accept(nil))
+	assert.Nil(t, m.Accept(nil))
 
 	v := &mockVisitor{err: errors.New("foo")}
-	assert.Error(t, m.accept(v))
+	assert.Error(t, m.Accept(v))
 	assert.Equal(t, 1, v.method)
 }
 
@@ -169,8 +169,8 @@ func TestMethod_ChildAtPath(t *testing.T) {
 
 	m := &method{}
 
-	assert.Equal(t, m, m.childAtPath(nil))
-	assert.Nil(t, m.childAtPath([]int32{1}))
+	assert.Equal(t, m, m.ChildAtPath(nil))
+	assert.Nil(t, m.ChildAtPath([]int32{1}))
 }
 
 type mockMethod struct {
@@ -182,9 +182,9 @@ type mockMethod struct {
 
 func (m *mockMethod) Imports() []File { return m.i }
 
-func (m *mockMethod) setService(s Service) { m.s = s }
+func (m *mockMethod) SetService(s Service) { m.s = s }
 
-func (m *mockMethod) accept(v Visitor) error {
+func (m *mockMethod) Accept(v Visitor) error {
 	_, err := v.VisitMethod(m)
 	if m.err != nil {
 		return m.err

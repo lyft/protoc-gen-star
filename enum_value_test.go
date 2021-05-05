@@ -26,7 +26,7 @@ func TestEnumVal_Syntax(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.Equal(t, e.Syntax(), ev.Syntax())
 }
 
@@ -34,7 +34,7 @@ func TestEnumVal_Package(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.NotNil(t, ev.Package())
 	assert.Equal(t, e.Package(), ev.Package())
 }
@@ -43,7 +43,7 @@ func TestEnumVal_File(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.NotNil(t, ev.File())
 	assert.Equal(t, e.File(), ev.File())
 }
@@ -52,7 +52,7 @@ func TestEnumVal_BuildTarget(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.False(t, ev.BuildTarget())
 	e.parent = &file{buildTarget: true}
 	assert.True(t, ev.BuildTarget())
@@ -68,7 +68,7 @@ func TestEnumVal_Enum(t *testing.T) {
 	t.Parallel()
 	ev := &enumVal{}
 	e := dummyEnum()
-	e.addValue(ev)
+	e.AddValue(ev)
 	assert.Equal(t, e, ev.Enum())
 }
 
@@ -94,10 +94,10 @@ func TestEnumVal_Accept(t *testing.T) {
 	t.Parallel()
 
 	ev := &enumVal{}
-	assert.NoError(t, ev.accept(nil))
+	assert.NoError(t, ev.Accept(nil))
 
 	v := &mockVisitor{err: errors.New("")}
-	assert.Error(t, ev.accept(v))
+	assert.Error(t, ev.Accept(v))
 	assert.Equal(t, 1, v.enumvalue)
 }
 
@@ -105,8 +105,8 @@ func TestEnumVal_ChildAtPath(t *testing.T) {
 	t.Parallel()
 
 	ev := &enumVal{}
-	assert.Equal(t, ev, ev.childAtPath(nil))
-	assert.Nil(t, ev.childAtPath([]int32{1}))
+	assert.Equal(t, ev, ev.ChildAtPath(nil))
+	assert.Nil(t, ev.ChildAtPath([]int32{1}))
 }
 
 type mockEnumValue struct {
@@ -115,9 +115,9 @@ type mockEnumValue struct {
 	err error
 }
 
-func (ev *mockEnumValue) setEnum(e Enum) { ev.e = e }
+func (ev *mockEnumValue) SetEnum(e Enum) { ev.e = e }
 
-func (ev *mockEnumValue) accept(v Visitor) error {
+func (ev *mockEnumValue) Accept(v Visitor) error {
 	_, err := v.VisitEnumValue(ev)
 	if ev.err != nil {
 		return ev.err

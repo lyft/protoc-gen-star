@@ -24,9 +24,9 @@ type Enum interface {
 	// transitively used.
 	Dependents() []Message
 
-	addValue(v EnumValue)
-	addDependent(m Message)
-	setParent(p ParentEntity)
+	AddValue(v EnumValue)
+	AddDependent(m Message)
+	SetParent(p ParentEntity)
 }
 
 type enum struct {
@@ -59,7 +59,7 @@ func (e *enum) populateDependentsCache() {
 	e.dependentsCache = map[string]Message{}
 	for _, dep := range e.dependents {
 		e.dependentsCache[dep.FullyQualifiedName()] = dep
-		dep.getDependents(e.dependentsCache)
+		dep.GetDependents(e.dependentsCache)
 	}
 }
 
@@ -72,7 +72,7 @@ func (e *enum) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, erro
 	return extension(e.desc.GetOptions(), desc, &ext)
 }
 
-func (e *enum) accept(v Visitor) (err error) {
+func (e *enum) Accept(v Visitor) (err error) {
 	if v == nil {
 		return nil
 	}
@@ -82,7 +82,7 @@ func (e *enum) accept(v Visitor) (err error) {
 	}
 
 	for _, ev := range e.vals {
-		if err = ev.accept(v); err != nil {
+		if err = ev.Accept(v); err != nil {
 			return
 		}
 	}
@@ -90,30 +90,30 @@ func (e *enum) accept(v Visitor) (err error) {
 	return
 }
 
-func (e *enum) addDependent(m Message) {
+func (e *enum) AddDependent(m Message) {
 	e.dependents = append(e.dependents, m)
 }
 
-func (e *enum) addValue(v EnumValue) {
-	v.setEnum(e)
+func (e *enum) AddValue(v EnumValue) {
+	v.SetEnum(e)
 	e.vals = append(e.vals, v)
 }
 
-func (e *enum) setParent(p ParentEntity) { e.parent = p }
+func (e *enum) SetParent(p ParentEntity) { e.parent = p }
 
-func (e *enum) childAtPath(path []int32) Entity {
+func (e *enum) ChildAtPath(path []int32) Entity {
 	switch {
 	case len(path) == 0:
 		return e
 	case len(path)%2 != 0:
 		return nil
 	case path[0] == enumTypeValuePath:
-		return e.vals[path[1]].childAtPath(path[2:])
+		return e.vals[path[1]].ChildAtPath(path[2:])
 	default:
 		return nil
 	}
 }
 
-func (e *enum) addSourceCodeInfo(info SourceCodeInfo) { e.info = info }
+func (e *enum) AddSourceCodeInfo(info SourceCodeInfo) { e.info = info }
 
 var _ Enum = (*enum)(nil)
