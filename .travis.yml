@@ -1,11 +1,10 @@
 language: go
-go: "1.14.6"
+go: "1.16.0"
 go_import_path: github.com/lyft/protoc-gen-star
 
 env:
   matrix:
-    - PROTOC_VER="3.5.1"
-    - PROTOC_VER="3.6.1"
+    - PROTOC_VER="3.16.0"
 
 before_install:
   - mkdir -p $GOPATH/bin

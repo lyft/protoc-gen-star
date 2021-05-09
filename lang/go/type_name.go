@@ -25,7 +25,7 @@ func (c context) Type(f pgs.Field) TypeName {
 		t = scalarType(ft.ProtoType())
 	}
 
-	if f.Syntax() == pgs.Proto2 {
+	if f.Syntax() == pgs.Proto2 || (f.Syntax() == pgs.Proto3 && f.Proto3Optional()) {
 		return t.Pointer()
 	}
 

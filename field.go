@@ -30,6 +30,11 @@ type Field interface {
 	// will only be true if the syntax is proto2.
 	Required() bool
 
+	// Proto3Optional returns whether or not the field is a proto 3 optional field. This
+	// will only be true if the syntax is proto3, and otherwise false.
+	// Info: https://github.com/protocolbuffers/protobuf/blob/master/docs/field_presence.md#presence-in-proto3-apis
+	Proto3Optional() bool
+
 	setMessage(m Message)
 	setOneOf(o OneOf)
 	addType(t FieldType)
@@ -64,6 +69,13 @@ func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 func (f *field) Required() bool {
 	return f.Syntax().SupportsRequiredPrefix() &&
 		f.desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_REQUIRED
+}
+
+func (f *field) Proto3Optional() bool {
+	if f.desc.Proto3Optional != nil {
+		return *f.desc.Proto3Optional
+	}
+	return false
 }
 
 func (f *field) addType(t FieldType) {
