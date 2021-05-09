@@ -1,5 +1,5 @@
 language: go
-go: "1.16.0"
+go: "1.14.6"
 go_import_path: github.com/lyft/protoc-gen-star
 
 env:
