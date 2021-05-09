@@ -13,10 +13,10 @@ const (
 	// See: https://developers.google.com/protocol-buffers/docs/proto
 	Proto2 Syntax = ""
 
-	// Proto3 syntax only allows for optional fields, but defaults to the zero
-	// value of that particular type. Most of the field types in the generated go
-	// structs are value types.
-	// See: https://developers.google.com/protocol-buffers/docs/proto3
+	// Proto3 syntax permits the use of "optional" field presence. Non optional fields default to the zero
+	// 	value of that particular type if not defined.
+	// Most of the field types in the generated go structs are value types.
+	// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/field_presence.md#presence-in-proto3-apis
 	Proto3 Syntax = "proto3"
 )
 
