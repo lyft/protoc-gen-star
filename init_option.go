@@ -49,6 +49,8 @@ func BiDirectional() InitOption {
 	return func(g *Generator) { g.workflow = &onceWorkflow{workflow: &standardWorkflow{BiDi: true}} }
 }
 
+// SupportProto3Optional adds support for proto3 field presence.
+// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/implementing_proto3_presence.md#signaling-that-your-code-generator-supports-proto3-optional
 func SupportProto3Optional() InitOption {
 	return func(g *Generator) {
 		p3Optional := uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
