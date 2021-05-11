@@ -22,8 +22,7 @@ type FieldType interface {
 	// repeated fields containing embeds will still return false.
 	IsEmbed() bool
 
-	// IsOptional returns true if the message's syntax is not Proto2 or
-	// the field is prefixed as optional.
+	// IsOptional returns true if the field is prefixed as optional.
 	IsOptional() bool
 
 	// IsRequired returns true if and only if the field is prefixed as required.
@@ -84,7 +83,7 @@ func (s *scalarT) Element() FieldTypeElem { return nil }
 func (s *scalarT) Key() FieldTypeElem     { return nil }
 
 func (s *scalarT) IsOptional() bool {
-	return !s.fld.Syntax().SupportsRequiredPrefix() || s.ProtoLabel() == Optional
+	return s.fld.Optional()
 }
 
 func (s *scalarT) IsRequired() bool {

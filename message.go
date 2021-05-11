@@ -29,8 +29,17 @@ type Message interface {
 	// OneOfFields returns only the fields contained within OneOf blocks.
 	OneOfFields() []Field
 
+	// SyntheticOneOfFields returns only the fields contained within synthetic OneOf blocks.
+	// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/field_presence.md
+	SyntheticOneOfFields() []Field
+
 	// OneOfs returns the OneOfs contained within this Message.
 	OneOfs() []OneOf
+
+	// RealOneOfs returns the OneOfs contained within this Message.
+	// This excludes synthetic OneOfs.
+	// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/field_presence.md
+	RealOneOfs() []OneOf
 
 	// Extensions returns all of the Extensions applied to this Message.
 	Extensions() []Extension
@@ -137,6 +146,26 @@ func (m *msg) OneOfFields() (f []Field) {
 	}
 
 	return f
+}
+
+func (m *msg) SyntheticOneOfFields() (f []Field) {
+	for _, o := range m.oneofs {
+		if o.IsSynthetic() {
+			f = append(f, o.Fields()...)
+		}
+	}
+
+	return f
+}
+
+func (m *msg) RealOneOfs() (r []OneOf) {
+	for _, o := range m.oneofs {
+		if !o.IsSynthetic() {
+			r = append(r, o)
+		}
+	}
+
+	return r
 }
 
 func (m *msg) Imports() (i []File) {

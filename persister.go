@@ -35,6 +35,7 @@ func (p *stdPersister) AddPostProcessor(proc ...PostProcessor) { p.procs = appen
 
 func (p *stdPersister) Persist(arts ...Artifact) *plugin_go.CodeGeneratorResponse {
 	resp := new(plugin_go.CodeGeneratorResponse)
+	resp.SupportedFeatures = p.supportedField
 
 	for _, a := range arts {
 		switch a := a.(type) {
