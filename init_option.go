@@ -1,6 +1,7 @@
 package pgs
 
 import (
+	"google.golang.org/protobuf/types/pluginpb"
 	"io"
 	"os"
 
@@ -46,4 +47,11 @@ func FileSystem(fs afero.Fs) InitOption { return func(g *Generator) { g.persiste
 // directions (ie, accessing dependents of an entity, not just dependencies).
 func BiDirectional() InitOption {
 	return func(g *Generator) { g.workflow = &onceWorkflow{workflow: &standardWorkflow{BiDi: true}} }
+}
+
+func SupportProto3Optional() InitOption {
+	return func(g *Generator) {
+		p3Optional := uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+		g.persister.SetSupportedField(&p3Optional)
+	}
 }
