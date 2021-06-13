@@ -211,6 +211,52 @@ func TestMsg_OneOfs(t *testing.T) {
 	assert.Len(t, m.OneOfs(), 1)
 }
 
+func TestMsg_SyntheticOneOfFields_And_RealOneOfs(t *testing.T) {
+	t.Parallel()
+
+	oSyn := &oneof{}
+	oSyn.flds = []Field{dummyOneOfField(true)}
+	oSyn.flds[0].setOneOf(oSyn)
+
+	oReal := &oneof{}
+	oReal.flds = []Field{dummyField(), dummyField()}
+	oReal.flds[0].setOneOf(oReal)
+	oReal.flds[1].setOneOf(oReal)
+
+	// no one offs
+	m := dummyMsg()
+	assert.Len(t, m.OneOfFields(), 0, "oneof fields")
+	assert.Len(t, m.SyntheticOneOfFields(), 0, "synthetic oneof fields")
+	assert.Len(t, m.OneOfs(), 0, "oneofs")
+	assert.Len(t, m.RealOneOfs(), 0, "real oneofs")
+
+	// one real oneof
+	m.addField(oReal.flds[0])
+	m.addField(oReal.flds[1])
+	m.addOneOf(oReal)
+	assert.Len(t, m.OneOfFields(), 2, "oneof fields")
+	assert.Len(t, m.SyntheticOneOfFields(), 0, "synthetic oneof fields")
+	assert.Len(t, m.OneOfs(), 1, "oneofs")
+	assert.Len(t, m.RealOneOfs(), 1, "real oneofs")
+
+	// one real, one synthetic oneof
+	m.addField(oSyn.flds[0])
+	m.addOneOf(oSyn)
+	assert.Len(t, m.OneOfFields(), 3, "oneof fields")
+	assert.Len(t, m.SyntheticOneOfFields(), 1, "synthetic oneof fields")
+	assert.Len(t, m.OneOfs(), 2, "oneofs")
+	assert.Len(t, m.RealOneOfs(), 1, "real oneofs")
+
+	// one synthetic oneof
+	m = dummyMsg()
+	m.addField(oSyn.flds[0])
+	m.addOneOf(oSyn)
+	assert.Len(t, m.OneOfFields(), 1, "oneof fields")
+	assert.Len(t, m.SyntheticOneOfFields(), 1, "synthetic oneof fields")
+	assert.Len(t, m.OneOfs(), 1, "oneofs")
+	assert.Len(t, m.RealOneOfs(), 0, "real oneofs")
+}
+
 func TestMsg_Extension(t *testing.T) {
 	// cannot be parallel
 	m := &msg{desc: &descriptor.DescriptorProto{}}

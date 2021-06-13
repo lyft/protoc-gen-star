@@ -19,6 +19,10 @@ type OneOf interface {
 	// Fields returns all fields contained within this OneOf.
 	Fields() []Field
 
+	// IsSynthetic returns true if this is a proto3 synthetic oneof.
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
+	IsSynthetic() bool
+
 	setMessage(m Message)
 	addField(f Field)
 }
@@ -51,6 +55,12 @@ func (o *oneof) SourceCodeInfo() SourceCodeInfo               { return o.info }
 func (o *oneof) Descriptor() *descriptor.OneofDescriptorProto { return o.desc }
 func (o *oneof) Message() Message                             { return o.msg }
 func (o *oneof) setMessage(m Message)                         { o.msg = m }
+
+func (o *oneof) IsSynthetic() bool {
+	return o.Syntax() == Proto3 &&
+		len(o.flds) == 1 &&
+		!o.flds[0].InRealOneOf()
+}
 
 func (o *oneof) Imports() (i []File) {
 	// Mapping for avoiding duplicate entries

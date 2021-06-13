@@ -42,4 +42,26 @@ message Proto3 {
     enum Enum {VALUE = 0;}
 
     message Message {}
+
+    message Optional {
+        optional double double = 1;
+        optional float float = 2;
+        optional int64 int64 = 3;
+        optional sfixed64 sfixed64 = 4;
+        optional sint64 sint64 = 5;
+        optional uint64 uint64 = 6;
+        optional fixed64 fixed64 = 7;
+        optional int32 int32 = 8;
+        optional sfixed32 sfixed32 = 9;
+        optional sint32 sint32 = 10;
+        optional uint32 uint32 = 11;
+        optional fixed32 fixed32 = 12;
+        optional bool bool = 13;
+        optional string string = 14;
+        optional bytes bytes = 15;
+        optional Enum enum = 16;
+        optional google.protobuf.Syntax ext_enum = 17;
+        optional Optional msg = 18;
+        optional google.protobuf.Duration ext_msg = 19;
+    }
 }

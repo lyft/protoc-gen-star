@@ -119,6 +119,20 @@ func TestOneof_Fields(t *testing.T) {
 	assert.Len(t, o.Fields(), 1)
 }
 
+func TestOneof_IsSynthetic(t *testing.T) {
+	t.Parallel()
+
+	o := &oneof{msg: &msg{parent: dummyFile()}}
+	assert.False(t, o.IsSynthetic())
+
+	o.flds = []Field{dummyField()}
+	o.flds[0].setOneOf(o)
+	assert.False(t, o.IsSynthetic())
+
+	o.flds = []Field{dummyOneOfField(true)}
+	assert.True(t, o.IsSynthetic())
+}
+
 func TestOneof_Accept(t *testing.T) {
 	t.Parallel()
 
