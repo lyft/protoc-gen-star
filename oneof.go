@@ -20,7 +20,7 @@ type OneOf interface {
 	Fields() []Field
 
 	// IsSynthetic returns true if this is a proto3 synthetic oneof.
-	// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/field_presence.md
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
 	IsSynthetic() bool
 
 	setMessage(m Message)

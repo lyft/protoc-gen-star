@@ -13,7 +13,7 @@ import (
 type persister interface {
 	SetDebugger(d Debugger)
 	SetFS(fs afero.Fs)
-	SetSupportedField(f *uint64)
+	SetSupportedFeatures(f *uint64)
 	AddPostProcessor(proc ...PostProcessor)
 	Persist(a ...Artifact) *plugin_go.CodeGeneratorResponse
 }
@@ -21,21 +21,21 @@ type persister interface {
 type stdPersister struct {
 	Debugger
 
-	fs             afero.Fs
-	procs          []PostProcessor
-	supportedField *uint64
+	fs                afero.Fs
+	procs             []PostProcessor
+	supportedFeatures *uint64
 }
 
 func newPersister() *stdPersister { return &stdPersister{fs: afero.NewOsFs()} }
 
 func (p *stdPersister) SetDebugger(d Debugger)                 { p.Debugger = d }
 func (p *stdPersister) SetFS(fs afero.Fs)                      { p.fs = fs }
-func (p *stdPersister) SetSupportedField(f *uint64)            { p.supportedField = f }
+func (p *stdPersister) SetSupportedFeatures(f *uint64)         { p.supportedFeatures = f }
 func (p *stdPersister) AddPostProcessor(proc ...PostProcessor) { p.procs = append(p.procs, proc...) }
 
 func (p *stdPersister) Persist(arts ...Artifact) *plugin_go.CodeGeneratorResponse {
 	resp := new(plugin_go.CodeGeneratorResponse)
-	resp.SupportedFeatures = p.supportedField
+	resp.SupportedFeatures = p.supportedFeatures
 
 	for _, a := range arts {
 		switch a := a.(type) {

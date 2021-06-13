@@ -1,7 +1,6 @@
 package pgs
 
 import (
-	"google.golang.org/protobuf/types/pluginpb"
 	"io"
 	"os"
 
@@ -49,11 +48,10 @@ func BiDirectional() InitOption {
 	return func(g *Generator) { g.workflow = &onceWorkflow{workflow: &standardWorkflow{BiDi: true}} }
 }
 
-// SupportProto3Optional adds support for proto3 field presence.
-// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/implementing_proto3_presence.md#signaling-that-your-code-generator-supports-proto3-optional
-func SupportProto3Optional() InitOption {
+// SupportedFeatures allows defining protoc features to enable / disable.
+// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/implementing_proto3_presence.md#signaling-that-your-code-generator-supports-proto3-optional
+func SupportedFeatures(feat *uint64) InitOption {
 	return func(g *Generator) {
-		p3Optional := uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
-		g.persister.SetSupportedField(&p3Optional)
+		g.persister.SetSupportedFeatures(feat)
 	}
 }

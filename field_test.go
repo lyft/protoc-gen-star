@@ -115,7 +115,7 @@ func TestField_InRealOneOf(t *testing.T) {
 func TestField_HasPresence(t *testing.T) {
 	t.Parallel()
 
-	f := &field{}
+	f := dummyField()
 	f.addType(&repT{scalarT: &scalarT{}})
 	assert.False(t, f.HasPresence())
 
@@ -137,19 +137,19 @@ func TestField_Optional(t *testing.T) {
 	optLabel := descriptor.FieldDescriptorProto_LABEL_OPTIONAL
 
 	f := &field{msg: &msg{parent: dummyFile()}}
-	assert.False(t, f.Optional())
+	assert.False(t, f.HasOptionalKeyword())
 
 	f.desc = &descriptor.FieldDescriptorProto{Label: &optLabel}
-	assert.False(t, f.Optional())
+	assert.False(t, f.HasOptionalKeyword())
 
 	f = dummyField()
-	assert.False(t, f.Optional())
+	assert.False(t, f.HasOptionalKeyword())
 
 	f = dummyOneOfField(false)
-	assert.False(t, f.Optional())
+	assert.False(t, f.HasOptionalKeyword())
 
 	f = dummyOneOfField(true)
-	assert.True(t, f.Optional())
+	assert.True(t, f.HasOptionalKeyword())
 }
 
 func TestField_Type(t *testing.T) {

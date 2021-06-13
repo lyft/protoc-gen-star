@@ -22,10 +22,10 @@ type Field interface {
 
 	// InRealOneOf returns true if the field is in a OneOf of the parent Message.
 	// This will return false for synthetic oneofs, and will only include 'real' oneofs.
-	// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/field_presence.md
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
 	InRealOneOf() bool
 
-	// OneOf returns the OneOf that this field is apart of. Nil is returned if
+	// OneOf returns the OneOf that this field is a part of. Nil is returned if
 	// the field is not within a OneOf.
 	OneOf() OneOf
 
@@ -33,13 +33,13 @@ type Field interface {
 	Type() FieldType
 
 	// HasPresence returns true for all fields that have explicit presence as defined by:
-	// See: https://github.com/protocolbuffers/protobuf/blob/master/docs/field_presence.md
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
 	HasPresence() bool
 
-	// Optional returns whether or not the field is labeled as optional.
-	Optional() bool
+	// HasOptionalKeyword returns whether the field is labeled as optional.
+	HasOptionalKeyword() bool
 
-	// Required returns whether or not the field is labeled as required. This
+	// Required returns whether the field is labeled as required. This
 	// will only be true if the syntax is proto2.
 	Required() bool
 
@@ -69,25 +69,33 @@ func (f *field) SourceCodeInfo() SourceCodeInfo               { return f.info }
 func (f *field) Descriptor() *descriptor.FieldDescriptorProto { return f.desc }
 func (f *field) Message() Message                             { return f.msg }
 func (f *field) InOneOf() bool                                { return f.oneof != nil }
-func (f *field) InRealOneOf() bool                            { return f.InOneOf() && !f.desc.GetProto3Optional() }
 func (f *field) OneOf() OneOf                                 { return f.oneof }
 func (f *field) Type() FieldType                              { return f.typ }
 func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
 
-func (f *field) HasPresence() bool {
-	if f.Type().IsRepeated() || f.Type().IsMap() {
-		return false
-	}
-
-	if f.Syntax() == Proto3 && !f.Optional() && !(f.Type().IsEmbed() || f.InRealOneOf()) {
-		return false
-	}
-
-	return true
+func (f *field) InRealOneOf() bool {
+	return f.InOneOf() && !f.desc.GetProto3Optional()
 }
 
-func (f *field) Optional() bool {
+func (f *field) HasPresence() bool {
+	if f.InOneOf() {
+		return true
+	}
+
+	if f.Type().IsEmbed() {
+		return true
+	}
+
+	if f.HasOptionalKeyword() ||
+		(f.Syntax() == Proto2 && !f.Type().IsRepeated() && !f.Type().IsMap()) {
+		return true
+	}
+
+	return false
+}
+
+func (f *field) HasOptionalKeyword() bool {
 	if f.Syntax() == Proto3 {
 		return f.desc.GetProto3Optional()
 	}
