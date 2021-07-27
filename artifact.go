@@ -304,7 +304,7 @@ func cleanGeneratorFileName(name string) (string, error) {
 		return "", errors.New("generator file names must be relative paths")
 	}
 
-	if name = filepath.Clean(name); name == "." || strings.HasPrefix(name, "..") {
+	if name = filepath.ToSlash(filepath.Clean(name)); name == "." || strings.HasPrefix(name, "..") {
 		return "", errors.New("generator file names must be not contain . or .. within them")
 	}
 
