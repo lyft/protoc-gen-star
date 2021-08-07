@@ -6,7 +6,7 @@ env:
   matrix:
     - PROTOC_VER="3.5.0"
     - PROTOC_VER="3.6.0"
-    - PROTOC_VER="3.16.0"
+    - PROTOC_VER="3.17.0"
 
 before_install:
   - mkdir -p $GOPATH/bin
