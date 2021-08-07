@@ -113,7 +113,7 @@ func TestScalarT_IsNotOptional(t *testing.T) {
 	f := dummyField()
 	f.addType(s)
 
-	assert.False(t, s.IsOptional())
+	assert.True(t, s.IsOptional())
 
 	fl := dummyFile()
 	fl.desc.Syntax = nil

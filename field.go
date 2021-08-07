@@ -87,11 +87,12 @@ func (f *field) HasPresence() bool {
 		return true
 	}
 
-	if f.HasOptionalKeyword() ||
-		(f.Syntax() == Proto2 && !f.Type().IsRepeated() && !f.Type().IsMap()) {
-		return true
+	if !f.Type().IsRepeated() && !f.Type().IsMap() {
+		if f.Syntax() == Proto2 {
+			return true
+		}
+		return f.HasOptionalKeyword()
 	}
-
 	return false
 }
 

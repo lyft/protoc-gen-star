@@ -83,7 +83,7 @@ func (s *scalarT) Element() FieldTypeElem { return nil }
 func (s *scalarT) Key() FieldTypeElem     { return nil }
 
 func (s *scalarT) IsOptional() bool {
-	return s.fld.HasOptionalKeyword()
+	return !s.fld.Syntax().SupportsRequiredPrefix() || s.ProtoLabel() == Optional
 }
 
 func (s *scalarT) IsRequired() bool {

@@ -122,7 +122,6 @@ func TestField_HasPresence(t *testing.T) {
 	f.addType(&mapT{repT: &repT{scalarT: &scalarT{}}})
 	assert.False(t, f.HasPresence())
 
-	f.msg = dummyMsg()
 	f.addType(&scalarT{})
 	assert.False(t, f.HasPresence())
 
@@ -131,7 +130,7 @@ func TestField_HasPresence(t *testing.T) {
 	assert.True(t, f.HasPresence())
 }
 
-func TestField_Optional(t *testing.T) {
+func TestField_HasOptionalKeyword(t *testing.T) {
 	t.Parallel()
 
 	optLabel := descriptor.FieldDescriptorProto_LABEL_OPTIONAL
