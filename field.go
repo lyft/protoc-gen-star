@@ -17,16 +17,29 @@ type Field interface {
 	Message() Message
 
 	// InOneOf returns true if the field is in a OneOf of the parent Message.
+	// This will return true for synthetic oneofs (proto3 field presence) as well.
 	InOneOf() bool
 
-	// OneOf returns the OneOf that this field is apart of. Nil is returned if
+	// InRealOneOf returns true if the field is in a OneOf of the parent Message.
+	// This will return false for synthetic oneofs, and will only include 'real' oneofs.
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
+	InRealOneOf() bool
+
+	// OneOf returns the OneOf that this field is a part of. Nil is returned if
 	// the field is not within a OneOf.
 	OneOf() OneOf
 
 	// Type returns the FieldType of this Field.
 	Type() FieldType
 
-	// Required returns whether or not the field is labeled as required. This
+	// HasPresence returns true for all fields that have explicit presence as defined by:
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
+	HasPresence() bool
+
+	// HasOptionalKeyword returns whether the field is labeled as optional.
+	HasOptionalKeyword() bool
+
+	// Required returns whether the field is labeled as required. This
 	// will only be true if the syntax is proto2.
 	Required() bool
 
@@ -60,6 +73,35 @@ func (f *field) OneOf() OneOf                                 { return f.oneof }
 func (f *field) Type() FieldType                              { return f.typ }
 func (f *field) setMessage(m Message)                         { f.msg = m }
 func (f *field) setOneOf(o OneOf)                             { f.oneof = o }
+
+func (f *field) InRealOneOf() bool {
+	return f.InOneOf() && !f.desc.GetProto3Optional()
+}
+
+func (f *field) HasPresence() bool {
+	if f.InOneOf() {
+		return true
+	}
+
+	if f.Type().IsEmbed() {
+		return true
+	}
+
+	if !f.Type().IsRepeated() && !f.Type().IsMap() {
+		if f.Syntax() == Proto2 {
+			return true
+		}
+		return f.HasOptionalKeyword()
+	}
+	return false
+}
+
+func (f *field) HasOptionalKeyword() bool {
+	if f.Syntax() == Proto3 {
+		return f.desc.GetProto3Optional()
+	}
+	return f.desc.GetLabel() == descriptor.FieldDescriptorProto_LABEL_OPTIONAL
+}
 
 func (f *field) Required() bool {
 	return f.Syntax().SupportsRequiredPrefix() &&

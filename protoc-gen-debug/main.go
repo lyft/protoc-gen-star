@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"google.golang.org/protobuf/types/pluginpb"
+
 	"github.com/golang/protobuf/proto"
 	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 )
@@ -41,8 +43,11 @@ func main() {
 		log.Fatal("unable to write request to disk: ", err)
 	}
 
-	data, err = proto.Marshal(&plugin_go.CodeGeneratorResponse{})
-	if err != nil {
+	// protoc-gen-debug supports proto3 field presence for testing purposes
+	var supportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+	if data, err = proto.Marshal(&plugin_go.CodeGeneratorResponse{
+		SupportedFeatures: &supportedFeatures,
+	}); err != nil {
 		log.Fatal("unable to marshal response payload: ", err)
 	}
 

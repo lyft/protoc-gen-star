@@ -99,6 +99,58 @@ func TestField_OneOf(t *testing.T) {
 	assert.True(t, f.InOneOf())
 }
 
+func TestField_InRealOneOf(t *testing.T) {
+	t.Parallel()
+
+	f := dummyField()
+	assert.False(t, f.InRealOneOf())
+
+	f = dummyOneOfField(false)
+	assert.True(t, f.InRealOneOf())
+
+	f = dummyOneOfField(true)
+	assert.False(t, f.InRealOneOf())
+}
+
+func TestField_HasPresence(t *testing.T) {
+	t.Parallel()
+
+	f := dummyField()
+	f.addType(&repT{scalarT: &scalarT{}})
+	assert.False(t, f.HasPresence())
+
+	f.addType(&mapT{repT: &repT{scalarT: &scalarT{}}})
+	assert.False(t, f.HasPresence())
+
+	f.addType(&scalarT{})
+	assert.False(t, f.HasPresence())
+
+	opt := true
+	f.desc = &descriptor.FieldDescriptorProto{Proto3Optional: &opt}
+	assert.True(t, f.HasPresence())
+}
+
+func TestField_HasOptionalKeyword(t *testing.T) {
+	t.Parallel()
+
+	optLabel := descriptor.FieldDescriptorProto_LABEL_OPTIONAL
+
+	f := &field{msg: &msg{parent: dummyFile()}}
+	assert.False(t, f.HasOptionalKeyword())
+
+	f.desc = &descriptor.FieldDescriptorProto{Label: &optLabel}
+	assert.False(t, f.HasOptionalKeyword())
+
+	f = dummyField()
+	assert.False(t, f.HasOptionalKeyword())
+
+	f = dummyOneOfField(false)
+	assert.False(t, f.HasOptionalKeyword())
+
+	f = dummyOneOfField(true)
+	assert.True(t, f.HasOptionalKeyword())
+}
+
 func TestField_Type(t *testing.T) {
 	t.Parallel()
 
@@ -190,6 +242,26 @@ func dummyField() *field {
 	str := descriptor.FieldDescriptorProto_TYPE_STRING
 	f := &field{desc: &descriptor.FieldDescriptorProto{Name: proto.String("field"), Type: &str}}
 	m.addField(f)
+	t := &scalarT{}
+	f.addType(t)
+	return f
+}
+
+func dummyOneOfField(synthetic bool) *field {
+	m := dummyMsg()
+	o := dummyOneof()
+	str := descriptor.FieldDescriptorProto_TYPE_STRING
+	var oIndex int32
+	oIndex = 1
+	f := &field{desc: &descriptor.FieldDescriptorProto{
+		Name:           proto.String("field"),
+		Type:           &str,
+		OneofIndex:     &oIndex,
+		Proto3Optional: &synthetic,
+	}}
+	o.addField(f)
+	m.addField(f)
+	m.addOneOf(o)
 	t := &scalarT{}
 	f.addType(t)
 	return f
