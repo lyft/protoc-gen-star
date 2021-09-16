@@ -1,0 +1,6 @@
+on: [push, pull_request]
+jobs:
+  update-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CI is no longer running on this repo, update the files in .github/workflows to re-enable it. See the .travis.yml file for your previous CI config"; exit 1
