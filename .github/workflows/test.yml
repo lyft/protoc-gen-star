@@ -26,4 +26,7 @@ jobs:
       - run: unzip /tmp/protoc.zip -d /tmp
       - run: sudo mv /tmp/bin/protoc /usr/local/bin/protoc
       - run: sudo mv /tmp/include/google /usr/local/include/google
-
+      - name: Generate Testdata
+        run: make testdata
+      - name: Lint
+        run: make lint tests
