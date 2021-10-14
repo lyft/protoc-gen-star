@@ -38,5 +38,18 @@ testdata-outputs: ../../bin/protoc-gen-debug
 		cd -; \
 	done
 
+testdata-presence: ../../bin/protoc-gen-debug
+	cd testdata/presence && \
+	set -e; for subdir in `find . -mindepth 1 -maxdepth 1 -type d`; do \
+		cd $$subdir; \
+		params=`cat params`; \
+		protoc -I . -I .. \
+			--plugin=protoc-gen-debug=../../../../../bin/protoc-gen-debug \
+			--debug_out=".:." \
+			--go_out="$$params:." \
+			`find . -name "*.proto"`; \
+		cd -; \
+	done
+
 ../../bin/protoc-gen-debug:
 	cd ../.. && $(MAKE) bin/protoc-gen-debug

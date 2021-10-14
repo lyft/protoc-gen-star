@@ -89,6 +89,27 @@ func TestScalarT_IsOptional(t *testing.T) {
 	t.Parallel()
 
 	s := &scalarT{}
+	f := dummyOneOfField(true)
+	f.addType(s)
+
+	assert.True(t, s.IsOptional())
+
+	fl := dummyFile()
+	fl.desc.Syntax = nil
+	f.Message().setParent(fl)
+
+	assert.True(t, s.IsOptional())
+
+	req := descriptor.FieldDescriptorProto_LABEL_REQUIRED
+	f.desc.Label = &req
+
+	assert.False(t, s.IsOptional())
+}
+
+func TestScalarT_IsNotOptional(t *testing.T) {
+	t.Parallel()
+
+	s := &scalarT{}
 	f := dummyField()
 	f.addType(s)
 
