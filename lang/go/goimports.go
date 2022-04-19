@@ -6,9 +6,7 @@ import (
 	"strings"
 )
 
-type goImports struct {
-	filename string
-}
+type goImports struct {}
 
 // GoImports returns a PostProcessor that run goimports on any files ending . ".go"
 func GoImports() pgs.PostProcessor { return goImports{} }
@@ -29,11 +27,10 @@ func (g goImports) Match(a pgs.Artifact) bool {
 		return false
 	}
 
-	g.filename = n
-
 	return strings.HasSuffix(n, ".go")
 }
 
 func (g goImports) Process(in []byte) ([]byte, error) {
-	return imports.Process(g.filename, in, nil)
+	// We do not want to give a filename here, ever
+	return imports.Process("", in, nil)
 }
