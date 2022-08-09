@@ -34,3 +34,5 @@ func (g goImports) Process(in []byte) ([]byte, error) {
 	// We do not want to give a filename here, ever
 	return imports.Process("", in, nil)
 }
+
+var _ pgs.PostProcessor = goImports{}
