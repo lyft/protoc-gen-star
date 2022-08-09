@@ -16,7 +16,7 @@ func (g goImports) Match(a pgs.Artifact) bool {
 
 	switch a := a.(type) {
 	case pgs.GeneratorFile:
-		n = a.Name
+	n = a.Name
 	case pgs.GeneratorTemplateFile:
 		n = a.Name
 	case pgs.CustomFile:
