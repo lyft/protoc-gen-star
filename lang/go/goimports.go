@@ -20,7 +20,7 @@ func (g goImports) Match(a pgs.Artifact) bool {
 	case pgs.GeneratorTemplateFile:
 	n = a.Name
 	case pgs.CustomFile:
-		n = a.Name
+	n = a.Name
 	case pgs.CustomTemplateFile:
 	n = a.Name
 	default:
