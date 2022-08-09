@@ -22,7 +22,7 @@ func (g goImports) Match(a pgs.Artifact) bool {
 	case pgs.CustomFile:
 		n = a.Name
 	case pgs.CustomTemplateFile:
-		n = a.Name
+	n = a.Name
 	default:
 		return false
 	}
