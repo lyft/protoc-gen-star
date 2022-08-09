@@ -1,5 +1,6 @@
 # the name of this package
 PKG  := $(shell go list .)
+PROTOC_VER := $(shell protoc --version | cut -d' ' -f2)
 
 .PHONY: bootstrap
 bootstrap: testdata # set up the project for development
@@ -16,15 +17,27 @@ lint: # lints the package for common code smells
 
 .PHONY: quick
 quick: testdata # runs all tests without the race detector or coverage
+ifeq ($(PROTOC_VER), 3.17.0)
+	go test $(PKGS) --tags=proto3_presence
+else
 	go test $(PKGS)
+endif
 
 .PHONY: tests
 tests: testdata # runs all tests against the package with race detection and coverage percentage
+ifeq ($(PROTOC_VER), 3.17.0)
+	go test -race -cover ./... --tags=proto3_presence
+else
 	go test -race -cover ./...
+endif
 
 .PHONY: cover
 cover: testdata # runs all tests against the package, generating a coverage report and opening it in the browser
+ifeq ($(PROTOC_VER), 3.17.0)
+	go test -race -covermode=atomic -coverprofile=cover.out ./... --tags=proto3_presence || true
+else
 	go test -race -covermode=atomic -coverprofile=cover.out ./... || true
+endif
 	go tool cover -html cover.out -o cover.html
 	open cover.html
 
@@ -76,6 +89,10 @@ testdata-go: protoc-gen-go bin/protoc-gen-debug # generate go-specific testdata
 		testdata-names \
 		testdata-packages \
 		testdata-outputs
+ifeq ($(PROTOC_VER), 3.17.0)
+	cd lang/go && $(MAKE) \
+		testdata-presence
+endif
 
 vendor: # install project dependencies
 	which glide || (curl https://glide.sh/get | sh)
