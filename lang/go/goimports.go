@@ -24,7 +24,7 @@ func (g goImports) Match(a pgs.Artifact) bool {
 	case pgs.CustomTemplateFile:
 	n = a.Name
 	default:
-		return false
+	return false
 	}
 
 	return strings.HasSuffix(n, ".go")
