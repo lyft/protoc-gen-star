@@ -9,7 +9,7 @@ import (
 func TestGoImports_Match(t *testing.T) {
 	t.Parallel()
 
-	pp := GoFmt()
+	pp := GoImports()
 
 	tests := []struct {
 		n string
