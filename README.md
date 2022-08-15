@@ -1,5 +1,7 @@
 # protoc-gen-star (PG*) [![Build Status](https://travis-ci.org/lyft/protoc-gen-star.svg?branch=master)](https://travis-ci.org/lyft/protoc-gen-star) [![GoDoc](https://godoc.org/github.com/lyft/protoc-gen-star?status.svg)](https://godoc.org/github.com/lyft/protoc-gen-star)
 
+This is a test of `make lint`.
+
 **!!! THIS PROJECT IS A WORK-IN-PROGRESS | THE API SHOULD BE CONSIDERED UNSTABLE !!!**
 
 _PG* is a protoc plugin library for efficient proto-based code generation_
