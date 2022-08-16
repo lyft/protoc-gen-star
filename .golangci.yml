@@ -1,0 +1,13 @@
+linters:
+  disable-all: true
+  enable:
+    - gofmt
+    - goimports
+    - govet
+issues:
+  max-per-linter: 0
+  max-same-issues: 0
+run:
+  build-tags:
+    - integration
+  deadline: 5m
