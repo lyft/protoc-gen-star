@@ -1,9 +1,22 @@
 linters:
   disable-all: true
   enable:
+    - deadcode
+    - goconst
+    - gocyclo
     - gofmt
     - goimports
+    - gosimple
     - govet
+    - ineffassign
+    - misspell
+    - revive
+    - structcheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
 issues:
   max-per-linter: 0
   max-same-issues: 0

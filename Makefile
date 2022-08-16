@@ -5,16 +5,6 @@ PROTOC_VER := $(shell protoc --version | cut -d' ' -f2)
 .PHONY: bootstrap
 bootstrap: testdata # set up the project for development
 
-.PHONY: lint
-lint: # lints the package for common code smells
-	set -e; for f in `find . -name "*.go" -not -name "*.pb.go"`; do \
-		out=`gofmt -s -d $$f`; \
-		test -z "$$out" || (echo $$out && exit 1); \
-	done
-	which golint || go get -u golang.org/x/lint/golint
-	golint -set_exit_status ./...
-	go vet -all
-
 .PHONY: quick
 quick: testdata # runs all tests without the race detector or coverage
 ifeq ($(PROTOC_VER), 3.17.0)
