@@ -1,7 +1,7 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 // Entity describes any member of the proto AST that is extensible via
