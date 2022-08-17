@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // An EnumValue describes a name-value pair for an entry in an enum.

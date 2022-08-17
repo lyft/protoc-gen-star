@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // A Field describes a member of a Message. A field may also be a member of a
