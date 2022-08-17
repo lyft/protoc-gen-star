@@ -3,6 +3,7 @@ package pgs
 import (
 	"bytes"
 	"errors"
+	"google.golang.org/protobuf/runtime/protoimpl"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

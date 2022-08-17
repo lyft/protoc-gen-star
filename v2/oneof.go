@@ -1,6 +1,7 @@
 package pgs
 
 import (
+	"google.golang.org/protobuf/runtime/protoimpl"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
