@@ -1,7 +1,6 @@
 package pgs
 
 import (
-	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
@@ -37,7 +36,7 @@ func (s *service) BuildTarget() bool                              { return s.fil
 func (s *service) SourceCodeInfo() SourceCodeInfo                 { return s.info }
 func (s *service) Descriptor() *descriptor.ServiceDescriptorProto { return s.desc }
 
-func (s *service) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
+func (s *service) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (bool, error) {
 	return extension(s.desc.GetOptions(), desc, &ext)
 }
 

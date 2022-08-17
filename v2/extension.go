@@ -58,27 +58,27 @@ var extractor extExtractor
 func init() { extractor = protoExtExtractor{} }
 
 type extExtractor interface {
-	HasExtension(proto.Message, *proto.ExtensionDesc) bool
-	GetExtension(proto.Message, *proto.ExtensionDesc) (interface{}, error)
+	HasExtension(proto.Message, *protoimpl.ExtensionInfo) bool
+	GetExtension(proto.Message, *protoimpl.ExtensionInfo) (interface{}, error)
 }
 
 type protoExtExtractor struct{}
 
-func (e protoExtExtractor) HasExtension(pb proto.Message, ext *proto.ExtensionDesc) bool {
+func (e protoExtExtractor) HasExtension(pb proto.Message, ext *protoimpl.ExtensionInfo) bool {
 	return proto.HasExtension(pb, ext)
 }
 
-func (e protoExtExtractor) GetExtension(pb proto.Message, ext *proto.ExtensionDesc) (interface{}, error) {
+func (e protoExtExtractor) GetExtension(pb proto.Message, ext *protoimpl.ExtensionInfo) (interface{}, error) {
 	return proto.GetExtension(pb, ext)
 }
 
-func extension(opts proto.Message, e *proto.ExtensionDesc, out interface{}) (bool, error) {
+func extension(opts proto.Message, e *protoimpl.ExtensionInfo, out interface{}) (bool, error) {
 	if opts == nil || reflect.ValueOf(opts).IsNil() {
 		return false, nil
 	}
 
 	if e == nil {
-		return false, errors.New("nil *proto.ExtensionDesc parameter provided")
+		return false, errors.New("nil *protoimpl.ExtensionInfo parameter provided")
 	}
 
 	if out == nil {

@@ -1,7 +1,6 @@
 package pgs
 
 import (
-	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
@@ -69,7 +68,7 @@ func (m *method) Imports() (i []File) {
 	return
 }
 
-func (m *method) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
+func (m *method) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (ok bool, err error) {
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
 

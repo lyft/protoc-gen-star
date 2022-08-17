@@ -1,7 +1,6 @@
 package pgs
 
 import (
-	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
@@ -207,7 +206,7 @@ func (m *msg) Dependents() []Message {
 	return messageSetToSlice(m.FullyQualifiedName(), m.dependentsCache)
 }
 
-func (m *msg) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
+func (m *msg) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (bool, error) {
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
 

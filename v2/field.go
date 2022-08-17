@@ -1,7 +1,6 @@
 package pgs
 
 import (
-	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
@@ -113,7 +112,7 @@ func (f *field) addType(t FieldType) {
 	f.typ = t
 }
 
-func (f *field) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
+func (f *field) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (ok bool, err error) {
 	return extension(f.desc.GetOptions(), desc, &ext)
 }
 
