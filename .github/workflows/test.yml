@@ -36,4 +36,6 @@ jobs:
         run: make testdata
       - name: Run Tests
         run: make tests
+      - name: Run v2 Tests
+        run: make tests-v2
 
