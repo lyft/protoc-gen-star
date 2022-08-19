@@ -74,7 +74,7 @@ testdata/fdset.bin:
 		testdata/protos/**/*.proto
 
 .PHONY: testdata-go-v2
-testdata-go: protoc-gen-go bin/protoc-gen-debug # generate go-specific testdata
+testdata-go: protoc-gen-go-v2 bin/protoc-gen-debug # generate go-specific testdata
 	cd v2/lang/go && $(MAKE) \
 		testdata-names \
 		testdata-packages \
