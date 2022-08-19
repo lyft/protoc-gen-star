@@ -116,7 +116,7 @@ clean:
 	done
 
 .PHONY: tests-v2
-tests: testdata-v2 # runs all tests against the package with race detection and coverage percentage
+tests-v2: testdata-v2 # runs all tests against the package with race detection and coverage percentage
 ifeq ($(PROTOC_VER), 3.17.0)
 	go test -race -cover ./... --tags=proto3_presence
 else
@@ -124,7 +124,7 @@ else
 endif
 
 .PHONY: testdata-v2
-testdata: testdata-graph testdata-go testdata/generated-v2 testdata/fdset.bin # generate all testdata
+testdata-v2: testdata-graph testdata-go testdata/generated-v2 testdata/fdset.bin # generate all testdata
 
 testdata/generated-v2: protoc-gen-go-v2 bin/protoc-gen-example
 	go install google.golang.org/protobuf/cmd/protoc-gen-go
