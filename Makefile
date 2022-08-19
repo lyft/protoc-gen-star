@@ -73,16 +73,16 @@ testdata/fdset.bin:
 		--include_imports \
 		testdata/protos/**/*.proto
 
-#.PHONY: testdata-go
-#testdata-go: protoc-gen-go bin/protoc-gen-debug # generate go-specific testdata
-#	cd lang/go && $(MAKE) \
-#		testdata-names \
-#		testdata-packages \
-#		testdata-outputs
-#ifeq ($(PROTOC_VER), 3.17.0)
-#	cd lang/go && $(MAKE) \
-#		testdata-presence
-#endif
+.PHONY: testdata-go-v2
+testdata-go: protoc-gen-go bin/protoc-gen-debug # generate go-specific testdata
+	cd v2/lang/go && $(MAKE) \
+		testdata-names \
+		testdata-packages \
+		testdata-outputs
+ifeq ($(PROTOC_VER), 3.17.0)
+	cd v2/lang/go && $(MAKE) \
+		testdata-presence
+endif
 
 vendor: # install project dependencies
 	which glide || (curl https://glide.sh/get | sh)
@@ -124,7 +124,7 @@ else
 endif
 
 .PHONY: testdata-v2
-testdata-v2: testdata-graph testdata-go testdata/generated-v2 testdata/fdset.bin # generate all testdata
+testdata-v2: testdata-graph testdata-go-v2 testdata/generated-v2 testdata/fdset.bin # generate all testdata
 
 testdata/generated-v2: protoc-gen-go-v2 bin/protoc-gen-example
 	go install google.golang.org/protobuf/cmd/protoc-gen-go
