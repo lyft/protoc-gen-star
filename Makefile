@@ -74,7 +74,7 @@ testdata/fdset.bin:
 		testdata/protos/**/*.proto
 
 .PHONY: testdata-go-v2
-testdata-go: protoc-gen-go-v2 bin/protoc-gen-debug # generate go-specific testdata
+testdata-go-v2: protoc-gen-go-v2 bin/protoc-gen-debug # generate go-specific testdata
 	cd v2/lang/go && $(MAKE) \
 		testdata-names \
 		testdata-packages \
@@ -93,7 +93,7 @@ vendor: # install project dependencies
 #	which protoc-gen-go || (go install github.com/golang/protobuf/protoc-gen-go)
 
 .PHONY: protoc-gen-go-v2
-protoc-gen-go:
+protoc-gen-go-v2:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go
 
 
