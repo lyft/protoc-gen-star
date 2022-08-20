@@ -9,7 +9,6 @@ testdata-names: ../../../bin/protoc-gen-debug # parse the proto file sets in tes
 			--debug_out=".:." \
 			--go_out="plugins,paths=source_relative,$$params:." \
 			`find . -name "*.proto"`; \
-		ls -la
 		cd -; \
 	done
 
