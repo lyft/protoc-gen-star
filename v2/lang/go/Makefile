@@ -38,7 +38,7 @@ testdata-outputs: ../../../bin/protoc-gen-debug
 		cd -; \
 	done
 
-testdata-presence: ../../bin/protoc-gen-debug
+testdata-presence: ../../../bin/protoc-gen-debug
 	cd testdata/presence && \
 	set -e; for subdir in `find . -mindepth 1 -maxdepth 1 -type d`; do \
 		cd $$subdir; \
