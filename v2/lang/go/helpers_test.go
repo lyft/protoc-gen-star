@@ -13,7 +13,7 @@ import (
 )
 
 func readCodeGenReq(t *testing.T, dir ...string) *plugin_go.CodeGeneratorRequest {
-	dirs := append(append([]string{"../testdata"}, dir...), "code_generator_request.pb.bin")
+	dirs := append(append([]string{"testdata"}, dir...), "code_generator_request.pb.bin")
 	filename := filepath.Join(dirs...)
 
 	data, err := ioutil.ReadFile(filename)
