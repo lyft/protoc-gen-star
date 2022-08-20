@@ -14,7 +14,7 @@ import (
 )
 
 func readCodeGenReq(t *testing.T, dir string) *plugin_go.CodeGeneratorRequest {
-	filename := filepath.Join("testdata", "graph", dir, "code_generator_request.pb.bin")
+	filename := filepath.Join("../testdata", "graph", dir, "code_generator_request.pb.bin")
 
 	data, err := ioutil.ReadFile(filename)
 	require.NoError(t, err, "unable to read CDR at %q", filename)
@@ -45,7 +45,7 @@ func buildGraph(t *testing.T, dir string) AST {
 }
 
 func TestGraph_FDSet(t *testing.T) {
-	fdset := readFileDescSet(t, "testdata/fdset.bin")
+	fdset := readFileDescSet(t, "../testdata/fdset.bin")
 	d := InitMockDebugger()
 	ast := ProcessFileDescriptorSet(d, fdset)
 
@@ -340,7 +340,7 @@ func TestGraph_Extensions(t *testing.T) {
 func TestGraph_Bidirectional(t *testing.T) {
 	t.Parallel()
 
-	fdset := readFileDescSet(t, "testdata/fdset.bin")
+	fdset := readFileDescSet(t, "../testdata/fdset.bin")
 	d := InitMockDebugger()
 	ast := ProcessFileDescriptorSetBidirectional(d, fdset)
 	require.False(t, d.Failed(), "failed to build graph from FDSet")

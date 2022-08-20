@@ -118,9 +118,9 @@ clean:
 .PHONY: tests-v2
 tests-v2: testdata-v2 # runs all tests against the package with race detection and coverage percentage
 ifeq ($(PROTOC_VER), 3.17.0)
-	go test -race -cover ./... --tags=proto3_presence
+	cd v2 && go test -race -cover ./... --tags=proto3_presence
 else
-	go test -race -cover ./...
+	cd v2 && go test -race -cover ./...
 endif
 
 .PHONY: testdata-v2
@@ -128,7 +128,7 @@ testdata-v2: testdata-graph testdata-go-v2 testdata/generated-v2 testdata/fdset.
 
 testdata/generated-v2: protoc-gen-go-v2 bin/protoc-gen-example
 	go install google.golang.org/protobuf/cmd/protoc-gen-go
-	rm -rf ./testdata/generated && mkdir -p ./testdata/generated
+	rm -rf ./testdata/generated/v2 && mkdir -p ./testdata/generated/v2
 	# generate the official go code, must be one directory at a time
 	set -e; for subdir in `find ./testdata/protos -mindepth 1 -type d`; do \
 		files=`find $$subdir -maxdepth 1 -name "*.proto"`; \
@@ -141,6 +141,6 @@ testdata/generated-v2: protoc-gen-go-v2 bin/protoc-gen-example
 	set -e; for subdir in `find ./testdata/protos -mindepth 1 -maxdepth 1 -type d`; do \
 		protoc -I ./testdata/protos \
 			--plugin=protoc-gen-example=./bin/protoc-gen-example \
-			--example_out="paths=source_relative:./testdata/generated" \
+			--example_out="paths=source_relative:./testdata/generated/v2" \
 			`find $$subdir -name "*.proto"`; \
 	done
