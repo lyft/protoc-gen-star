@@ -34,7 +34,7 @@ func buildGraph(t *testing.T, dir ...string) pgs.AST {
 }
 
 func loadContext(t *testing.T, dir ...string) Context {
-	dirs := append(append([]string{"../testdata"}, dir...), "params")
+	dirs := append(append([]string{"testdata"}, dir...), "params")
 	filename := filepath.Join(dirs...)
 
 	data, err := ioutil.ReadFile(filename)
