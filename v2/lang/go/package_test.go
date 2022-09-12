@@ -103,8 +103,6 @@ func TestOutputPath(t *testing.T) {
 		{"unqualified_srcrel", "unqualified.proto", "unqualified.pb.go"},
 		{"qualified", "qualified.proto", "example.com/qualified/qualified.pb.go"},
 		{"qualified_srcrel", "qualified.proto", "qualified.pb.go"},
-		{"import_prefix", "prefix.proto", "example.com/import_prefix/prefix.pb.go"},
-		{"import_prefix_srcrel", "prefix.proto", "prefix.pb.go"},
 		{"mapped", "mapped.proto", "mapped.pb.go"},
 		{"mapped_srcrel", "mapped.proto", "mapped.pb.go"},
 	}
