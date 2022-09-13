@@ -102,7 +102,6 @@ func TestExt_Accept(t *testing.T) {
 type mockExtractor struct {
 	has bool
 	get interface{}
-	err error
 }
 
 func (e *mockExtractor) HasExtension(proto.Message, *protoimpl.ExtensionInfo) bool { return e.has }
@@ -132,13 +131,13 @@ func TestExtension(t *testing.T) {
 
 	found, err = extension(opts, nil, nil)
 	assert.False(t, found)
-	assert.Error(t, err)
+	assert.EqualError(t, err, "nil *protoimpl.ExtensionInfo parameter provided")
 
 	desc := &protoimpl.ExtensionInfo{}
 
 	found, err = extension(opts, desc, nil)
 	assert.False(t, found)
-	assert.Error(t, err)
+	assert.EqualError(t, err, "nil extension output parameter provided")
 
 	type myExt struct{ Name string }
 
@@ -150,22 +149,14 @@ func TestExtension(t *testing.T) {
 
 	found, err = extension(opts, desc, &myExt{})
 	assert.False(t, found)
-	assert.NoError(t, err)
+	assert.EqualError(t, err, "extracted extension value is nil")
 
-	testExtractor.err = errors.New("foo")
-
-	found, err = extension(opts, desc, &myExt{})
-	assert.False(t, found)
-	assert.Error(t, err)
-
-	testExtractor.err = nil
 	testExtractor.get = &myExt{"bar"}
-
 	out := myExt{}
 
 	found, err = extension(opts, desc, out)
 	assert.False(t, found)
-	assert.Error(t, err)
+	assert.EqualError(t, err, "out parameter must be a pointer type")
 
 	found, err = extension(opts, desc, &out)
 	assert.True(t, found)

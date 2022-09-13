@@ -97,7 +97,7 @@ func extension(opts proto.Message, e *protoimpl.ExtensionInfo, out interface{}) 
 
 	val := extractor.GetExtension(opts, e)
 	if val == nil {
-		return false, nil
+		return false, errors.New("extracted extension value is nil")
 	}
 
 	v := reflect.ValueOf(val)
