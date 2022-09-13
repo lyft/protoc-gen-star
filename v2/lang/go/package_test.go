@@ -62,12 +62,6 @@ func TestImportPath(t *testing.T) {
 			"example.com/fizz/buzz",
 			"example.com/quux",
 		},
-		{ // import_prefix param prefixes everything...pretty much doesn't work since it also prefixes the proto package
-			"import_prefix",
-			"foo.bar/example.com/packages/targets/fully_qualified",
-			"foo.bar/targets/unqualified",
-			"foo.bar/fizz/buzz",
-		},
 	}
 
 	for _, test := range tests {
@@ -109,8 +103,6 @@ func TestOutputPath(t *testing.T) {
 		{"unqualified_srcrel", "unqualified.proto", "unqualified.pb.go"},
 		{"qualified", "qualified.proto", "example.com/qualified/qualified.pb.go"},
 		{"qualified_srcrel", "qualified.proto", "qualified.pb.go"},
-		{"import_prefix", "prefix.proto", "example.com/import_prefix/prefix.pb.go"},
-		{"import_prefix_srcrel", "prefix.proto", "prefix.pb.go"},
 		{"mapped", "mapped.proto", "mapped.pb.go"},
 		{"mapped_srcrel", "mapped.proto", "mapped.pb.go"},
 	}
