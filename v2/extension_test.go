@@ -177,7 +177,7 @@ func TestExtension(t *testing.T) {
 func TestProtoExtExtractor(t *testing.T) {
 	e := protoExtExtractor{}
 	assert.NotPanics(t, func() { e.HasExtension(nil, nil) })
-	assert.NotPanics(t, func() { e.GetExtension(nil, nil) })
+	assert.Panics(t, func() { e.GetExtension(nil, nil) })
 }
 
 // needed to wrapped since there is a Extension method
