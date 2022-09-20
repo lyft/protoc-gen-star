@@ -33,7 +33,7 @@ func (g goImports) Match(a pgs.Artifact) bool {
 }
 
 func (g goImports) Process(in []byte) ([]byte, error) {
-	// We do not want to give a filename here, ever
+	// We do not want to give a filename here, ever.
 	return imports.Process("", in, nil)
 }
 
