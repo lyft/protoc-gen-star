@@ -1,9 +1,9 @@
 package pgsgo
 
 import (
-	"testing"
 	pgs "github.com/lyft/protoc-gen-star"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestGoImports_Match(t *testing.T) {
