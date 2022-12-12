@@ -1,7 +1,7 @@
 package pgs
 
 import (
-	"google.golang.org/protobuf/runtime/protoimpl"
+	"github.com/golang/protobuf/proto"
 )
 
 // Entity describes any member of the proto AST that is extensible via
@@ -36,7 +36,7 @@ type Entity interface {
 	// will only be returned if there is a type mismatch between desc and ext.
 	// The ok value will be true if the extension was found. If the extension
 	// is NOT found, ok will be false and err will be nil.
-	Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (ok bool, err error)
+	Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error)
 
 	// BuildTarget identifies whether or not generation should be performed on
 	// this entity. Use this flag to determine if the file was targeted in the

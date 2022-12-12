@@ -3,10 +3,9 @@ package pgs
 import (
 	"errors"
 	"fmt"
-	"google.golang.org/protobuf/runtime/protoimpl"
 	"reflect"
 
-	"google.golang.org/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 // An Extension is a custom option annotation that can be applied to an Entity to provide additional
@@ -59,27 +58,27 @@ var extractor extExtractor
 func init() { extractor = protoExtExtractor{} }
 
 type extExtractor interface {
-	HasExtension(proto.Message, *protoimpl.ExtensionInfo) bool
-	GetExtension(proto.Message, *protoimpl.ExtensionInfo) interface{}
+	HasExtension(proto.Message, *proto.ExtensionDesc) bool
+	GetExtension(proto.Message, *proto.ExtensionDesc) (interface{}, error)
 }
 
 type protoExtExtractor struct{}
 
-func (e protoExtExtractor) HasExtension(pb proto.Message, ext *protoimpl.ExtensionInfo) bool {
+func (e protoExtExtractor) HasExtension(pb proto.Message, ext *proto.ExtensionDesc) bool {
 	return proto.HasExtension(pb, ext)
 }
 
-func (e protoExtExtractor) GetExtension(pb proto.Message, ext *protoimpl.ExtensionInfo) interface{} {
+func (e protoExtExtractor) GetExtension(pb proto.Message, ext *proto.ExtensionDesc) (interface{}, error) {
 	return proto.GetExtension(pb, ext)
 }
 
-func extension(opts proto.Message, e *protoimpl.ExtensionInfo, out interface{}) (bool, error) {
+func extension(opts proto.Message, e *proto.ExtensionDesc, out interface{}) (bool, error) {
 	if opts == nil || reflect.ValueOf(opts).IsNil() {
 		return false, nil
 	}
 
 	if e == nil {
-		return false, errors.New("nil *protoimpl.ExtensionInfo parameter provided")
+		return false, errors.New("nil *proto.ExtensionDesc parameter provided")
 	}
 
 	if out == nil {
@@ -95,9 +94,9 @@ func extension(opts proto.Message, e *protoimpl.ExtensionInfo, out interface{}) 
 		return false, nil
 	}
 
-	val := extractor.GetExtension(opts, e)
-	if val == nil {
-		return false, errors.New("extracted extension value is nil")
+	val, err := extractor.GetExtension(opts, e)
+	if err != nil || val == nil {
+		return false, err
 	}
 
 	v := reflect.ValueOf(val)

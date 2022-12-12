@@ -1,6 +1,6 @@
 package pgs
 
-import descriptor "google.golang.org/protobuf/types/descriptorpb"
+import "github.com/golang/protobuf/protoc-gen-go/descriptor"
 
 // Package is a container that encapsulates all the files under a single
 // package namespace.
