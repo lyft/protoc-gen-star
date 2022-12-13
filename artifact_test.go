@@ -13,8 +13,6 @@ var (
 	artifactTpl    = template.Must(template.New("foo").Parse("{{ . }}"))
 )
 
-const fName = "foo"
-
 func TestGeneratorFile_ProtoFile(t *testing.T) {
 	t.Parallel()
 
@@ -27,7 +25,7 @@ func TestGeneratorFile_ProtoFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, pb)
 
-	f.Name = fName
+	f.Name = "foo"
 	pb, err = f.ProtoFile()
 	assert.NoError(t, err)
 	assert.Equal(t, f.Name, pb.GetName())
@@ -49,7 +47,7 @@ func TestGeneratorTemplateFile_ProtoFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, pb)
 
-	f.Name = fName
+	f.Name = "foo"
 	pb, err = f.ProtoFile()
 	assert.Error(t, err)
 	assert.Nil(t, pb)
@@ -73,7 +71,7 @@ func TestGeneratorAppend_ProtoFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, pb)
 
-	f.FileName = fName
+	f.FileName = "foo"
 	pb, err = f.ProtoFile()
 	assert.NoError(t, err)
 	assert.Empty(t, pb.GetName())
@@ -95,7 +93,7 @@ func TestGeneratorTemplateAppend_ProtoFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, pb)
 
-	f.FileName = fName
+	f.FileName = "foo"
 	pb, err = f.ProtoFile()
 	assert.Error(t, err)
 	assert.Nil(t, pb)
@@ -120,7 +118,7 @@ func TestGeneratorInjection_ProtoFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, pb)
 
-	f.FileName = fName
+	f.FileName = "foo"
 	pb, err = f.ProtoFile()
 	assert.NoError(t, err)
 	assert.Equal(t, f.FileName, pb.GetName())
@@ -144,7 +142,7 @@ func TestGeneratorTemplateInjection_ProtoFile(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, pb)
 
-	f.FileName = fName
+	f.FileName = "foo"
 	pb, err = f.ProtoFile()
 	assert.Error(t, err)
 	assert.Nil(t, pb)

@@ -93,4 +93,4 @@ func (m *method) childAtPath(path []int32) Entity {
 
 func (m *method) addSourceCodeInfo(info SourceCodeInfo) { m.info = info }
 
-var _ Method = (*method)(nil)
+var m Method = (*method)(nil)

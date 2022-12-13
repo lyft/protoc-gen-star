@@ -22,7 +22,7 @@ func (c context) Name(node pgs.Node) pgs.Name {
 		return c.PackageName(en)
 	case ChildEntity: // Message or Enum types, which may be nested
 		if p, ok := en.Parent().(pgs.Message); ok {
-			return joinChild(c.Name(p), en.Name())
+			return pgs.Name(joinChild(c.Name(p), en.Name()))
 		}
 		return PGGUpperCamelCase(en.Name())
 	case pgs.Field: // field names cannot conflict with other generated methods
@@ -31,9 +31,9 @@ func (c context) Name(node pgs.Node) pgs.Name {
 		return replaceProtected(PGGUpperCamelCase(en.Name()))
 	case pgs.EnumValue: // EnumValue are prefixed with the enum name
 		if _, ok := en.Enum().Parent().(pgs.File); ok {
-			return joinNames(c.Name(en.Enum()), en.Name())
+			return pgs.Name(joinNames(c.Name(en.Enum()), en.Name()))
 		}
-		return joinNames(c.Name(en.Enum().Parent()), en.Name())
+		return pgs.Name(joinNames(c.Name(en.Enum().Parent()), en.Name()))
 	case pgs.Service: // always return the server name
 		return c.ServerName(en)
 	case pgs.Entity: // any other entity should be just upper-camel-cased
@@ -44,7 +44,7 @@ func (c context) Name(node pgs.Node) pgs.Name {
 }
 
 func (c context) OneofOption(field pgs.Field) pgs.Name {
-	n := joinNames(c.Name(field.Message()), c.Name(field))
+	n := pgs.Name(joinNames(c.Name(field.Message()), c.Name(field)))
 
 	for _, msg := range field.Message().Messages() {
 		if c.Name(msg) == n {

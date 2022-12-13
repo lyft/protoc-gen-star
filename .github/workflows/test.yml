@@ -26,7 +26,7 @@ jobs:
       - name: Set Up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17'
+          go-version: '1.14.6'
       - run: mkdir -p $GOPATH/bin
       - run: wget "https://github.com/protocolbuffers/protobuf/releases/download/v${{ matrix.protoc-version }}/protoc-${{ matrix.protoc-version }}-linux-x86_64.zip" -O /tmp/protoc.zip
       - run: unzip /tmp/protoc.zip -d /tmp
@@ -34,6 +34,5 @@ jobs:
       - run: sudo mv /tmp/include/google /usr/local/include/google
       - name: Generate Testdata
         run: make testdata
-      - name: Run Tests
-        run: make tests
-
+      - name: Lint
+        run: make lint tests
