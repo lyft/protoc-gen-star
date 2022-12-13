@@ -49,7 +49,7 @@ testdata-graph: bin/protoc-gen-debug # parses the proto file sets in testdata/gr
 	done
 
 testdata/generated: protoc-gen-go bin/protoc-gen-example
-	which protoc-gen-go || (go install github.com/golang/protobuf/protoc-gen-go)
+	go install google.golang.org/protobuf/cmd/protoc-gen-go
 	rm -rf ./testdata/generated && mkdir -p ./testdata/generated
 	# generate the official go code, must be one directory at a time
 	set -e; for subdir in `find ./testdata/protos -mindepth 1 -type d`; do \

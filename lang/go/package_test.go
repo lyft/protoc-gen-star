@@ -62,6 +62,12 @@ func TestImportPath(t *testing.T) {
 			"example.com/fizz/buzz",
 			"example.com/quux",
 		},
+		{ // import_prefix param prefixes everything...pretty much doesn't work since it also prefixes the proto package
+			"import_prefix",
+			"foo.bar/example.com/packages/targets/fully_qualified",
+			"foo.bar/targets/unqualified",
+			"foo.bar/fizz/buzz",
+		},
 	}
 
 	for _, test := range tests {
