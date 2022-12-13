@@ -251,7 +251,8 @@ func dummyOneOfField(synthetic bool) *field {
 	m := dummyMsg()
 	o := dummyOneof()
 	str := descriptor.FieldDescriptorProto_TYPE_STRING
-	var oIndex int32 = 1
+	var oIndex int32
+	oIndex = 1
 	f := &field{desc: &descriptor.FieldDescriptorProto{
 		Name:           proto.String("field"),
 		Type:           &str,

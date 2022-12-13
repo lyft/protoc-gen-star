@@ -1,5 +1,0 @@
-syntax="proto3";
-
-option go_package="example.com/outputs/none";
-
-message None {}

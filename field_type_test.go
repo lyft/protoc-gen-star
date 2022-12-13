@@ -304,8 +304,9 @@ func TestMapT_Key(t *testing.T) {
 
 type mockT struct {
 	FieldType
-	i []File
-	f Field
+	i   []File
+	f   Field
+	err error
 }
 
 func (t *mockT) Imports() []File { return t.i }
