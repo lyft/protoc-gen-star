@@ -32,8 +32,8 @@ jobs:
       - run: unzip /tmp/protoc.zip -d /tmp
       - run: sudo mv /tmp/bin/protoc /usr/local/bin/protoc
       - run: sudo mv /tmp/include/google /usr/local/include/google
-      - name: Generate v2 Testdata
-        run: make testdata-v2
-      - name: Run v2 Tests
-        run: make tests-v2
+      - name: Generate Testdata
+        run: make testdata
+      - name: Run Tests
+        run: make tests
 

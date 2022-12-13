@@ -1,7 +1,7 @@
 package pgs
 
 import (
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
+	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 )
 
 // Syntax describes the proto syntax used to encode the proto file
