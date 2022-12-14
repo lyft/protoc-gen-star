@@ -1,2 +1,2 @@
-paths=source_relative,import_prefix=foo/
+paths=source_relative
 
