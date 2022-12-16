@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"

@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"google.golang.org/protobuf/runtime/protoimpl"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // Enum describes an enumeration type. Its parent can be either a Message or a
