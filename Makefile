@@ -5,16 +5,6 @@ PROTOC_VER := $(shell protoc --version | cut -d' ' -f2)
 .PHONY: bootstrap
 bootstrap: testdata # set up the project for development
 
-.PHONY: lint
-lint: # lints the package for common code smells
-	set -e; for f in `find . -name "*.go" -not -name "*.pb.go"`; do \
-		out=`gofmt -s -d $$f`; \
-		test -z "$$out" || (echo $$out && exit 1); \
-	done
-	which golint || go get -u golang.org/x/lint/golint
-	golint -set_exit_status ./...
-	go vet -all
-
 .PHONY: quick
 quick: testdata # runs all tests without the race detector or coverage
 ifeq ($(PROTOC_VER), 3.17.0)
@@ -59,7 +49,7 @@ testdata-graph: bin/protoc-gen-debug # parses the proto file sets in testdata/gr
 	done
 
 testdata/generated: protoc-gen-go bin/protoc-gen-example
-	which protoc-gen-go || (go install github.com/golang/protobuf/protoc-gen-go)
+	go install google.golang.org/protobuf/cmd/protoc-gen-go
 	rm -rf ./testdata/generated && mkdir -p ./testdata/generated
 	# generate the official go code, must be one directory at a time
 	set -e; for subdir in `find ./testdata/protos -mindepth 1 -type d`; do \
@@ -100,7 +90,7 @@ vendor: # install project dependencies
 
 .PHONY: protoc-gen-go
 protoc-gen-go:
-	which protoc-gen-go || (go install github.com/golang/protobuf/protoc-gen-go)
+	go install google.golang.org/protobuf/cmd/protoc-gen-go
 
 bin/protoc-gen-example: # creates the demo protoc plugin for demonstrating uses of PG*
 	go build -o ./bin/protoc-gen-example ./testdata/protoc-gen-example
