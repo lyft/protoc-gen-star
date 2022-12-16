@@ -72,15 +72,6 @@ func TestParameters_EnableAllPlugins(t *testing.T) {
 	assert.True(t, all)
 }
 
-func TestParameters_ImportPrefix(t *testing.T) {
-	t.Parallel()
-
-	p := pgs.Parameters{}
-	assert.Empty(t, ImportPrefix(p))
-	SetImportPrefix(p, "foo")
-	assert.Equal(t, "foo", ImportPrefix(p))
-}
-
 func TestParameters_ImportPath(t *testing.T) {
 	t.Parallel()
 
