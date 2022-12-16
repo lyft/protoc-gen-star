@@ -2,6 +2,7 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 // Method describes a method on a proto service

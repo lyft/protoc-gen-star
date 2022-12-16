@@ -3,6 +3,7 @@ package pgs
 import (
 	"bytes"
 	"errors"
+	"google.golang.org/protobuf/runtime/protoimpl"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -133,7 +134,7 @@ func TestExtension(t *testing.T) {
 	assert.False(t, found)
 	assert.Error(t, err)
 
-	desc := &proto.ExtensionDesc{}
+	desc := &protoimpl.ExtensionInfo{}
 
 	found, err = extension(opts, desc, nil)
 	assert.False(t, found)

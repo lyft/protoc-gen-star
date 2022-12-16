@@ -3,6 +3,7 @@ package pgs
 import (
 	"errors"
 	"fmt"
+	"google.golang.org/protobuf/runtime/protoimpl"
 	"reflect"
 
 	"google.golang.org/protobuf/proto"
@@ -69,7 +70,7 @@ func (e protoExtExtractor) HasExtension(pb proto.Message, ext *protoimpl.Extensi
 }
 
 func (e protoExtExtractor) GetExtension(pb proto.Message, ext *protoimpl.ExtensionInfo) (interface{}, error) {
-	return proto.GetExtension(pb, ext)
+	return proto.GetExtension(pb, ext), nil
 }
 
 func extension(opts proto.Message, e *protoimpl.ExtensionInfo, out interface{}) (bool, error) {

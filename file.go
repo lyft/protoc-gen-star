@@ -2,6 +2,7 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 // File describes the contents of a single proto file.

@@ -2,6 +2,7 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 // A Field describes a member of a Message. A field may also be a member of a
