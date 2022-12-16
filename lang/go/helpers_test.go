@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
 	pgs "github.com/lyft/protoc-gen-star"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 )
 
 func readCodeGenReq(t *testing.T, dir ...string) *plugin_go.CodeGeneratorRequest {

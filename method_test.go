@@ -5,9 +5,9 @@ import (
 
 	"errors"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestMethod_Name(t *testing.T) {
