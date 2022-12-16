@@ -3,11 +3,11 @@ package pgs
 import (
 	"bytes"
 	"errors"
-	"google.golang.org/protobuf/runtime/protoimpl"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 func TestExt_FullyQualifiedName(t *testing.T) {

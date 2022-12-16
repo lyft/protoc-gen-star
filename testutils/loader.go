@@ -6,10 +6,10 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // The T interface represents a reduced API of the testing.T and testing.B

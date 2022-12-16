@@ -3,10 +3,10 @@ package pgs
 import (
 	"errors"
 	"fmt"
-	"google.golang.org/protobuf/runtime/protoimpl"
 	"reflect"
 
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 // An Extension is a custom option annotation that can be applied to an Entity to provide additional
