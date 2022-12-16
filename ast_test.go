@@ -5,12 +5,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"google.golang.org/protobuf/proto"c-gen-go/descriptor"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 
-	"google.golang.org/protobuf/proto"
-	plugin_go "google.golang.org/protobuf/types/pluginpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
+	plugin_go "google.golang.org/protobuf/types/pluginpb"
 )
 
 func readCodeGenReq(t *testing.T, dir string) *plugin_go.CodeGeneratorRequest {
