@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/runtime/protoimpl"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // Service describes a proto service definition (typically, gRPC)

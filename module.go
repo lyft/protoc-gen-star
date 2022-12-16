@@ -24,16 +24,15 @@ type Module interface {
 // field of an actual Module implementation. The only methods that need to be
 // overridden are Name and Execute.
 //
-//   type MyModule {
-//       *pgs.ModuleBase
-//   }
+//	type MyModule {
+//	    *pgs.ModuleBase
+//	}
 //
-//   func InitMyModule() *MyModule { return &MyModule{ &pgs.ModuleBase{} } }
+//	func InitMyModule() *MyModule { return &MyModule{ &pgs.ModuleBase{} } }
 //
-//   func (m *MyModule) Name() string { return "MyModule" }
+//	func (m *MyModule) Name() string { return "MyModule" }
 //
-//   func (m *MyModule) Execute(...) []pgs.Artifact { ... }
-//
+//	func (m *MyModule) Execute(...) []pgs.Artifact { ... }
 type ModuleBase struct {
 	BuildContext
 	artifacts []Artifact

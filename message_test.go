@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	desc "github.com/golang/protobuf/descriptor"
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestMsg_Name(t *testing.T) {

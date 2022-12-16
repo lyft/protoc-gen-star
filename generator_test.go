@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	plugin_go "google.golang.org/protobuf/types/pluginpb"
 )
 

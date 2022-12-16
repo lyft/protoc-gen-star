@@ -3,8 +3,8 @@ package pgs
 import (
 	"testing"
 
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"github.com/stretchr/testify/assert"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestSyntax_SupportsRequiredPrefix(t *testing.T) {

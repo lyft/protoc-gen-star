@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestEnumVal_Name(t *testing.T) {

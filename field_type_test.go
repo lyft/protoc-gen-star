@@ -3,9 +3,9 @@ package pgs
 import (
 	"testing"
 
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestScalarT_Field(t *testing.T) {

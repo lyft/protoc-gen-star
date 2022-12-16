@@ -3,8 +3,8 @@ package pgs
 import (
 	"testing"
 
-	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/proto"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 
 	"errors"
 
