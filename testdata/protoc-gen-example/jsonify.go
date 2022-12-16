@@ -3,7 +3,7 @@ package main
 import (
 	"text/template"
 
-	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
+	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 
 	pgs "github.com/lyft/protoc-gen-star/v2"
 )

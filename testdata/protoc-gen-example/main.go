@@ -2,7 +2,7 @@ package main
 
 import (
 	pgs "github.com/lyft/protoc-gen-star/v2"
-	pgsgo "github.com/lyft/protoc-gen-star/lang/go"
+	pgsgo "github.com/lyft/protoc-gen-star/v2/lang/go"
 )
 
 func main() {
