@@ -2,7 +2,6 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"google.golang.org/protobuf/proto"
 )
 
 // OneOf describes a OneOf block within a Message. OneOfs behave like C++
@@ -76,7 +75,7 @@ func (o *oneof) Imports() (i []File) {
 	return
 }
 
-func (o *oneof) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
+func (o *oneof) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (ok bool, err error) {
 	return extension(o.desc.GetOptions(), desc, &ext)
 }
 

@@ -2,7 +2,6 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"google.golang.org/protobuf/proto"
 )
 
 // An EnumValue describes a name-value pair for an entry in an enum.
@@ -41,7 +40,7 @@ func (ev *enumVal) Enum() Enum                                       { return ev
 func (ev *enumVal) Value() int32                                     { return ev.desc.GetNumber() }
 func (ev *enumVal) Imports() []File                                  { return nil }
 
-func (ev *enumVal) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
+func (ev *enumVal) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (bool, error) {
 	return extension(ev.desc.GetOptions(), desc, &ext)
 }
 

@@ -104,9 +104,9 @@ type mockExtractor struct {
 	err error
 }
 
-func (e *mockExtractor) HasExtension(proto.Message, *proto.ExtensionDesc) bool { return e.has }
+func (e *mockExtractor) HasExtension(proto.Message, *protoimpl.ExtensionInfo) bool { return e.has }
 
-func (e *mockExtractor) GetExtension(proto.Message, *proto.ExtensionDesc) (interface{}, error) {
+func (e *mockExtractor) GetExtension(proto.Message, *protoimpl.ExtensionInfo) (interface{}, error) {
 	return e.get, e.err
 }
 

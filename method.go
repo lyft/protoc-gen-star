@@ -2,7 +2,6 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"google.golang.org/protobuf/proto"
 )
 
 // Method describes a method on a proto service
@@ -69,7 +68,7 @@ func (m *method) Imports() (i []File) {
 	return
 }
 
-func (m *method) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
+func (m *method) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (ok bool, err error) {
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
 

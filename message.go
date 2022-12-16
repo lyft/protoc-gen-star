@@ -2,7 +2,6 @@ package pgs
 
 import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"google.golang.org/protobuf/proto"
 )
 
 // Message describes a proto message. Messages can be contained in either
@@ -207,7 +206,7 @@ func (m *msg) Dependents() []Message {
 	return messageSetToSlice(m.FullyQualifiedName(), m.dependentsCache)
 }
 
-func (m *msg) Extension(desc *proto.ExtensionDesc, ext interface{}) (bool, error) {
+func (m *msg) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (bool, error) {
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
 
