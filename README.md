@@ -7,7 +7,7 @@ _PG* is a protoc plugin library for efficient proto-based code generation_
 ```go
 package main
 
-import "github.com/lyft/protoc-gen-star"
+import "github.com/lyft/protoc-gen-star/v2"
 
 func main() {
   pgs.Init(pgs.DebugEnv("DEBUG")).

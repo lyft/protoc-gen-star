@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/spf13/afero"
 	"google.golang.org/protobuf/proto"
 )
