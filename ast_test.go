@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/proto"c-gen-go/descriptor"
 
 	"google.golang.org/protobuf/proto"
-	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
+	plugin_go "google.golang.org/protobuf/types/pluginpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
