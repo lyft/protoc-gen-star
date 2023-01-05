@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 )
 
 const (
-	importPrefixKey    = "import_prefix"
 	importPathKey      = "import_path"
 	importMapKeyPrefix = "M"
 	pathTypeKey        = "paths"
@@ -81,18 +80,6 @@ func AddPlugin(p pgs.Parameters, name ...string) {
 
 // EnableAllPlugins changes the parameters to enable all registered sub-plugins.
 func EnableAllPlugins(p pgs.Parameters) { p.SetStr(pluginsKey, "") }
-
-// ImportPrefix returns the protoc-gen-go parameter. This prefix is added onto
-// the beginning of all Go import paths. This is useful for things like
-// generating protos in a subdirectory, or regenerating vendored protobufs
-// in-place. By default, this method returns an empty string.
-//
-// See: https://github.com/golang/protobuf#parameters
-func ImportPrefix(p pgs.Parameters) string { return p.Str(importPrefixKey) }
-
-// SetImportPrefix sets the protoc-gen-go ImportPrefix parameter. This is
-// useful for overriding the behavior of the ImportPrefix at runtime.
-func SetImportPrefix(p pgs.Parameters, prefix string) { p.SetStr(importPrefixKey, prefix) }
 
 // ImportPath returns the protoc-gen-go parameter. This value is used as the
 // package if the input proto files do not declare a go_package option. If it

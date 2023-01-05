@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"google.golang.org/protobuf/runtime/protoimpl"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
 
 // A Field describes a member of a Message. A field may also be a member of a
@@ -113,7 +113,7 @@ func (f *field) addType(t FieldType) {
 	f.typ = t
 }
 
-func (f *field) Extension(desc *proto.ExtensionDesc, ext interface{}) (ok bool, err error) {
+func (f *field) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (ok bool, err error) {
 	return extension(f.desc.GetOptions(), desc, &ext)
 }
 

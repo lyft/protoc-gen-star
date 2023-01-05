@@ -5,8 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
 func TestExt_FullyQualifiedName(t *testing.T) {
@@ -101,13 +102,12 @@ func TestExt_Accept(t *testing.T) {
 type mockExtractor struct {
 	has bool
 	get interface{}
-	err error
 }
 
-func (e *mockExtractor) HasExtension(proto.Message, *proto.ExtensionDesc) bool { return e.has }
+func (e *mockExtractor) HasExtension(proto.Message, *protoimpl.ExtensionInfo) bool { return e.has }
 
-func (e *mockExtractor) GetExtension(proto.Message, *proto.ExtensionDesc) (interface{}, error) {
-	return e.get, e.err
+func (e *mockExtractor) GetExtension(proto.Message, *protoimpl.ExtensionInfo) interface{} {
+	return e.get
 }
 
 var testExtractor = &mockExtractor{}
@@ -116,7 +116,6 @@ func init() { extractor = testExtractor }
 
 func TestExtension(t *testing.T) {
 	// cannot be parallel
-
 	defer func() { testExtractor.get = nil }()
 
 	found, err := extension(nil, nil, nil)
@@ -128,43 +127,30 @@ func TestExtension(t *testing.T) {
 	assert.NoError(t, err)
 
 	opts := &struct{ proto.Message }{}
-
 	found, err = extension(opts, nil, nil)
 	assert.False(t, found)
-	assert.Error(t, err)
+	assert.EqualError(t, err, "nil *protoimpl.ExtensionInfo parameter provided")
 
-	desc := &proto.ExtensionDesc{}
-
+	desc := &protoimpl.ExtensionInfo{}
 	found, err = extension(opts, desc, nil)
 	assert.False(t, found)
-	assert.Error(t, err)
+	assert.EqualError(t, err, "nil extension output parameter provided")
 
 	type myExt struct{ Name string }
-
 	found, err = extension(opts, desc, &myExt{})
 	assert.False(t, found)
 	assert.NoError(t, err)
-
 	testExtractor.has = true
 
 	found, err = extension(opts, desc, &myExt{})
 	assert.False(t, found)
-	assert.NoError(t, err)
+	assert.EqualError(t, err, "extracted extension value is nil")
 
-	testExtractor.err = errors.New("foo")
-
-	found, err = extension(opts, desc, &myExt{})
-	assert.False(t, found)
-	assert.Error(t, err)
-
-	testExtractor.err = nil
 	testExtractor.get = &myExt{"bar"}
-
 	out := myExt{}
-
 	found, err = extension(opts, desc, out)
 	assert.False(t, found)
-	assert.Error(t, err)
+	assert.EqualError(t, err, "out parameter must be a pointer type")
 
 	found, err = extension(opts, desc, &out)
 	assert.True(t, found)
@@ -185,7 +171,7 @@ func TestExtension(t *testing.T) {
 func TestProtoExtExtractor(t *testing.T) {
 	e := protoExtExtractor{}
 	assert.NotPanics(t, func() { e.HasExtension(nil, nil) })
-	assert.NotPanics(t, func() { e.GetExtension(nil, nil) })
+	assert.Panics(t, func() { e.GetExtension(nil, nil) })
 }
 
 // needed to wrapped since there is a Extension method

@@ -3,7 +3,7 @@ package pgsgo
 import (
 	"testing"
 
-	pgs "github.com/lyft/protoc-gen-star"
+	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -70,15 +70,6 @@ func TestParameters_EnableAllPlugins(t *testing.T) {
 	EnableAllPlugins(p)
 	_, all = Plugins(p)
 	assert.True(t, all)
-}
-
-func TestParameters_ImportPrefix(t *testing.T) {
-	t.Parallel()
-
-	p := pgs.Parameters{}
-	assert.Empty(t, ImportPrefix(p))
-	SetImportPrefix(p, "foo")
-	assert.Equal(t, "foo", ImportPrefix(p))
 }
 
 func TestParameters_ImportPath(t *testing.T) {

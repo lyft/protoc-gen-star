@@ -1,8 +1,8 @@
 package pgs
 
 import (
-	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	plugin_go "github.com/golang/protobuf/protoc-gen-go/plugin"
+	descriptor "google.golang.org/protobuf/types/descriptorpb"
+	plugin_go "google.golang.org/protobuf/types/pluginpb"
 )
 
 // AST encapsulates the entirety of the input CodeGeneratorRequest from protoc,
@@ -101,7 +101,7 @@ func ProcessCodeGeneratorRequestBidirectional(debug Debugger, req *plugin_go.Cod
 // malformed or missing dependencies. To generate a self-contained
 // FileDescriptorSet, run the following command:
 //
-//   protoc -o path/to/fdset.bin --include_imports $PROTO_FILES
+//	protoc -o path/to/fdset.bin --include_imports $PROTO_FILES
 //
 // The emitted AST will have no values in the Targets map, but Packages will be
 // populated. If used for testing purposes, the Targets map can be manually

@@ -7,7 +7,7 @@ _PG* is a protoc plugin library for efficient proto-based code generation_
 ```go
 package main
 
-import "github.com/lyft/protoc-gen-star"
+import "github.com/lyft/protoc-gen-star/v2"
 
 func main() {
   pgs.Init(pgs.DebugEnv("DEBUG")).
@@ -292,7 +292,7 @@ PG* permits mutating the `Parameters` via the `MutateParams` `InitOption`. By pa
 
 While implemented in Go, PG* seeks to be language agnostic in what it can do. Therefore, beyond the pre-generated base descriptor types, PG* has no dependencies on the protoc-gen-go (PGG) package. However, there are many nuances that each language's protoc-plugin introduce that can be generalized. For instance, PGG package naming, import paths, and output paths are a complex interaction of the proto package name, the `go_package` file option, and parameters passed to protoc. While PG*'s core API should not be overloaded with many language-specific methods, subpackages can be provided that can operate on `Parameters` and `Entities` to derive the appropriate results.
 
-PG* currently implements the [pgsgo](https://godoc.org/github.com/lyft/protoc-gen-star/lang/go/) subpackage to provide these utilities to plugins targeting the Go language. Future subpackages are planned to support a variety of languages.
+PG* currently implements the [pgsgo](https://godoc.org/github.com/lyft/protoc-gen-star/v2/lang/go/) subpackage to provide these utilities to plugins targeting the Go language. Future subpackages are planned to support a variety of languages.
 
 ## PG* Development & Make Targets
 
