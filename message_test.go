@@ -2,11 +2,11 @@ package pgs
 
 import (
 	"errors"
-	"google.golang.org/protobuf/reflect/protodesc"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protodesc"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 	any "google.golang.org/protobuf/types/known/anypb"
 )
