@@ -360,7 +360,6 @@ make testdata/generated
 
 PG* uses [TravisCI][travis] to validate all code changes. Please view the [configuration][travis.yml] for what tests are involved in the validation.
 
-[glide]: http://glide.sh
 [pgg]: https://github.com/golang/protobuf/tree/master/protoc-gen-go
 [pge]: https://github.com/lyft/protoc-gen-star/tree/master/testdata/protoc-gen-example
 [travis]: https://travis-ci.com/lyft/protoc-gen-star
