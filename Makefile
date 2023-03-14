@@ -84,10 +84,6 @@ ifeq ($(PROTOC_VER), 3.17.0)
 		testdata-presence
 endif
 
-vendor: # install project dependencies
-	which glide || (curl https://glide.sh/get | sh)
-	glide install
-
 .PHONY: protoc-gen-go
 protoc-gen-go:
 	go install google.golang.org/protobuf/cmd/protoc-gen-go
@@ -100,7 +96,6 @@ bin/protoc-gen-debug: # creates the protoc-gen-debug protoc plugin for output Pr
 
 .PHONY: clean
 clean:
-	rm -rf vendor
 	rm -rf bin
 	rm -rf testdata/generated
 	set -e; for f in `find . -name *.pb.bin`; do \
