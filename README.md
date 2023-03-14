@@ -300,15 +300,11 @@ PG* seeks to provide all the tools necessary to rapidly and ergonomically extend
 
 ### Setup
 
-For developing on PG*, you should install the package within the `GOPATH`. PG* uses [glide][glide] for dependency management.
+PG* can be installed and developed like any standard Go module:
 
 ```sh
-go get -u github.com/lyft/protoc-gen-star
-cd $GOPATH/src/github.com/lyft/protoc-gen-star
-make vendor
+go get -u github.com/lyft/protoc-gen-star/v2
 ```
-
-To upgrade dependencies, please make the necessary modifications in `glide.yaml` and run `glide update`.
 
 ### Linting & Static Analysis
 
