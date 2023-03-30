@@ -62,6 +62,33 @@ func TestName_Split(t *testing.T) {
 	}
 }
 
+func TestName_SplitOnDot(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		in    string
+		parts []string
+	}{
+		{"foo", []string{"foo"}},
+		{"foo_bar", []string{"foo_bar"}},
+		{"foo1", []string{"foo1"}},
+		{"foo.bar", []string{"foo", "bar"}},
+		{".foo.bar", []string{"", "foo", "bar"}},
+		{".JSONString.Foo.Bar", []string{"", "JSONString", "Foo", "Bar"}},
+
+		// empty
+		{"", []string{""}},
+	}
+
+	for _, test := range tests {
+		tc := test
+		t.Run(tc.in, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tc.parts, Name(tc.in).SplitOnDot())
+		})
+	}
+}
+
 func TestName(t *testing.T) {
 	t.Parallel()
 
