@@ -21,10 +21,14 @@ type AST interface {
 	// (FQN). The FQN uses dot notation of the form ".{package}.{entity}", or the
 	// input path for Files.
 	Lookup(name string) (Entity, bool)
+
+	// The original CodeGeneratorRequest from protoc
+    CodeGeneratorRequest() *plugin_go.CodeGeneratorRequest
 }
 
 type graph struct {
 	d Debugger
+    req *plugin_go.CodeGeneratorRequest
 
 	targets    map[string]File
 	packages   map[string]Package
@@ -41,6 +45,8 @@ func (g *graph) Lookup(name string) (Entity, bool) {
 	return e, ok
 }
 
+func (g *graph) CodeGeneratorRequest() *plugin_go.CodeGeneratorRequest { return g.req }
+
 // ProcessDescriptors is deprecated; use ProcessCodeGeneratorRequest instead
 func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
 	return ProcessCodeGeneratorRequest(debug, req)
@@ -51,6 +57,7 @@ func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST
 func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
 	g := &graph{
 		d:          debug,
+		req:        req,
 		targets:    make(map[string]File, len(req.GetFileToGenerate())),
 		packages:   make(map[string]Package),
 		entities:   make(map[string]Entity),
