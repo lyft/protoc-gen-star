@@ -108,6 +108,11 @@ func (n Name) Split() (parts []string) {
 	}
 }
 
+// SplitOnDot breaks apart Name n into its constituent components using dot notation.
+func (n Name) SplitOnDot() (parts []string) {
+	return strings.Split(string(n), ".")
+}
+
 // NameTransformer is a function that mutates a string. Many of the methods in
 // the standard strings package satisfy this signature.
 type NameTransformer func(string) string
