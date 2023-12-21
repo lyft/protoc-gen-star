@@ -334,10 +334,10 @@ func TestPrefixedDebugger_Assert(t *testing.T) {
 	}
 
 	d := rootDebugger{fail: fail}.Push("FIZZ")
-	d.Assert(1 == 1, "fizz")
+	d.Assert(true, "fizz")
 	assert.False(t, failed)
 
-	d.Assert(1 == 0, "foo")
+	d.Assert(false, "foo")
 	assert.True(t, failed)
 }
 

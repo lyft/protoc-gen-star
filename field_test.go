@@ -164,7 +164,7 @@ func TestField_Extension(t *testing.T) {
 	// cannot be parallel
 
 	f := &field{desc: &descriptor.FieldDescriptorProto{}}
-	assert.NotPanics(t, func() { f.Extension(nil, nil) })
+	assert.NotPanics(t, func() { f.Extension(nil, nil) }) //nolint:errcheck
 }
 
 func TestField_Accept(t *testing.T) {

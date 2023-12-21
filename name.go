@@ -68,7 +68,7 @@ func (n Name) Split() (parts []string) {
 			parts[1] = "_" + parts[1]
 			return parts[1:]
 		}
-		return
+		return parts
 	default: // camelCase
 		buf := &bytes.Buffer{}
 		var capt, lodash, num bool
@@ -104,7 +104,7 @@ func (n Name) Split() (parts []string) {
 			buf.WriteRune(r)
 		}
 		parts = append(parts, buf.String())
-		return
+		return parts
 	}
 }
 

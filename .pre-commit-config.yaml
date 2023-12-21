@@ -1,7 +1,7 @@
 default_language_version:
-  python: python3.8
+  python: python3.10
 repos:
   -   repo: https://github.com/golangci/golangci-lint
-      rev: v1.42.1
+      rev: v1.55.0
       hooks:
         -   id: golangci-lint

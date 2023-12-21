@@ -149,7 +149,7 @@ func TestMethod_Extension(t *testing.T) {
 	// cannot be parallel
 
 	m := &method{desc: &descriptor.MethodDescriptorProto{}}
-	assert.NotPanics(t, func() { m.Extension(nil, nil) })
+	assert.NotPanics(t, func() { m.Extension(nil, nil) }) //nolint:errcheck
 }
 
 func TestMethod_Accept(t *testing.T) {

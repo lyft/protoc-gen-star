@@ -260,7 +260,7 @@ func TestMsg_SyntheticOneOfFields_And_RealOneOfs(t *testing.T) {
 func TestMsg_Extension(t *testing.T) {
 	// cannot be parallel
 	m := &msg{desc: &descriptor.DescriptorProto{}}
-	assert.NotPanics(t, func() { m.Extension(nil, nil) })
+	assert.NotPanics(t, func() { m.Extension(nil, nil) }) //nolint:errcheck
 }
 
 func TestMsg_Extensions(t *testing.T) {

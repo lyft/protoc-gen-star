@@ -16,14 +16,14 @@ jobs:
         working-directory: ${{ env.GOPATH }}/src/github.com/lyft/protoc-gen-star
     name: protoc version 3.17.0
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 1
           path: ${{ env.GOPATH }}/src/github.com/lyft/protoc-gen-star
       - name: Set Up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.17'
+          go-version: '1.20'
       - run: mkdir -p $GOPATH/bin
       - run: wget "https://github.com/protocolbuffers/protobuf/releases/download/v3.17.0/protoc-3.17.0-linux-x86_64.zip" -O /tmp/protoc.zip
       - run: unzip /tmp/protoc.zip -d /tmp

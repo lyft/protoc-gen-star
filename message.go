@@ -225,40 +225,40 @@ func (m *msg) accept(v Visitor) (err error) {
 	}
 
 	if v, err = v.VisitMessage(m); err != nil || v == nil {
-		return
+		return err
 	}
 
 	for _, e := range m.enums {
 		if err = e.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
 	for _, sm := range m.msgs {
 		if err = sm.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
 	for _, f := range m.fields {
 		if err = f.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
 	for _, o := range m.oneofs {
 		if err = o.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
 	for _, ext := range m.defExts {
 		if err = ext.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
-	return
+	return nil
 }
 
 func (m *msg) addExtension(ext Extension) {

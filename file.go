@@ -195,34 +195,34 @@ func (f *file) accept(v Visitor) (err error) {
 	}
 
 	if v, err = v.VisitFile(f); err != nil || v == nil {
-		return
+		return err
 	}
 
 	for _, e := range f.enums {
 		if err = e.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
 	for _, m := range f.msgs {
 		if err = m.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
 	for _, s := range f.srvs {
 		if err = s.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
 	for _, ext := range f.defExts {
 		if err = ext.accept(v); err != nil {
-			return
+			return err
 		}
 	}
 
-	return
+	return err
 }
 
 func (f *file) addDefExtension(ext Extension) {

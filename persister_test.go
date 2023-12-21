@@ -182,7 +182,7 @@ func TestPersister_Persist_GeneratorTemplateAppend(t *testing.T) {
 	assert.Equal(t, "", resp.File[3].GetName())
 	assert.Equal(t, "quux", resp.File[3].GetContent())
 
-	resp = p.Persist(GeneratorTemplateAppend{
+	_ = p.Persist(GeneratorTemplateAppend{
 		FileName: "doesNotExist",
 		TemplateArtifact: TemplateArtifact{
 			Template: genTpl,

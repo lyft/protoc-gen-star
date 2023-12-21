@@ -79,7 +79,7 @@ func TestService_Extension(t *testing.T) {
 	// cannot be parallel
 
 	s := &service{desc: &descriptor.ServiceDescriptorProto{}}
-	assert.NotPanics(t, func() { s.Extension(nil, nil) })
+	assert.NotPanics(t, func() { s.Extension(nil, nil) }) //nolint:errcheck
 }
 
 func TestService_Imports(t *testing.T) {

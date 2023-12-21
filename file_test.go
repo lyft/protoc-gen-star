@@ -312,7 +312,7 @@ func TestFile_Extension(t *testing.T) {
 	assert.NotPanics(t, func() {
 		(&file{
 			desc: &descriptor.FileDescriptorProto{},
-		}).Extension(nil, nil)
+		}).Extension(nil, nil) //nolint:errcheck
 	})
 }
 
