@@ -1,22 +1,29 @@
 linters:
   disable-all: true
   enable:
-    - deadcode
-    - goconst
-    - gocyclo
+    - errcheck
     - gofmt
     - goimports
+    - gosec
     - gosimple
     - govet
     - ineffassign
     - misspell
+    - nakedret
     - revive
-    - structcheck
+    - staticcheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
+linters-settings:
+  gosec:
+    excludes:
+      - G306
+  revive:
+    rules:
+      - name: unused-parameter
+        disabled: true
 issues:
   max-per-linter: 0
   max-same-issues: 0

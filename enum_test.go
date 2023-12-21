@@ -150,7 +150,7 @@ func TestEnum_Extension(t *testing.T) {
 	// cannot be parallel
 
 	e := &enum{desc: &descriptor.EnumDescriptorProto{}}
-	assert.NotPanics(t, func() { e.Extension(nil, nil) })
+	assert.NotPanics(t, func() { e.Extension(nil, nil) }) //nolint:errcheck
 }
 
 func TestEnum_Accept(t *testing.T) {

@@ -28,7 +28,7 @@ func TestDebugEnv(t *testing.T) {
 	g := &Generator{}
 	assert.False(t, g.debug)
 
-	e := strconv.Itoa(rand.Int())
+	e := strconv.Itoa(rand.Int()) //nolint:gosec
 
 	DebugEnv(e)(g)
 	assert.False(t, g.debug)

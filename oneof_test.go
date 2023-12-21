@@ -106,7 +106,7 @@ func TestOneof_Extension(t *testing.T) {
 	// cannot be parallel
 
 	o := &oneof{desc: &descriptor.OneofDescriptorProto{}}
-	assert.NotPanics(t, func() { o.Extension(nil, nil) })
+	assert.NotPanics(t, func() { o.Extension(nil, nil) }) //nolint:errcheck
 }
 
 func TestOneof_Fields(t *testing.T) {

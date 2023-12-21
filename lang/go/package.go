@@ -68,7 +68,7 @@ func (c context) optionPackage(e pgs.Entity) (path, pkg string) {
 		if idx := strings.LastIndex(pkg, "/"); idx > -1 {
 			pkg = pkg[idx+1:]
 		}
-		return
+		return path, pkg
 	}
 
 	// check if there's a go_package option specified
@@ -82,26 +82,26 @@ func (c context) optionPackage(e pgs.Entity) (path, pkg string) {
 		} else { // no other info, then replace all non-alphanumerics from the input file name
 			pkg = nonAlphaNumPattern.ReplaceAllString(e.File().InputPath().BaseName(), "_")
 		}
-		return
+		return path, pkg
 	}
 
 	// go_package="example.com/foo/bar;baz" should have a package name of `baz`
 	if idx := strings.LastIndex(pkg, ";"); idx > -1 {
 		path = pkg[:idx]
 		pkg = nonAlphaNumPattern.ReplaceAllString(pkg[idx+1:], "_")
-		return
+		return path, pkg
 	}
 
 	// go_package="example.com/foo/bar" should have a package name of `bar`
 	if idx := strings.LastIndex(pkg, "/"); idx > -1 {
 		path = pkg
 		pkg = nonAlphaNumPattern.ReplaceAllString(pkg[idx+1:], "_")
-		return
+		return path, pkg
 	}
 
 	pkg = nonAlphaNumPattern.ReplaceAllString(pkg, "_")
 
-	return
+	return path, pkg
 }
 
 func (c context) resolveGoPackageOption(e pgs.Entity) string {

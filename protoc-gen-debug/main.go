@@ -38,7 +38,7 @@ func main() {
 		log.Fatal("unable to create output dir: ", err)
 	}
 
-	err = ioutil.WriteFile(filepath.Join(path, "code_generator_request.pb.bin"), data, 0644)
+	err = os.WriteFile(filepath.Join(path, "code_generator_request.pb.bin"), data, 0644)
 	if err != nil {
 		log.Fatal("unable to write request to disk: ", err)
 	}
