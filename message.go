@@ -30,7 +30,7 @@ type Message interface {
 	OneOfFields() []Field
 
 	// SyntheticOneOfFields returns only the fields contained within synthetic OneOf blocks.
-	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.19.5/docs/field_presence.md
 	SyntheticOneOfFields() []Field
 
 	// OneOfs returns the OneOfs contained within this Message.
@@ -38,7 +38,7 @@ type Message interface {
 
 	// RealOneOfs returns the OneOfs contained within this Message.
 	// This excludes synthetic OneOfs.
-	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.19.5/docs/field_presence.md
 	RealOneOfs() []OneOf
 
 	// Extensions returns all of the Extensions applied to this Message.

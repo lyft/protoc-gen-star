@@ -1,13 +1,14 @@
 # the name of this package
 PKG  := $(shell go list .)
 PROTOC_VER := $(shell protoc --version | cut -d' ' -f2)
+PGG_VER := $(shell protoc-gen-go --version | cut -d' ' -f2 | cut -c 2- )
 
 .PHONY: bootstrap
 bootstrap: testdata # set up the project for development
 
 .PHONY: quick
 quick: testdata # runs all tests without the race detector or coverage
-ifeq ($(PROTOC_VER), 3.17.0)
+ifeq ($(PROTOC_VER), 3.19.5)
 	go test $(PKGS) --tags=proto3_presence
 else
 	go test $(PKGS)
@@ -15,7 +16,7 @@ endif
 
 .PHONY: tests
 tests: testdata # runs all tests against the package with race detection and coverage percentage
-ifeq ($(PROTOC_VER), 3.17.0)
+ifeq ($(PROTOC_VER), 3.19.5)
 	go test -race -cover ./... --tags=proto3_presence
 else
 	go test -race -cover ./...
@@ -23,7 +24,7 @@ endif
 
 .PHONY: cover
 cover: testdata # runs all tests against the package, generating a coverage report and opening it in the browser
-ifeq ($(PROTOC_VER), 3.17.0)
+ifeq ($(PROTOC_VER), 3.19.5)
 	go test -race -covermode=atomic -coverprofile=cover.out ./... --tags=proto3_presence || true
 else
 	go test -race -covermode=atomic -coverprofile=cover.out ./... || true
@@ -40,7 +41,7 @@ docs: # starts a doc server and opens a browser window to this package
 testdata: testdata-graph testdata-go testdata/generated testdata/fdset.bin # generate all testdata
 
 .PHONY: testdata-graph
-testdata-graph: bin/protoc-gen-debug # parses the proto file sets in testdata/graph and renders binary CodeGeneratorRequest
+testdata-graph: # parses the proto file sets in testdata/graph and renders binary CodeGeneratorRequest
 	set -e; for subdir in `find ./testdata/graph -mindepth 1 -maxdepth 1 -type d`; do \
 		protoc -I ./testdata/graph \
 			--plugin=protoc-gen-debug=./bin/protoc-gen-debug \
@@ -48,8 +49,7 @@ testdata-graph: bin/protoc-gen-debug # parses the proto file sets in testdata/gr
 			`find $$subdir -name "*.proto"`; \
 	done
 
-testdata/generated: protoc-gen-go bin/protoc-gen-example
-	go install google.golang.org/protobuf/cmd/protoc-gen-go
+testdata/generated: bin/protoc-gen-example
 	rm -rf ./testdata/generated && mkdir -p ./testdata/generated
 	# generate the official go code, must be one directory at a time
 	set -e; for subdir in `find ./testdata/protos -mindepth 1 -type d`; do \
@@ -74,19 +74,22 @@ testdata/fdset.bin:
 		testdata/protos/**/*.proto
 
 .PHONY: testdata-go
-testdata-go: protoc-gen-go bin/protoc-gen-debug # generate go-specific testdata
+testdata-go: # generate go-specific testdata
 	cd lang/go && $(MAKE) \
 		testdata-names \
 		testdata-packages \
 		testdata-outputs
-ifeq ($(PROTOC_VER), 3.17.0)
+ifeq ($(PROTOC_VER), 3.19.5)
 	cd lang/go && $(MAKE) \
 		testdata-presence
 endif
 
 .PHONY: protoc-gen-go
 protoc-gen-go:
+ifeq ($(PGG_VER), 1.26.0)
+else
 	go install google.golang.org/protobuf/cmd/protoc-gen-go
+endif
 
 bin/protoc-gen-example: # creates the demo protoc plugin for demonstrating uses of PG*
 	go build -o ./bin/protoc-gen-example ./testdata/protoc-gen-example

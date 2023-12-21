@@ -22,7 +22,7 @@ type Field interface {
 
 	// InRealOneOf returns true if the field is in a OneOf of the parent Message.
 	// This will return false for synthetic oneofs, and will only include 'real' oneofs.
-	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.19.5/docs/field_presence.md
 	InRealOneOf() bool
 
 	// OneOf returns the OneOf that this field is a part of. Nil is returned if
@@ -33,7 +33,7 @@ type Field interface {
 	Type() FieldType
 
 	// HasPresence returns true for all fields that have explicit presence as defined by:
-	// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/field_presence.md
+	// See: https://github.com/protocolbuffers/protobuf/blob/v3.19.5/docs/field_presence.md
 	HasPresence() bool
 
 	// HasOptionalKeyword returns whether the field is labeled as optional.
