@@ -12,6 +12,7 @@ import (
 
 type persister interface {
 	SetDebugger(d Debugger)
+	SetOutputPath(op string)
 	SetFS(fs afero.Fs)
 	SetSupportedFeatures(f *uint64)
 	AddPostProcessor(proc ...PostProcessor)
@@ -20,7 +21,7 @@ type persister interface {
 
 type stdPersister struct {
 	Debugger
-
+	outputPath        string
 	fs                afero.Fs
 	procs             []PostProcessor
 	supportedFeatures *uint64
@@ -29,6 +30,7 @@ type stdPersister struct {
 func newPersister() *stdPersister { return &stdPersister{fs: afero.NewOsFs()} }
 
 func (p *stdPersister) SetDebugger(d Debugger)                 { p.Debugger = d }
+func (p *stdPersister) SetOutputPath(op string)                { p.outputPath = op }
 func (p *stdPersister) SetFS(fs afero.Fs)                      { p.fs = fs }
 func (p *stdPersister) SetSupportedFeatures(f *uint64)         { p.supportedFeatures = f }
 func (p *stdPersister) AddPostProcessor(proc ...PostProcessor) { p.procs = append(p.procs, proc...) }
@@ -73,7 +75,7 @@ func (p *stdPersister) Persist(arts ...Artifact) *plugin_go.CodeGeneratorRespons
 			p.insertFile(resp, f, false)
 		case CustomFile:
 			p.writeFile(
-				a.Name,
+				p.resolveOutputPath(a.Name),
 				[]byte(p.postProcess(a, a.Contents)),
 				a.Overwrite,
 				a.Perms,
@@ -82,8 +84,9 @@ func (p *stdPersister) Persist(arts ...Artifact) *plugin_go.CodeGeneratorRespons
 			content, err := a.render()
 			p.CheckErr(err, "unable to render CustomTemplateFile: ", a.Name)
 			content = p.postProcess(a, content)
+
 			p.writeFile(
-				a.Name,
+				p.resolveOutputPath(a.Name),
 				[]byte(content),
 				a.Overwrite,
 				a.Perms,
@@ -189,4 +192,12 @@ func (p *stdPersister) postProcess(a Artifact, in string) string {
 	}
 
 	return string(b)
+}
+
+func (p *stdPersister) resolveOutputPath(a string) string {
+	if p.outputPath == "." {
+		return a
+	}
+
+	return filepath.Join(p.outputPath, a)
 }
