@@ -40,7 +40,6 @@ func Init(opts ...InitOption) *Generator {
 
 	g.Debugger = initDebugger(g.debug, log.New(os.Stderr, "", 0))
 	g.persister.SetDebugger(g.Debugger)
-	g.persister.SetOutputPath(g.params.OutputPath())
 
 	return g
 }

@@ -19,10 +19,14 @@ func TestStandardWorkflow_Init(t *testing.T) {
 
 	mutated := false
 
-	g := Init(ProtocInput(bytes.NewReader(b)), MutateParams(func(p Parameters) { mutated = true }))
+	g := Init(ProtocInput(bytes.NewReader(b)), MutateParams(func(p Parameters) {
+		mutated = true
+		p["output_path"] = "output/path"
+	}))
 	g.workflow.Init(g)
 
 	assert.True(t, mutated)
+	assert.Equal(t, "output/path", g.params.OutputPath())
 
 	t.Run("bidi", func(t *testing.T) {
 		mutated = false
