@@ -40,6 +40,7 @@ func (wf *standardWorkflow) Init(g *Generator) AST {
 	for _, pm := range wf.paramMutators {
 		pm(wf.params)
 	}
+	wf.persister.SetOutputPath(wf.params.OutputPath())
 
 	if wf.BiDi {
 		return ProcessCodeGeneratorRequestBidirectional(g, req)
