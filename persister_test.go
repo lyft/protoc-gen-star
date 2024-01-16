@@ -1,10 +1,9 @@
 package pgs
 
 import (
+	"errors"
 	"html/template"
 	"testing"
-
-	"errors"
 
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -29,6 +28,7 @@ func TestPersister_Persist_GeneratorFile(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	p.SetFS(fs)
 
+	p.SetOutputPath("no/effect") // only used for CustomFile and CustomTemplateFile
 	resp := p.Persist(
 		GeneratorFile{
 			Name:     "foo",
@@ -47,6 +47,8 @@ func TestPersister_Persist_GeneratorFile(t *testing.T) {
 	assert.Len(t, resp.File, 2)
 	assert.Equal(t, "foo", resp.File[0].GetName())
 	assert.Equal(t, "fizz", resp.File[0].GetContent())
+	assert.Equal(t, "quux", resp.File[1].GetName())
+	assert.Equal(t, "baz", resp.File[1].GetContent())
 }
 
 var genTpl = template.Must(template.New("good").Parse("{{ . }}"))
@@ -86,7 +88,9 @@ func TestPersister_Persist_GeneratorTemplateFile(t *testing.T) {
 
 	assert.Len(t, resp.File, 2)
 	assert.Equal(t, "foo", resp.File[0].GetName())
-	assert.Equal(t, "fizz", resp.File[0].GetContent())
+	assert.Equal(t, "fizz", resp.File[0].GetContent()) // overwritten
+	assert.Equal(t, "quux", resp.File[1].GetName())
+	assert.Equal(t, "baz", resp.File[1].GetContent())
 }
 
 func TestPersister_Persist_GeneratorAppend(t *testing.T) {
@@ -111,8 +115,12 @@ func TestPersister_Persist_GeneratorAppend(t *testing.T) {
 	)
 
 	assert.Len(t, resp.File, 4)
+	assert.Equal(t, "foo", resp.File[0].GetName())
+	assert.Equal(t, "", resp.File[0].GetContent())
 	assert.Equal(t, "", resp.File[1].GetName())
 	assert.Equal(t, "baz", resp.File[1].GetContent())
+	assert.Equal(t, "bar", resp.File[2].GetName())
+	assert.Equal(t, "", resp.File[2].GetContent())
 	assert.Equal(t, "", resp.File[3].GetName())
 	assert.Equal(t, "quux", resp.File[3].GetContent())
 
@@ -145,8 +153,11 @@ func TestPersister_Persist_GeneratorAppendSeveral(t *testing.T) {
 	)
 
 	assert.Len(t, resp.File, 3)
+	assert.Equal(t, "file", resp.File[0].GetName())
 	assert.Equal(t, "foo", resp.File[0].GetContent())
+	assert.Equal(t, "", resp.File[1].GetName())
 	assert.Equal(t, "bar", resp.File[1].GetContent())
+	assert.Equal(t, "", resp.File[2].GetName())
 	assert.Equal(t, "baz", resp.File[2].GetContent())
 }
 
@@ -177,8 +188,12 @@ func TestPersister_Persist_GeneratorTemplateAppend(t *testing.T) {
 	)
 
 	assert.Len(t, resp.File, 4)
+	assert.Equal(t, "foo", resp.File[0].GetName())
+	assert.Equal(t, "", resp.File[0].GetContent())
 	assert.Equal(t, "", resp.File[1].GetName())
 	assert.Equal(t, "baz", resp.File[1].GetContent())
+	assert.Equal(t, "bar", resp.File[2].GetName())
+	assert.Equal(t, "", resp.File[2].GetContent())
 	assert.Equal(t, "", resp.File[3].GetName())
 	assert.Equal(t, "quux", resp.File[3].GetContent())
 
@@ -236,6 +251,8 @@ func TestPersister_Persist_GeneratorTemplateInjection(t *testing.T) {
 	assert.Equal(t, "baz", resp.File[0].GetContent())
 }
 
+// The persister writes these artifacts directly to disk, so there should
+// not be any entries in CodeGeneratorResponse.File.
 func TestPersister_Persist_CustomFile(t *testing.T) {
 	t.Parallel()
 
@@ -244,38 +261,54 @@ func TestPersister_Persist_CustomFile(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	p.SetFS(fs)
 
-	p.Persist(CustomFile{
+	f := CustomFile{
 		Name:     "foo/bar/baz.txt",
 		Perms:    0655,
 		Contents: "fizz",
-	})
+	}
 
+	// without OutputPath
+	resp := p.Persist(f)
+	assert.Len(t, resp.File, 0)
 	b, err := afero.ReadFile(fs, "foo/bar/baz.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, "fizz", string(b))
 
-	p.Persist(CustomFile{
+	// with OutputPath
+	p.SetOutputPath("some/path")
+	resp = p.Persist(f)
+	assert.Len(t, resp.File, 0)
+	ok, err := afero.Exists(fs, "some/path/foo/bar/baz.txt")
+	assert.NoError(t, err)
+	assert.True(t, ok)
+
+	// change data, overwrite = false
+	p.SetOutputPath("")
+	resp = p.Persist(CustomFile{
 		Name:     "foo/bar/baz.txt",
 		Perms:    0655,
 		Contents: "buzz",
 	})
-
+	assert.Len(t, resp.File, 0)
 	b, err = afero.ReadFile(fs, "foo/bar/baz.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, "fizz", string(b))
 
-	p.Persist(CustomFile{
+	// change data, overwrite = true
+	resp = p.Persist(CustomFile{
 		Name:      "foo/bar/baz.txt",
 		Perms:     0655,
 		Contents:  "buzz",
 		Overwrite: true,
 	})
-
+	assert.Len(t, resp.File, 0)
 	b, err = afero.ReadFile(fs, "foo/bar/baz.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, "buzz", string(b))
 }
 
+// The persister writes these artifacts directly to disk, so there should
+// not be any entries in CodeGeneratorResponse.File.
 func TestPersister_Persist_CustomTemplateFile(t *testing.T) {
 	t.Parallel()
 
@@ -284,20 +317,33 @@ func TestPersister_Persist_CustomTemplateFile(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	p.SetFS(fs)
 
-	p.Persist(CustomTemplateFile{
+	f := CustomTemplateFile{
 		Name:  "foo/bar/baz.txt",
 		Perms: 0655,
 		TemplateArtifact: TemplateArtifact{
 			Template: genTpl,
 			Data:     "fizz",
 		},
-	})
+	}
 
+	// without OutputPath
+	resp := p.Persist(f)
+	assert.Equal(t, len(resp.File), 0)
 	b, err := afero.ReadFile(fs, "foo/bar/baz.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, "fizz", string(b))
 
-	p.Persist(CustomTemplateFile{
+	// with OutputPath
+	p.SetOutputPath("some/path")
+	resp = p.Persist(f)
+	assert.Equal(t, len(resp.File), 0)
+	ok, err := afero.Exists(fs, "some/path/foo/bar/baz.txt")
+	assert.NoError(t, err)
+	assert.True(t, ok)
+
+	// change data, overwrite = false
+	p.SetOutputPath("")
+	resp = p.Persist(CustomTemplateFile{
 		Name:  "foo/bar/baz.txt",
 		Perms: 0655,
 		TemplateArtifact: TemplateArtifact{
@@ -305,12 +351,13 @@ func TestPersister_Persist_CustomTemplateFile(t *testing.T) {
 			Data:     "buzz",
 		},
 	})
-
+	assert.Equal(t, len(resp.File), 0)
 	b, err = afero.ReadFile(fs, "foo/bar/baz.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, "fizz", string(b))
 
-	p.Persist(CustomTemplateFile{
+	// change data, overwrite = true
+	resp = p.Persist(CustomTemplateFile{
 		Name:  "foo/bar/baz.txt",
 		Perms: 0655,
 		TemplateArtifact: TemplateArtifact{
@@ -319,7 +366,7 @@ func TestPersister_Persist_CustomTemplateFile(t *testing.T) {
 		},
 		Overwrite: true,
 	})
-
+	assert.Equal(t, len(resp.File), 0)
 	b, err = afero.ReadFile(fs, "foo/bar/baz.txt")
 	assert.NoError(t, err)
 	assert.Equal(t, "buzz", string(b))
