@@ -49,9 +49,3 @@ func BiDirectional() InitOption {
 }
 
 // SupportedFeatures allows defining protoc features to enable / disable.
-// See: https://github.com/protocolbuffers/protobuf/blob/v3.17.0/docs/implementing_proto3_presence.md#signaling-that-your-code-generator-supports-proto3-optional
-func SupportedFeatures(feat *uint64) InitOption {
-	return func(g *Generator) {
-		g.persister.SetSupportedFeatures(feat)
-	}
-}

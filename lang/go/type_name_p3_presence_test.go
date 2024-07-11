@@ -1,3 +1,4 @@
+//go:build proto3_presence
 // +build proto3_presence
 
 package pgsgo

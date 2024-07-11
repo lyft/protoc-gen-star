@@ -41,11 +41,6 @@ func (g *graph) Lookup(name string) (Entity, bool) {
 	return e, ok
 }
 
-// ProcessDescriptors is deprecated; use ProcessCodeGeneratorRequest instead
-func ProcessDescriptors(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
-	return ProcessCodeGeneratorRequest(debug, req)
-}
-
 // ProcessCodeGeneratorRequest converts a CodeGeneratorRequest from protoc into a fully
 // connected AST entity graph. An error is returned if the input is malformed.
 func ProcessCodeGeneratorRequest(debug Debugger, req *plugin_go.CodeGeneratorRequest) AST {
