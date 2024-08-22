@@ -1,6 +1,7 @@
 package pgs
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -27,6 +28,8 @@ type Generator struct {
 // Init configures a new Generator. InitOptions may be provided as well to
 // modify the behavior of the generator.
 func Init(opts ...InitOption) *Generator {
+	persister := newPersister()
+	fmt.Fprintln(os.Stderr, "min edition from generator:", persister.minimumEdition)
 	g := &Generator{
 		in:        os.Stdin,
 		out:       os.Stdout,

@@ -6,7 +6,7 @@ require (
 	github.com/spf13/afero v1.3.3
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/tools v0.1.12
-	google.golang.org/protobuf v1.23.0
+	google.golang.org/protobuf v1.34.2
 )
 
 require (

@@ -1,6 +1,7 @@
 package pgs
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -53,5 +54,22 @@ func BiDirectional() InitOption {
 func SupportedFeatures(feat *uint64) InitOption {
 	return func(g *Generator) {
 		g.persister.SetSupportedFeatures(feat)
+	}
+}
+
+// MinimumEdition allows defining protoc features to enable / disable.
+// See: https://protobuf.dev/editions/implementation/
+func MinimumEdition(me *int32) InitOption {
+	return func(g *Generator) {
+		g.persister.SetMinimumEdition(me)
+	}
+}
+
+// MaximumEdition allows defining protoc features to enable / disable.
+// See: https://protobuf.dev/editions/implementation/
+func MaximumEdition(me *int32) InitOption {
+	return func(g *Generator) {
+		fmt.Fprintln(os.Stderr, "in max edition:", *me)
+		g.persister.SetMaximumEdition(me)
 	}
 }
