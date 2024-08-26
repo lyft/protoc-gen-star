@@ -5,7 +5,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -19,7 +18,6 @@ import (
 )
 
 func main() {
-	fmt.Fprintln(os.Stderr, "does this execute? yes")
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
 		log.Fatal("unable to read input: ", err)

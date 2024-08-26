@@ -1,7 +1,6 @@
 package pgs
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -45,10 +44,6 @@ func (p *stdPersister) Persist(arts ...Artifact) *plugin_go.CodeGeneratorRespons
 	resp.SupportedFeatures = p.supportedFeatures
 	resp.MaximumEdition = p.maximumEdition
 	resp.MinimumEdition = p.minimumEdition
-
-	fmt.Fprintln(os.Stderr, "max edition:", *resp.MaximumEdition)
-	fmt.Fprintln(os.Stderr, "min edition:", *resp.MinimumEdition)
-	fmt.Fprintln(os.Stderr, "supported features:", *resp.SupportedFeatures)
 
 	for _, a := range arts {
 		switch a := a.(type) {

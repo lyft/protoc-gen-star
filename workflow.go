@@ -1,9 +1,7 @@
 package pgs
 
 import (
-	"fmt"
 	"io/ioutil"
-	"os"
 	"sync"
 
 	"google.golang.org/protobuf/proto"
@@ -67,10 +65,7 @@ func (wf *standardWorkflow) Run(ast AST) (arts []Artifact) {
 }
 
 func (wf *standardWorkflow) Persist(arts []Artifact) {
-	fmt.Fprintln(os.Stderr, "before persist")
 	resp := wf.persister.Persist(arts...)
-
-	fmt.Fprintln(os.Stderr, "resp after persist", resp)
 
 	data, err := proto.Marshal(resp)
 	wf.CheckErr(err, "marshaling output proto")
@@ -80,7 +75,6 @@ func (wf *standardWorkflow) Persist(arts []Artifact) {
 	wf.Assert(len(data) == n, "failed to write all output")
 
 	wf.Debug("rendering successful")
-	fmt.Fprintln(os.Stderr, "rendering done")
 }
 
 // onceWorkflow wraps an existing workflow, executing its methods exactly
