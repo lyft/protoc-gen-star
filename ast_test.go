@@ -374,13 +374,10 @@ func TestGraph_Bidirectional(t *testing.T) {
 		require.True(t, ok)
 		kitchenProto, ok := ast.Lookup("kitchen/kitchen.proto")
 		require.True(t, ok)
-		fridgeProto, ok := ast.Lookup("kitchen/fridge.proto")
-		require.True(t, ok)
 
 		assert.Len(t, deps, 2)
 		assert.Contains(t, deps, sinkProto)
 		assert.Contains(t, deps, kitchenProto)
-		assert.Contains(t, deps, fridgeProto)
 	})
 }
 

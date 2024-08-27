@@ -56,7 +56,7 @@ func SupportedFeatures(feat *uint64) InitOption {
 	}
 }
 
-// MinimumEdition allows defining protoc features to enable / disable.
+// Generators must specify exactly which editions they support. MinimumEdition and MaximumEdition fields for specify the precise support window.
 // See: https://protobuf.dev/editions/implementation/
 func MinimumEdition(me *int32) InitOption {
 	return func(g *Generator) {
@@ -64,7 +64,7 @@ func MinimumEdition(me *int32) InitOption {
 	}
 }
 
-// MaximumEdition allows defining protoc features to enable / disable.
+// Generators must specify exactly which editions they support. MinimumEdition and MaximumEdition fields for specify the precise support window.
 // See: https://protobuf.dev/editions/implementation/
 func MaximumEdition(me *int32) InitOption {
 	return func(g *Generator) {
