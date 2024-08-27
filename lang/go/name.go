@@ -5,7 +5,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 func (c context) Name(node pgs.Node) pgs.Name {

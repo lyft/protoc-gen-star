@@ -55,3 +55,19 @@ func SupportedFeatures(feat *uint64) InitOption {
 		g.persister.SetSupportedFeatures(feat)
 	}
 }
+
+// Generators must specify exactly which editions they support. MinimumEdition and MaximumEdition fields for specify the precise support window.
+// See: https://protobuf.dev/editions/implementation/
+func MinimumEdition(me *int32) InitOption {
+	return func(g *Generator) {
+		g.persister.SetMinimumEdition(me)
+	}
+}
+
+// Generators must specify exactly which editions they support. MinimumEdition and MaximumEdition fields for specify the precise support window.
+// See: https://protobuf.dev/editions/implementation/
+func MaximumEdition(me *int32) InitOption {
+	return func(g *Generator) {
+		g.persister.SetMaximumEdition(me)
+	}
+}

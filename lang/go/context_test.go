@@ -3,8 +3,8 @@ package pgsgo
 import (
 	"testing"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/stretchr/testify/assert"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 func TestContext_Params(t *testing.T) {

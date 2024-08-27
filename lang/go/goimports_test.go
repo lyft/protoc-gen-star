@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 func TestGoImports_Match(t *testing.T) {

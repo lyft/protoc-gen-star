@@ -3,9 +3,9 @@ package pgsgo
 import (
 	"testing"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 func TestPackageName(t *testing.T) {

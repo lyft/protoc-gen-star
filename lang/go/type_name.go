@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 func (c context) Type(f pgs.Field) TypeName {

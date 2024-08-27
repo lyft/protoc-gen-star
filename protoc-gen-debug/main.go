@@ -44,9 +44,13 @@ func main() {
 	}
 
 	// protoc-gen-debug supports proto3 field presence for testing purposes
-	var supportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+	var supportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL) | uint64(pluginpb.CodeGeneratorResponse_FEATURE_SUPPORTS_EDITIONS)
+	var minimumEdition = int32(2023)
+	var maximumEdition = int32(2023)
 	if data, err = proto.Marshal(&plugin_go.CodeGeneratorResponse{
 		SupportedFeatures: &supportedFeatures,
+		MinimumEdition:    &minimumEdition,
+		MaximumEdition:    &maximumEdition,
 	}); err != nil {
 		log.Fatal("unable to marshal response payload: ", err)
 	}

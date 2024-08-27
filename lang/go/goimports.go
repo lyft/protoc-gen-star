@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/imports"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 type goImports struct{}

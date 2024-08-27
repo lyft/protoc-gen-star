@@ -14,6 +14,8 @@ type persister interface {
 	SetDebugger(d Debugger)
 	SetFS(fs afero.Fs)
 	SetSupportedFeatures(f *uint64)
+	SetMaximumEdition(me *int32)
+	SetMinimumEdition(me *int32)
 	AddPostProcessor(proc ...PostProcessor)
 	Persist(a ...Artifact) *plugin_go.CodeGeneratorResponse
 }
@@ -24,6 +26,8 @@ type stdPersister struct {
 	fs                afero.Fs
 	procs             []PostProcessor
 	supportedFeatures *uint64
+	maximumEdition    *int32
+	minimumEdition    *int32
 }
 
 func newPersister() *stdPersister { return &stdPersister{fs: afero.NewOsFs()} }
@@ -31,11 +35,15 @@ func newPersister() *stdPersister { return &stdPersister{fs: afero.NewOsFs()} }
 func (p *stdPersister) SetDebugger(d Debugger)                 { p.Debugger = d }
 func (p *stdPersister) SetFS(fs afero.Fs)                      { p.fs = fs }
 func (p *stdPersister) SetSupportedFeatures(f *uint64)         { p.supportedFeatures = f }
+func (p *stdPersister) SetMaximumEdition(me *int32)            { p.maximumEdition = me }
+func (p *stdPersister) SetMinimumEdition(me *int32)            { p.minimumEdition = me }
 func (p *stdPersister) AddPostProcessor(proc ...PostProcessor) { p.procs = append(p.procs, proc...) }
 
 func (p *stdPersister) Persist(arts ...Artifact) *plugin_go.CodeGeneratorResponse {
 	resp := new(plugin_go.CodeGeneratorResponse)
 	resp.SupportedFeatures = p.supportedFeatures
+	resp.MaximumEdition = p.maximumEdition
+	resp.MinimumEdition = p.minimumEdition
 
 	for _, a := range arts {
 		switch a := a.(type) {

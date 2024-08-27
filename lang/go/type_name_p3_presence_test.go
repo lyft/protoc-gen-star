@@ -1,3 +1,4 @@
+//go:build proto3_presence
 // +build proto3_presence
 
 package pgsgo
@@ -8,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 func TestType(t *testing.T) {
