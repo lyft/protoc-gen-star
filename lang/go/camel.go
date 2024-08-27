@@ -1,7 +1,7 @@
 package pgsgo
 
 import (
-	pgs "github.com/lyft/protoc-gen-star/v2"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 )
 
 // PGGUpperCamelCase converts Name n to the protoc-gen-go defined upper

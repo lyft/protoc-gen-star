@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	pgs "github.com/lyft/protoc-gen-star/v2"
 	"github.com/spf13/afero"
+	pgs "github.com/vaidehi-figma/protoc-gen-star"
 	"google.golang.org/protobuf/proto"
 	descriptor "google.golang.org/protobuf/types/descriptorpb"
 )
