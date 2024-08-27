@@ -1,8 +1,9 @@
-module github.com/lyft/protoc-gen-star/v2
+module github.com/vaidehi-figma/protoc-gen-star
 
 go 1.17
 
 require (
+	github.com/lyft/protoc-gen-star/v2 v2.0.3
 	github.com/spf13/afero v1.3.3
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/tools v0.1.12
