@@ -210,6 +210,11 @@ func (m *msg) populateDependentsCache() {
 	}
 }
 
+func (m *msg) Dependents() []Message {
+	m.populateDependentsCache()
+	return messageSetToSlice(m.FullyQualifiedName(), m.dependentsCache)
+}
+
 func (m *msg) getDependencies(set map[string]Message) {
 	m.populateDependenciesCache()
 
@@ -228,11 +233,6 @@ func (m *msg) populateDependenciesCache() {
 		m.dependenciesCache[dep.FullyQualifiedName()] = dep
 		dep.getDependencies(m.dependenciesCache)
 	}
-}
-
-func (m *msg) Dependents() []Message {
-	m.populateDependentsCache()
-	return messageSetToSlice(m.FullyQualifiedName(), m.dependentsCache)
 }
 
 func (m *msg) Dependencies() []Message {
