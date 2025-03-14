@@ -420,15 +420,22 @@ func TestMsg_Dependencies(t *testing.T) {
 			Name:    proto.String("test_file.proto"),
 		},
 	}
+	m1 := &msg{parent: f}
+	m1.fqn = "test.m1"
+	m2 := &msg{parent: f}
+	m2.fqn = "test.m2"
+	m3 := &msg{parent: f}
+	m3.fqn = "test.m3"
 
-	m := &msg{parent: f}
-	m.fqn = fullyQualifiedName(f, m)
-	m2 := dummyMsg()
-	m2.addDependency(m)
-	deps := m2.Dependencies()
+	m2.addDependency(m1)
+	m3.addDependency(m2)
 
-	assert.Len(t, deps, 1)
-	assert.Contains(t, deps, m)
+	assert.Len(t, m2.Dependencies(), 1)
+	assert.Contains(t, m2.Dependencies(), m1)
+
+	assert.Len(t, m3.Dependencies(), 2)
+	assert.Contains(t, m3.Dependencies(), m1)
+	assert.Contains(t, m3.Dependencies(), m2)
 }
 
 func TestMsg_ChildAtPath(t *testing.T) {
