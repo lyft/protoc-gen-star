@@ -456,11 +456,13 @@ func assignDependent(ft FieldType, parent Message) {
 		ft.Enum().addDependent(parent)
 	} else if ft.IsEmbed() {
 		ft.Embed().addDependent(parent)
+		parent.addDependency(ft.Embed())
 	} else if ft.IsRepeated() || ft.IsMap() {
 		if ft.Element().IsEnum() {
 			ft.Element().Enum().addDependent(parent)
 		} else if ft.Element().IsEmbed() {
 			ft.Element().Embed().addDependent(parent)
+			parent.addDependency(ft.Embed())
 		}
 
 		if ft.IsMap() {
@@ -468,6 +470,7 @@ func assignDependent(ft FieldType, parent Message) {
 				ft.Key().Enum().addDependent(parent)
 			} else if ft.Key().IsEmbed() {
 				ft.Key().Embed().addDependent(parent)
+				parent.addDependency(ft.Embed())
 			}
 		}
 	}
