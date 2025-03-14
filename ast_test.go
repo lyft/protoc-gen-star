@@ -350,17 +350,24 @@ func TestGraph_Bidirectional(t *testing.T) {
 
 		finish, ok := ast.Lookup(".kitchen.Sink.Material.Finish")
 		require.True(t, ok)
-		deps := finish.(Enum).Dependents()
 
 		kitchen, ok := ast.Lookup(".kitchen.Kitchen")
 		require.True(t, ok)
 		sink, ok := ast.Lookup(".kitchen.Sink")
 		require.True(t, ok)
 
-		require.Len(t, deps, 3)
-		assert.Contains(t, deps, finish.(Enum).Parent())
-		assert.Contains(t, deps, sink)
-		assert.Contains(t, deps, kitchen)
+		material, ok := ast.Lookup(".kitchen.Sink.Material")
+		require.True(t, ok)
+
+		dependents := finish.(Enum).Dependents()
+		require.Len(t, dependents, 3)
+		assert.Contains(t, dependents, finish.(Enum).Parent())
+		assert.Contains(t, dependents, sink)
+		assert.Contains(t, dependents, kitchen)
+
+		dependencies := sink.(Message).Dependencies()
+		require.Len(t, dependencies, 2)
+		assert.Contains(t, dependencies, material.(Message))
 	})
 
 	t.Run("files", func(t *testing.T) {
@@ -368,16 +375,16 @@ func TestGraph_Bidirectional(t *testing.T) {
 
 		timestamp, ok := ast.Lookup("google/protobuf/timestamp.proto")
 		require.True(t, ok)
-		deps := timestamp.(File).Dependents()
 
 		sinkProto, ok := ast.Lookup("kitchen/sink.proto")
 		require.True(t, ok)
 		kitchenProto, ok := ast.Lookup("kitchen/kitchen.proto")
 		require.True(t, ok)
 
-		assert.Len(t, deps, 2)
-		assert.Contains(t, deps, sinkProto)
-		assert.Contains(t, deps, kitchenProto)
+		dependents := timestamp.(File).Dependents()
+		assert.Len(t, dependents, 2)
+		assert.Contains(t, dependents, sinkProto)
+		assert.Contains(t, dependents, kitchenProto)
 	})
 }
 
@@ -395,17 +402,21 @@ func TestGraph_Bidirectional_Messages_Enums(t *testing.T) {
 		require.True(t, ok)
 		repeated, ok := graph.Lookup(".graph.messages.Repeated")
 		require.True(t, ok)
-		deps := beforeRepMsg.(Message).Dependents()
 
-		require.Len(t, deps, 1)
-		assert.Contains(t, deps, repeated)
+		dependents := beforeRepMsg.(Message).Dependents()
+		require.Len(t, dependents, 1)
+		assert.Contains(t, dependents, repeated)
+
+		dependencies := repeated.(Message).Dependencies()
+		require.Len(t, dependencies, 6)
+		assert.Contains(t, dependents, repeated)
 
 		beforeRepEnum, ok := graph.Lookup(".graph.messages.BeforeRepEnum")
 		require.True(t, ok)
-		deps = beforeRepEnum.(Enum).Dependents()
 
-		require.Len(t, deps, 1)
-		assert.Contains(t, deps, repeated)
+		dependents = beforeRepEnum.(Enum).Dependents()
+		require.Len(t, dependents, 1)
+		assert.Contains(t, dependents, repeated)
 	})
 
 	t.Run("message cycle", func(t *testing.T) {
@@ -414,6 +425,7 @@ func TestGraph_Bidirectional_Messages_Enums(t *testing.T) {
 		recursiveMsg, ok := graph.Lookup(".graph.messages.Recursive")
 		require.True(t, ok)
 		assert.Empty(t, recursiveMsg.(Message).Dependents())
+		assert.Empty(t, recursiveMsg.(Message).Dependencies())
 	})
 
 	t.Run("maps", func(t *testing.T) {
@@ -423,17 +435,21 @@ func TestGraph_Bidirectional_Messages_Enums(t *testing.T) {
 		require.True(t, ok)
 		maps, ok := graph.Lookup(".graph.messages.Maps")
 		require.True(t, ok)
-		deps := beforeMapMsg.(Message).Dependents()
 
-		require.Len(t, deps, 1)
-		assert.Contains(t, deps, maps)
+		dependents := beforeMapMsg.(Message).Dependents()
+		require.Len(t, dependents, 1)
+		assert.Contains(t, dependents, maps)
+
+		dependencies := maps.(Message).Dependencies()
+		require.Len(t, dependencies, 6)
+		assert.Contains(t, dependencies, beforeMapMsg.(Message))
 
 		beforeMapEnum, ok := graph.Lookup(".graph.messages.BeforeMapEnum")
 		require.True(t, ok)
-		deps = beforeMapEnum.(Enum).Dependents()
 
-		require.Len(t, deps, 1)
-		assert.Contains(t, deps, maps)
+		dependents = beforeMapEnum.(Enum).Dependents()
+		require.Len(t, dependents, 1)
+		assert.Contains(t, dependents, maps)
 	})
 }
 
@@ -456,7 +472,8 @@ func TestGraph_Bidirectional_Recursive(t *testing.T) {
 			fqn: ".graph.messages.Circular.Rock",
 			expected: []string{
 				".graph.messages.Circular.Paper",
-				".graph.messages.Circular.Scissors"},
+				".graph.messages.Circular.Scissors",
+			},
 		},
 		{
 			fqn:      ".graph.messages.RepeatedRecursive",
@@ -471,17 +488,23 @@ func TestGraph_Bidirectional_Recursive(t *testing.T) {
 
 			m, ok := graph.Lookup(tc.fqn)
 			require.True(t, ok)
-			deps := m.(Message).Dependents()
+			dependents := m.(Message).Dependents()
+			dependencies := m.(Message).Dependencies()
 
-			require.Len(t, deps, len(tc.expected),
-				"wanted %v, but got %v", tc.expected, deps)
+			require.Len(t, dependents, len(tc.expected),
+				"wanted %v, but got %v", tc.expected, dependents)
+			require.Len(t, dependencies, len(tc.expected),
+				"wanted %v, but got %v", tc.expected, dependents)
 
 			set := make(map[string]bool)
 			for _, name := range tc.expected {
 				set[name] = true
 			}
 
-			for _, dep := range deps {
+			for _, dep := range dependents {
+				assert.Contains(t, set, dep.FullyQualifiedName())
+			}
+			for _, dep := range dependencies {
 				assert.Contains(t, set, dep.FullyQualifiedName())
 			}
 		})

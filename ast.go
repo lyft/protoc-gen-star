@@ -468,9 +468,20 @@ func assignDependent(ft FieldType, parent Message) {
 		if ft.IsMap() {
 			if ft.Key().IsEnum() {
 				ft.Key().Enum().addDependent(parent)
-			} else if ft.Key().IsEmbed() {
+			}
+			if ft.Key().IsEmbed() {
 				ft.Key().Embed().addDependent(parent)
 				parent.addDependency(ft.Embed())
+			}
+			if ft.Element().IsEmbed() {
+				ft.Element().Embed().addDependent(parent)
+				parent.addDependency(ft.Element().Embed())
+			}
+		}
+
+		if ft.IsRepeated() {
+			if ft.Element().IsEmbed() {
+				parent.addDependency(ft.Element().Embed())
 			}
 		}
 	}
