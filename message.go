@@ -48,6 +48,10 @@ type Message interface {
 	// transitively used.
 	Dependents() []Message
 
+	// Dependencies returns all of the messages that message directly or
+	// transitively uses.
+	Dependencies() []Message
+
 	// IsMapEntry identifies this message as a MapEntry. If true, this message is
 	// not generated as code, and is used exclusively when marshaling a map field
 	// to the wire format.
@@ -68,6 +72,8 @@ type Message interface {
 	addOneOf(o OneOf)
 	addDependent(message Message)
 	getDependents(set map[string]Message)
+	addDependency(message Message)
+	getDependencies(set map[string]Message)
 }
 
 type msg struct {
@@ -84,6 +90,8 @@ type msg struct {
 	maps                []Message
 	dependents          []Message
 	dependentsCache     map[string]Message
+	dependencies        []Message
+	dependenciesCache   map[string]Message
 
 	info SourceCodeInfo
 }
@@ -207,6 +215,31 @@ func (m *msg) Dependents() []Message {
 	return messageSetToSlice(m.FullyQualifiedName(), m.dependentsCache)
 }
 
+func (m *msg) getDependencies(set map[string]Message) {
+	m.populateDependenciesCache()
+
+	for fqn, d := range m.dependenciesCache {
+		set[fqn] = d
+	}
+}
+
+func (m *msg) populateDependenciesCache() {
+	if m.dependenciesCache != nil {
+		return
+	}
+
+	m.dependenciesCache = map[string]Message{}
+	for _, dep := range m.dependencies {
+		m.dependenciesCache[dep.FullyQualifiedName()] = dep
+		dep.getDependencies(m.dependenciesCache)
+	}
+}
+
+func (m *msg) Dependencies() []Message {
+	m.populateDependenciesCache()
+	return messageSetToSlice(m.FullyQualifiedName(), m.dependenciesCache)
+}
+
 func (m *msg) Extension(desc *protoimpl.ExtensionInfo, ext interface{}) (bool, error) {
 	return extension(m.desc.GetOptions(), desc, &ext)
 }
@@ -298,6 +331,12 @@ func (m *msg) addMapEntry(me Message) {
 
 func (m *msg) addDependent(message Message) {
 	m.dependents = append(m.dependents, message)
+}
+
+func (m *msg) addDependency(message Message) {
+	if message != nil {
+		m.dependencies = append(m.dependencies, message)
+	}
 }
 
 func (m *msg) childAtPath(path []int32) Entity {
